@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP TCAN330
+D TCAN33x 3.3-V CAN Transceivers with CAN FD
+K CAN Transceivers
+F http://www.ti.com/lit/ds/symlink/tcan330.pdf
+$ENDCMP
+#
+#End Doc Library

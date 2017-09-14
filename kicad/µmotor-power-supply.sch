@@ -1,0 +1,173 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:stm32
+LIBS:DRV8870
+LIBS:INA180A
+LIBS:AS5045B
+LIBS:TCAN33x
+LIBS:µmotor-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 3 7
+Title "µmotor - Micro Motor Controller"
+Date "2017-09-14"
+Rev "rev1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L C C301
+U 1 1 59BA07C7
+P 1500 1650
+F 0 "C301" H 1525 1750 50  0000 L CNN
+F 1 "10µ/10V" H 1525 1550 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 1538 1500 50  0001 C CNN
+F 3 "" H 1500 1650 50  0001 C CNN
+	1    1500 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C303
+U 1 1 59BA07FE
+P 2300 1650
+F 0 "C303" H 2325 1750 50  0000 L CNN
+F 1 "10µ/6V3" H 2325 1550 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 2338 1500 50  0001 C CNN
+F 3 "" H 2300 1650 50  0001 C CNN
+	1    2300 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR011
+U 1 1 59BA0971
+P 1900 2000
+F 0 "#PWR011" H 1900 1750 50  0001 C CNN
+F 1 "GND" H 1900 1850 50  0000 C CNN
+F 2 "" H 1900 2000 50  0001 C CNN
+F 3 "" H 1900 2000 50  0001 C CNN
+	1    1900 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1900 2000 1900 1700
+Wire Wire Line
+	1500 1800 1500 1900
+Wire Wire Line
+	1500 1900 2300 1900
+Connection ~ 1900 1900
+Wire Wire Line
+	2300 1900 2300 1800
+Wire Wire Line
+	2200 1400 2500 1400
+Wire Wire Line
+	2300 1400 2300 1500
+Wire Wire Line
+	1300 1400 1600 1400
+Wire Wire Line
+	1500 1400 1500 1500
+$Comp
+L +6V #PWR012
+U 1 1 59BA09C9
+P 1300 1400
+F 0 "#PWR012" H 1300 1250 50  0001 C CNN
+F 1 "+6V" H 1300 1540 50  0000 C CNN
+F 2 "" H 1300 1400 50  0001 C CNN
+F 3 "" H 1300 1400 50  0001 C CNN
+	1    1300 1400
+	0    -1   -1   0   
+$EndComp
+Connection ~ 1500 1400
+$Comp
+L +3V3 #PWR013
+U 1 1 59BA09F2
+P 2500 1400
+F 0 "#PWR013" H 2500 1250 50  0001 C CNN
+F 1 "+3V3" H 2500 1540 50  0000 C CNN
+F 2 "" H 2500 1400 50  0001 C CNN
+F 3 "" H 2500 1400 50  0001 C CNN
+	1    2500 1400
+	0    1    1    0   
+$EndComp
+Connection ~ 2300 1400
+$Comp
+L CP C302
+U 1 1 59BA0F5E
+P 1750 3450
+F 0 "C302" H 1775 3550 50  0000 L CNN
+F 1 "47µ/35V" H 1775 3350 50  0000 L CNN
+F 2 "Capacitors_THT:CP_Radial_D4.0mm_P1.50mm" H 1788 3300 50  0001 C CNN
+F 3 "" H 1750 3450 50  0001 C CNN
+	1    1750 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR014
+U 1 1 59BA105D
+P 1750 3700
+F 0 "#PWR014" H 1750 3450 50  0001 C CNN
+F 1 "GND" H 1750 3550 50  0000 C CNN
+F 2 "" H 1750 3700 50  0001 C CNN
+F 3 "" H 1750 3700 50  0001 C CNN
+	1    1750 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L +24V #PWR015
+U 1 1 59BA1079
+P 1750 3200
+F 0 "#PWR015" H 1750 3050 50  0001 C CNN
+F 1 "+24V" H 1750 3340 50  0000 C CNN
+F 2 "" H 1750 3200 50  0001 C CNN
+F 3 "" H 1750 3200 50  0001 C CNN
+	1    1750 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1750 3200 1750 3300
+Wire Wire Line
+	1750 3600 1750 3700
+$Comp
+L MCP1700T-3002E/TT U301
+U 1 1 59BB1991
+P 1900 1500
+F 0 "U301" H 2000 1300 50  0000 C CNN
+F 1 "MCP1700T-3002E/TT" H 1900 1800 50  0000 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 1900 1600 50  0001 C CNN
+F 3 "" H 1900 1600 50  0001 C CNN
+	1    1900 1500
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

@@ -1,0 +1,311 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:stm32
+LIBS:DRV8870
+LIBS:INA180A
+LIBS:AS5045B
+LIBS:TCAN33x
+LIBS:µmotor-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 7
+Title "µmotor - Micro Motor Controller"
+Date "2017-09-14"
+Rev "rev1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L STM32F042F6Px U201
+U 1 1 59B9FCD8
+P 5950 4000
+F 0 "U201" H 3150 4925 50  0000 L BNN
+F 1 "STM32F042F6Px" H 8750 4925 50  0000 R BNN
+F 2 "Housings_SSOP:TSSOP-20_4.4x6.5mm_Pitch0.65mm" H 8750 4875 50  0001 R TNN
+F 3 "" H 5950 4000 50  0001 C CNN
+	1    5950 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR05
+U 1 1 59BA119E
+P 5900 2800
+F 0 "#PWR05" H 5900 2650 50  0001 C CNN
+F 1 "+3V3" H 5900 2940 50  0000 C CNN
+F 2 "" H 5900 2800 50  0001 C CNN
+F 3 "" H 5900 2800 50  0001 C CNN
+	1    5900 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 2800 5900 2900
+Wire Wire Line
+	5850 2900 5950 2900
+Wire Wire Line
+	5850 2900 5850 3000
+Wire Wire Line
+	5950 2900 5950 3000
+Connection ~ 5900 2900
+$Comp
+L GND #PWR06
+U 1 1 59BA11C7
+P 5950 5000
+F 0 "#PWR06" H 5950 4750 50  0001 C CNN
+F 1 "GND" H 5950 4850 50  0000 C CNN
+F 2 "" H 5950 5000 50  0001 C CNN
+F 3 "" H 5950 5000 50  0001 C CNN
+	1    5950 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5950 5000 5950 4900
+NoConn ~ 3050 3400
+$Comp
+L TEST_1P J203
+U 1 1 59BA1247
+P 9250 4400
+F 0 "J203" V 9250 4950 50  0000 C CNN
+F 1 "SWDIO" V 9250 4700 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9450 4400 50  0001 C CNN
+F 3 "" H 9450 4400 50  0001 C CNN
+	1    9250 4400
+	0    1    1    0   
+$EndComp
+$Comp
+L TEST_1P J204
+U 1 1 59BA12F1
+P 9250 4500
+F 0 "J204" V 9250 5050 50  0000 C CNN
+F 1 "SWCLK" V 9250 4800 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9450 4500 50  0001 C CNN
+F 3 "" H 9450 4500 50  0001 C CNN
+	1    9250 4500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	9250 4500 8850 4500
+Wire Wire Line
+	8850 4400 9250 4400
+$Comp
+L TEST_1P J205
+U 1 1 59BA1332
+P 9250 4600
+F 0 "J205" V 9250 5150 50  0000 C CNN
+F 1 "GND" V 9250 4900 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9450 4600 50  0001 C CNN
+F 3 "" H 9450 4600 50  0001 C CNN
+	1    9250 4600
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR07
+U 1 1 59BA1365
+P 9150 4700
+F 0 "#PWR07" H 9150 4450 50  0001 C CNN
+F 1 "GND" H 9150 4550 50  0000 C CNN
+F 2 "" H 9150 4700 50  0001 C CNN
+F 3 "" H 9150 4700 50  0001 C CNN
+	1    9150 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 4700 9150 4600
+Wire Wire Line
+	9150 4600 9250 4600
+Wire Notes Line
+	9200 4350 9200 4650
+Wire Notes Line
+	9200 4650 10150 4650
+Wire Notes Line
+	10150 4650 10150 4350
+Wire Notes Line
+	10150 4350 9200 4350
+Text Notes 10100 4600 1    60   ~ 0
+SWD
+Text HLabel 2850 4100 0    60   BiDi ~ 0
+I2C_SDA
+Text HLabel 2850 4500 0    60   Output ~ 0
+I2C_SCL
+Text HLabel 9050 4200 2    60   Input ~ 0
+CAN_RX
+Text HLabel 9050 4300 2    60   Output ~ 0
+CAN_TX
+Text HLabel 9050 3900 2    60   Input ~ 0
+ADC
+Text HLabel 9050 4100 2    60   Output ~ 0
+PWM_TIM1_CH1N
+Text HLabel 2850 4400 0    60   Output ~ 0
+PWM_TIM1_CH3N
+$Comp
+L TEST_1P J201
+U 1 1 59BA1FC2
+P 9250 3600
+F 0 "J201" V 9250 4050 50  0000 C CNN
+F 1 "TX" V 9250 3850 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9450 3600 50  0001 C CNN
+F 3 "" H 9450 3600 50  0001 C CNN
+	1    9250 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L TEST_1P J202
+U 1 1 59BA1FC8
+P 9250 3700
+F 0 "J202" V 9250 4150 50  0000 C CNN
+F 1 "RX" V 9250 3950 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9450 3700 50  0001 C CNN
+F 3 "" H 9450 3700 50  0001 C CNN
+	1    9250 3700
+	0    1    1    0   
+$EndComp
+Wire Notes Line
+	10150 3550 9200 3550
+Wire Wire Line
+	9250 3600 8850 3600
+Wire Wire Line
+	8850 3700 9250 3700
+Wire Notes Line
+	9200 3550 9200 3750
+Wire Notes Line
+	9200 3750 10150 3750
+Wire Notes Line
+	10150 3750 10150 3550
+Text Notes 9850 3700 0    60   ~ 0
+UART
+Wire Wire Line
+	9050 3900 8850 3900
+Wire Wire Line
+	8850 4100 9050 4100
+Wire Wire Line
+	9050 4200 8850 4200
+Wire Wire Line
+	8850 4300 9050 4300
+Text HLabel 9050 3400 2    60   Input ~ 0
+Enc_TIM2_CH1
+Text HLabel 9050 3500 2    60   Input ~ 0
+Enc_TIM2_CH2
+Wire Wire Line
+	3050 4400 2850 4400
+Wire Wire Line
+	2850 4500 3050 4500
+Wire Wire Line
+	3050 4100 2850 4100
+Wire Wire Line
+	9050 3400 8850 3400
+Wire Wire Line
+	8850 3500 9050 3500
+NoConn ~ 8850 4000
+Text HLabel 9050 3800 2    60   Output ~ 0
+PWM_TIM14_CH1
+Wire Wire Line
+	8850 3800 9050 3800
+$Comp
+L C C201
+U 1 1 59BAE177
+P 6400 2450
+F 0 "C201" H 6425 2550 50  0000 L CNN
+F 1 "100n" H 6425 2350 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 6438 2300 50  0001 C CNN
+F 3 "" H 6400 2450 50  0001 C CNN
+	1    6400 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR08
+U 1 1 59BAE1E9
+P 6400 2200
+F 0 "#PWR08" H 6400 2050 50  0001 C CNN
+F 1 "+3V3" H 6400 2340 50  0000 C CNN
+F 2 "" H 6400 2200 50  0001 C CNN
+F 3 "" H 6400 2200 50  0001 C CNN
+	1    6400 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 2200 6400 2300
+$Comp
+L GND #PWR09
+U 1 1 59BAE239
+P 6400 2700
+F 0 "#PWR09" H 6400 2450 50  0001 C CNN
+F 1 "GND" H 6400 2550 50  0000 C CNN
+F 2 "" H 6400 2700 50  0001 C CNN
+F 3 "" H 6400 2700 50  0001 C CNN
+	1    6400 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 2700 6400 2600
+$Comp
+L R R201
+U 1 1 59BB0C75
+P 1850 4200
+F 0 "R201" V 1930 4200 50  0000 C CNN
+F 1 "1k" V 1850 4200 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 1780 4200 50  0001 C CNN
+F 3 "" H 1850 4200 50  0001 C CNN
+	1    1850 4200
+	0    1    1    0   
+$EndComp
+$Comp
+L LED D201
+U 1 1 59BB0CC4
+P 1450 4200
+F 0 "D201" H 1450 4300 50  0000 C CNN
+F 1 "Blue" H 1450 4100 50  0000 C CNN
+F 2 "LEDs:LED_0603" H 1450 4200 50  0001 C CNN
+F 3 "" H 1450 4200 50  0001 C CNN
+	1    1450 4200
+	-1   0    0    1   
+$EndComp
+$Comp
+L +3V3 #PWR010
+U 1 1 59BB0D1C
+P 1200 4200
+F 0 "#PWR010" H 1200 4050 50  0001 C CNN
+F 1 "+3V3" H 1200 4340 50  0000 C CNN
+F 2 "" H 1200 4200 50  0001 C CNN
+F 3 "" H 1200 4200 50  0001 C CNN
+	1    1200 4200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1200 4200 1300 4200
+Wire Wire Line
+	1600 4200 1700 4200
+Wire Wire Line
+	2000 4200 3050 4200
+$EndSCHEMATC

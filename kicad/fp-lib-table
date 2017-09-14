@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name HSOP-8)(type Legacy)(uri /home/rleh/src/RCA/µmotor/kicad/lib/HSOP-8.mod)(options "")(descr ""))
+)

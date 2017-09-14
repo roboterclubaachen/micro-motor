@@ -1,0 +1,224 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:stm32
+LIBS:DRV8870
+LIBS:INA180A
+LIBS:AS5045B
+LIBS:TCAN33x
+LIBS:µmotor-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 4 7
+Title "µmotor - Micro Motor Controller"
+Date "2017-09-14"
+Rev "rev1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L AS5045B U401
+U 1 1 59BAD84A
+P 5600 3800
+F 0 "U401" H 5600 4300 60  0000 C CNN
+F 1 "AS5045B" H 5600 3300 60  0000 C CNN
+F 2 "Housings_SSOP:SSOP-16_4.4x5.2mm_Pitch0.65mm" H 5650 3800 60  0001 C CNN
+F 3 "" H 5650 3800 60  0001 C CNN
+	1    5600 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR016
+U 1 1 59BAD885
+P 6300 3350
+F 0 "#PWR016" H 6300 3200 50  0001 C CNN
+F 1 "+3V3" H 6300 3490 50  0000 C CNN
+F 2 "" H 6300 3350 50  0001 C CNN
+F 3 "" H 6300 3350 50  0001 C CNN
+	1    6300 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6300 3350 6300 3550
+Wire Wire Line
+	6300 3450 6200 3450
+Wire Wire Line
+	6300 3550 6200 3550
+Connection ~ 6300 3450
+$Comp
+L GND #PWR017
+U 1 1 59BAD8B0
+P 4900 4250
+F 0 "#PWR017" H 4900 4000 50  0001 C CNN
+F 1 "GND" H 4900 4100 50  0000 C CNN
+F 2 "" H 4900 4250 50  0001 C CNN
+F 3 "" H 4900 4250 50  0001 C CNN
+	1    4900 4250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4900 4250 4900 4050
+Wire Wire Line
+	4900 4050 5000 4050
+Wire Wire Line
+	5000 4150 4900 4150
+Connection ~ 4900 4150
+NoConn ~ 5000 3950
+$Comp
+L LED D402
+U 1 1 59BAD8DC
+P 4900 3200
+F 0 "D402" H 4900 3300 50  0000 C CNN
+F 1 "Yellow" H 4900 3100 50  0000 C CNN
+F 2 "LEDs:LED_0603" H 4900 3200 50  0001 C CNN
+F 3 "" H 4900 3200 50  0001 C CNN
+	1    4900 3200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D401
+U 1 1 59BAD913
+P 4600 3200
+F 0 "D401" H 4600 3300 50  0000 C CNN
+F 1 "Red" H 4600 3100 50  0000 C CNN
+F 2 "LEDs:LED_0603" H 4600 3200 50  0001 C CNN
+F 3 "" H 4600 3200 50  0001 C CNN
+	1    4600 3200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4600 3350 4600 3550
+Wire Wire Line
+	4600 3550 5000 3550
+Wire Wire Line
+	5000 3450 4900 3450
+Wire Wire Line
+	4900 3450 4900 3350
+$Comp
+L R R402
+U 1 1 59BAD94F
+P 4900 2800
+F 0 "R402" V 4980 2800 50  0000 C CNN
+F 1 "1k" V 4900 2800 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 4830 2800 50  0001 C CNN
+F 3 "" H 4900 2800 50  0001 C CNN
+	1    4900 2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R401
+U 1 1 59BAD99D
+P 4600 2800
+F 0 "R401" V 4680 2800 50  0000 C CNN
+F 1 "1k" V 4600 2800 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 4530 2800 50  0001 C CNN
+F 3 "" H 4600 2800 50  0001 C CNN
+	1    4600 2800
+	1    0    0    -1  
+$EndComp
+NoConn ~ 6200 4150
+NoConn ~ 6200 4050
+NoConn ~ 6200 3950
+NoConn ~ 6200 3850
+Text HLabel 4350 3650 0    60   Output ~ 0
+A
+Text HLabel 4350 3750 0    60   Output ~ 0
+B
+Wire Wire Line
+	4350 3750 5000 3750
+Wire Wire Line
+	5000 3650 4350 3650
+$Comp
+L C C401
+U 1 1 59BADC52
+P 6750 3700
+F 0 "C401" H 6775 3800 50  0000 L CNN
+F 1 "100n" H 6775 3600 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 6788 3550 50  0001 C CNN
+F 3 "" H 6750 3700 50  0001 C CNN
+	1    6750 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR018
+U 1 1 59BADC81
+P 6750 3450
+F 0 "#PWR018" H 6750 3300 50  0001 C CNN
+F 1 "+3V3" H 6750 3590 50  0000 C CNN
+F 2 "" H 6750 3450 50  0001 C CNN
+F 3 "" H 6750 3450 50  0001 C CNN
+	1    6750 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR019
+U 1 1 59BADC9E
+P 6750 3950
+F 0 "#PWR019" H 6750 3700 50  0001 C CNN
+F 1 "GND" H 6750 3800 50  0000 C CNN
+F 2 "" H 6750 3950 50  0001 C CNN
+F 3 "" H 6750 3950 50  0001 C CNN
+	1    6750 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6750 3950 6750 3850
+Wire Wire Line
+	6750 3550 6750 3450
+Wire Wire Line
+	4900 3050 4900 2950
+Wire Wire Line
+	4600 3050 4600 2950
+$Comp
+L +3V3 #PWR020
+U 1 1 59BADF20
+P 4750 2450
+F 0 "#PWR020" H 4750 2300 50  0001 C CNN
+F 1 "+3V3" H 4750 2590 50  0000 C CNN
+F 2 "" H 4750 2450 50  0001 C CNN
+F 3 "" H 4750 2450 50  0001 C CNN
+	1    4750 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 2450 4750 2550
+Wire Wire Line
+	4600 2550 4900 2550
+Wire Wire Line
+	4600 2550 4600 2650
+Wire Wire Line
+	4900 2550 4900 2650
+Connection ~ 4750 2550
+$EndSCHEMATC

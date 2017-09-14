@@ -1,0 +1,233 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:stm32
+LIBS:DRV8870
+LIBS:INA180A
+LIBS:AS5045B
+LIBS:TCAN33x
+LIBS:µmotor-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 7
+Title "µmotor - Micro Motor Controller"
+Date "2017-09-14"
+Rev "rev1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 4750 3450 1550 1000
+U 59B9FC4A
+F0 "Microcontroller" 60
+F1 "µmotor-microcontroller.sch" 60
+F2 "I2C_SDA" B L 4750 3550 60 
+F3 "I2C_SCL" O L 4750 3650 60 
+F4 "CAN_RX" I L 4750 4350 60 
+F5 "CAN_TX" O L 4750 4250 60 
+F6 "PWM_TIM1_CH1N" O R 6300 4050 60 
+F7 "PWM_TIM1_CH3N" O R 6300 3950 60 
+F8 "Enc_TIM2_CH1" I R 6300 3550 60 
+F9 "Enc_TIM2_CH2" I R 6300 3650 60 
+F10 "ADC" I R 6300 4200 60 
+F11 "PWM_TIM14_CH1" O R 6300 4350 60 
+$EndSheet
+$Sheet
+S 1550 2200 1500 550 
+U 59B9FC51
+F0 "Power_Supply" 60
+F1 "µmotor-power-supply.sch" 60
+$EndSheet
+$Sheet
+S 6800 3450 1200 300 
+U 59B9FCA5
+F0 "Encoder" 60
+F1 "µmotor-encoder.sch" 60
+F2 "A" O L 6800 3550 60 
+F3 "B" O L 6800 3650 60 
+$EndSheet
+$Sheet
+S 8150 3850 1400 600 
+U 59B9FE17
+F0 "Motor_Driver" 60
+F1 "µmotor-motor-driver.sch" 60
+F2 "IN1" I L 8150 3950 60 
+F3 "IN2" I L 8150 4050 60 
+F4 "VREF" I L 8150 4350 60 
+F5 "Current_sense" O L 8150 4200 60 
+$EndSheet
+$Comp
+L CONN_01X05 J101
+U 1 1 59B9FEAC
+P 950 4150
+F 0 "J101" H 950 4450 50  0000 C CNN
+F 1 "CAN+PWR" V 1050 4150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x05_Pitch2.54mm" H 950 4150 50  0001 C CNN
+F 3 "" H 950 4150 50  0001 C CNN
+	1    950  4150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 59B9FFC7
+P 1250 4150
+F 0 "#PWR01" H 1250 3900 50  0001 C CNN
+F 1 "GND" H 1250 4000 50  0000 C CNN
+F 2 "" H 1250 4150 50  0001 C CNN
+F 3 "" H 1250 4150 50  0001 C CNN
+	1    1250 4150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1250 4150 1150 4150
+Wire Wire Line
+	1150 4250 2100 4250
+Wire Wire Line
+	1150 4350 2100 4350
+$Comp
+L +6V #PWR02
+U 1 1 59BA046F
+P 1550 4050
+F 0 "#PWR02" H 1550 3900 50  0001 C CNN
+F 1 "+6V" V 1550 4250 50  0000 C CNN
+F 2 "" H 1550 4050 50  0001 C CNN
+F 3 "" H 1550 4050 50  0001 C CNN
+	1    1550 4050
+	0    1    1    0   
+$EndComp
+$Comp
+L +24V #PWR03
+U 1 1 59BA04C0
+P 1550 3950
+F 0 "#PWR03" H 1550 3800 50  0001 C CNN
+F 1 "+24V" V 1550 4150 50  0000 C CNN
+F 2 "" H 1550 3950 50  0001 C CNN
+F 3 "" H 1550 3950 50  0001 C CNN
+	1    1550 3950
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1150 3950 1550 3950
+Wire Wire Line
+	1550 4050 1150 4050
+$Sheet
+S 2100 4150 1050 300 
+U 59B9FE58
+F0 "CAN" 60
+F1 "µmotor-can.sch" 60
+F2 "CAN_RX" O R 3150 4350 60 
+F3 "CAN_TX" I R 3150 4250 60 
+F4 "CAN_H" B L 2100 4250 60 
+F5 "CAN_L" B L 2100 4350 60 
+$EndSheet
+Wire Wire Line
+	4750 4250 3150 4250
+Wire Wire Line
+	3150 4350 4750 4350
+$Sheet
+S 2550 3450 1350 300 
+U 59BA5FB5
+F0 "Temperature_Sensor" 60
+F1 "µmotor-temp-sensor.sch" 60
+F2 "SDA" B R 3900 3550 60 
+F3 "SCL" I R 3900 3650 60 
+$EndSheet
+Wire Wire Line
+	4750 3650 3900 3650
+Wire Wire Line
+	3900 3550 4750 3550
+$Comp
+L R R101
+U 1 1 59BA90AD
+P 7000 4350
+F 0 "R101" V 7080 4350 50  0000 C CNN
+F 1 "100k" V 7000 4350 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 6930 4350 50  0001 C CNN
+F 3 "" H 7000 4350 50  0001 C CNN
+	1    7000 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L C C101
+U 1 1 59BAA0EB
+P 7250 4600
+F 0 "C101" H 7275 4700 50  0000 L CNN
+F 1 "1u" H 7275 4500 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 7288 4450 50  0001 C CNN
+F 3 "" H 7250 4600 50  0001 C CNN
+	1    7250 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 4350 6300 4350
+Wire Wire Line
+	7150 4350 8150 4350
+Wire Wire Line
+	7250 4450 7250 4350
+Connection ~ 7250 4350
+$Comp
+L GND #PWR04
+U 1 1 59BAA2C3
+P 7250 4850
+F 0 "#PWR04" H 7250 4600 50  0001 C CNN
+F 1 "GND" H 7250 4700 50  0000 C CNN
+F 2 "" H 7250 4850 50  0001 C CNN
+F 3 "" H 7250 4850 50  0001 C CNN
+	1    7250 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7250 4850 7250 4750
+Wire Notes Line
+	6800 4250 7500 4250
+Wire Notes Line
+	7500 4250 7500 5100
+Wire Notes Line
+	7500 5100 6800 5100
+Wire Notes Line
+	6800 5100 6800 4250
+Text Notes 6800 5200 0    60   ~ 0
+1.5Hz Low-pass
+Wire Wire Line
+	6300 4200 8150 4200
+Wire Wire Line
+	8150 4050 6300 4050
+Wire Wire Line
+	6300 3950 8150 3950
+Wire Wire Line
+	6800 3550 6300 3550
+Wire Wire Line
+	6300 3650 6800 3650
+$EndSCHEMATC
