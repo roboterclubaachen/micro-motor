@@ -1,4 +1,4 @@
-update=Thu Sep 14 08:08:50 2017
+update=Wed Oct 25 14:00:28 2017
 version=1
 last_client=kicad
 [pcbnew]
@@ -63,3 +63,4 @@ LibName31=lib/DRV8870
 LibName32=lib/INA180A
 LibName33=lib/AS5045B
 LibName34=lib/TCAN33x
+LibName35=lib/mic4606
