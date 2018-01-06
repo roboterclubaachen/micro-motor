@@ -36,12 +36,14 @@ LIBS:TCAN33x
 LIBS:mic4606
 LIBS:drv8323s
 LIBS:FDMD82xx
+LIBS:ncp4623
+LIBS:TMP006
 LIBS:µmotor-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 6
+Sheet 2 6
 Title "µmotor - Micro Motor Controller"
 Date "2017-09-14"
 Rev "rev1"
@@ -62,21 +64,10 @@ F 3 "" H 5650 3800 60  0001 C CNN
 	1    5600 3800
 	1    0    0    -1  
 $EndComp
-$Comp
-L +3V3 #PWR016
-U 1 1 59BAD885
-P 6300 3350
-F 0 "#PWR016" H 6300 3200 50  0001 C CNN
-F 1 "+3V3" H 6300 3490 50  0000 C CNN
-F 2 "" H 6300 3350 50  0001 C CNN
-F 3 "" H 6300 3350 50  0001 C CNN
-	1    6300 3350
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	6300 3350 6300 3550
+	6300 2400 6300 3550
 Wire Wire Line
-	6300 3450 6200 3450
+	6200 3450 6750 3450
 Wire Wire Line
 	6300 3550 6200 3550
 Connection ~ 6300 3450
@@ -155,14 +146,14 @@ NoConn ~ 6200 4150
 NoConn ~ 6200 4050
 NoConn ~ 6200 3950
 NoConn ~ 6200 3850
-Text HLabel 4350 3650 0    60   Output ~ 0
+Text HLabel 3150 3650 0    60   Output ~ 0
 A
-Text HLabel 4350 3750 0    60   Output ~ 0
+Text HLabel 3150 3750 0    60   Output ~ 0
 B
 Wire Wire Line
-	4350 3750 5000 3750
+	3150 3750 5000 3750
 Wire Wire Line
-	5000 3650 4350 3650
+	3150 3650 5000 3650
 $Comp
 L C C401
 U 1 1 59BADC52
@@ -172,17 +163,6 @@ F 1 "100n" H 6775 3600 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0603" H 6788 3550 50  0001 C CNN
 F 3 "" H 6750 3700 50  0001 C CNN
 	1    6750 3700
-	1    0    0    -1  
-$EndComp
-$Comp
-L +3V3 #PWR018
-U 1 1 59BADC81
-P 6750 3450
-F 0 "#PWR018" H 6750 3300 50  0001 C CNN
-F 1 "+3V3" H 6750 3590 50  0000 C CNN
-F 2 "" H 6750 3450 50  0001 C CNN
-F 3 "" H 6750 3450 50  0001 C CNN
-	1    6750 3450
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -199,24 +179,13 @@ $EndComp
 Wire Wire Line
 	6750 3950 6750 3850
 Wire Wire Line
-	6750 3550 6750 3450
+	6750 3450 6750 3550
 Wire Wire Line
 	4900 3050 4900 2950
 Wire Wire Line
 	4600 3050 4600 2950
-$Comp
-L +3V3 #PWR020
-U 1 1 59BADF20
-P 4750 2450
-F 0 "#PWR020" H 4750 2300 50  0001 C CNN
-F 1 "+3V3" H 4750 2590 50  0000 C CNN
-F 2 "" H 4750 2450 50  0001 C CNN
-F 3 "" H 4750 2450 50  0001 C CNN
-	1    4750 2450
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	4750 2450 4750 2550
+	4750 2400 4750 2550
 Wire Wire Line
 	4600 2550 4900 2550
 Wire Wire Line
@@ -224,4 +193,37 @@ Wire Wire Line
 Wire Wire Line
 	4900 2550 4900 2650
 Connection ~ 4750 2550
+$Comp
+L TEST_1P J?
+U 1 1 5A76BD44
+P 3900 3550
+F 0 "J?" H 3900 3820 50  0000 C CNN
+F 1 "A" H 3900 3750 50  0000 C CNN
+F 2 "" H 4100 3550 50  0001 C CNN
+F 3 "" H 4100 3550 50  0001 C CNN
+	1    3900 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L TEST_1P J?
+U 1 1 5A76BDAC
+P 3900 3850
+F 0 "J?" H 3900 4120 50  0000 C CNN
+F 1 "B" H 3900 4050 50  0000 C CNN
+F 2 "" H 4100 3850 50  0001 C CNN
+F 3 "" H 4100 3850 50  0001 C CNN
+	1    3900 3850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3900 3650 3900 3550
+Wire Wire Line
+	3900 3750 3900 3850
+Connection ~ 3900 3750
+Connection ~ 3900 3650
+Text HLabel 4400 2400 0    60   Input ~ 0
+3V_IN
+Wire Wire Line
+	4400 2400 6300 2400
+Connection ~ 4750 2400
 $EndSCHEMATC

@@ -36,12 +36,14 @@ LIBS:TCAN33x
 LIBS:mic4606
 LIBS:drv8323s
 LIBS:FDMD82xx
+LIBS:ncp4623
+LIBS:TMP006
 LIBS:µmotor-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 6
+Sheet 3 6
 Title "µmotor - Micro Motor Controller"
 Date "2017-09-14"
 Rev "rev1"
@@ -206,30 +208,8 @@ Text HLabel 4850 4800 0    60   Input ~ 0
 SCK
 Text HLabel 4850 4900 0    60   Input ~ 0
 ~CS
-$Comp
-L R R?
-U 1 1 5A4FECE8
-P 4100 4600
-F 0 "R?" V 4180 4600 50  0000 C CNN
-F 1 "R" V 4100 4600 50  0000 C CNN
-F 2 "" V 4030 4600 50  0001 C CNN
-F 3 "" H 4100 4600 50  0001 C CNN
-	1    4100 4600
-	0    -1   -1   0   
-$EndComp
-$Comp
-L +3V3 #PWR?
-U 1 1 5A4FEE5D
-P 3650 4600
-F 0 "#PWR?" H 3650 4450 50  0001 C CNN
-F 1 "+3V3" H 3650 4740 50  0000 C CNN
-F 2 "" H 3650 4600 50  0001 C CNN
-F 3 "" H 3650 4600 50  0001 C CNN
-	1    3650 4600
-	0    -1   -1   0   
-$EndComp
 Text Notes 3100 4850 0    60   ~ 0
-STM32 internal pull-up?
+STM32 internal pull-up!
 $Comp
 L GND #PWR?
 U 1 1 5A4FF46D
@@ -419,20 +399,13 @@ Wire Wire Line
 Wire Wire Line
 	4850 5500 5050 5500
 Wire Wire Line
-	4250 4600 4350 4600
-Wire Wire Line
-	4350 4600 4350 4700
-Wire Wire Line
 	4050 4700 5050 4700
-Connection ~ 4350 4700
 Wire Wire Line
 	4850 4600 5050 4600
 Wire Wire Line
 	5050 4800 4850 4800
 Wire Wire Line
 	4850 4900 5050 4900
-Wire Wire Line
-	3650 4600 3950 4600
 Wire Wire Line
 	5850 5900 5850 5800
 Wire Wire Line
@@ -653,8 +626,6 @@ Wire Wire Line
 Wire Wire Line
 	6850 5400 6650 5400
 Connection ~ 10100 5750
-Wire Wire Line
-	7850 5100 10100 5100
 Connection ~ 10100 5100
 Wire Wire Line
 	9000 5750 9000 5950
@@ -679,25 +650,37 @@ $EndComp
 Wire Wire Line
 	7850 4650 7850 5100
 Connection ~ 7850 4750
-NoConn ~ 5050 5200
+Text HLabel 4850 5200 0    60   Output ~ 0
+SenseW
 $Comp
-L GND #PWR?
-U 1 1 5A523579
-P 6850 5050
-F 0 "#PWR?" H 6850 4800 50  0001 C CNN
-F 1 "GND" H 6850 4900 50  0000 C CNN
-F 2 "" H 6850 5050 50  0001 C CNN
-F 3 "" H 6850 5050 50  0001 C CNN
-	1    6850 5050
-	0    -1   -1   0   
+L R R?
+U 1 1 5A534BFF
+P 7850 5250
+F 0 "R?" V 7930 5250 50  0000 C CNN
+F 1 "5m" V 7850 5250 50  0000 C CNN
+F 2 "" V 7780 5250 50  0001 C CNN
+F 3 "" H 7850 5250 50  0001 C CNN
+	1    7850 5250
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6850 5050 6750 5050
+	7850 5400 7850 5600
 Wire Wire Line
-	6750 5000 6750 5100
+	7850 5600 8200 5600
 Wire Wire Line
-	6750 5000 6650 5000
+	8200 5600 8200 5100
 Wire Wire Line
-	6750 5100 6650 5100
-Connection ~ 6750 5050
+	8200 5100 10100 5100
+Wire Wire Line
+	6650 5000 7850 5000
+Connection ~ 7850 5000
+Wire Wire Line
+	6650 5100 7700 5100
+Wire Wire Line
+	7700 5100 7700 5500
+Wire Wire Line
+	7700 5500 7850 5500
+Connection ~ 7850 5500
+Wire Wire Line
+	5050 5200 4850 5200
 $EndSCHEMATC

@@ -1,4 +1,4 @@
-update=Fri Jan  5 22:46:50 2018
+update=So 04 Feb 2018 03:50:26 CET
 version=1
 last_client=kicad
 [pcbnew]
@@ -67,3 +67,5 @@ LibName35=lib/mic4606
 LibName36=lib/drv8323s
 LibName37=lib/FDMD82xx
 LibName38=lib/stm32
+LibName39=lib/ncp4623
+LibName40=lib/TMP006
