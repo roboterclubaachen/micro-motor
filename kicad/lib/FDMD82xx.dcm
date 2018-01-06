@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP FDMD82xx
+D FDMD8280: 80V Dual N-Channel Power Trench® MOSFET
+K N-Channel Switching MOSFET
+F http://www.onsemi.com/pub/Collateral/FDMD8280-D.pdf
+$ENDCMP
+#
+#End Doc Library
