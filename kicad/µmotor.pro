@@ -1,4 +1,4 @@
-update=Wed Oct 25 14:00:28 2017
+update=Fri Jan  5 22:46:50 2018
 version=1
 last_client=kicad
 [pcbnew]
@@ -64,3 +64,6 @@ LibName32=lib/INA180A
 LibName33=lib/AS5045B
 LibName34=lib/TCAN33x
 LibName35=lib/mic4606
+LibName36=lib/drv8323s
+LibName37=lib/FDMD82xx
+LibName38=lib/stm32

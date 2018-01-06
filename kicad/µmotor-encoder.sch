@@ -33,12 +33,15 @@ LIBS:DRV8870
 LIBS:INA180A
 LIBS:AS5045B
 LIBS:TCAN33x
+LIBS:mic4606
+LIBS:drv8323s
+LIBS:FDMD82xx
 LIBS:µmotor-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 7
+Sheet 3 6
 Title "µmotor - Micro Motor Controller"
 Date "2017-09-14"
 Rev "rev1"
