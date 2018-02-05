@@ -1,3 +1,6 @@
 (fp_lib_table
   (lib (name HSOP-8)(type Legacy)(uri /home/rleh/src/RCA/µmotor/kicad/lib/HSOP-8.mod)(options "")(descr ""))
+  (lib (name DFN-12-2EP_3.3x5mm_Pitch0.65mm)(type Github)(uri https://github.com/kicad-rleh/DFN-12-2EP_3.3x5mm_Pitch0.65mm.pretty)(options "")(descr ""))
+  (lib (name WCSP-8_1.6x1.6mm_P0.5mm)(type Github)(uri https://github.com/kicad-rleh/WCSP-8_1.6x1.6mm_P0.5mm.pretty)(options "")(descr ""))
+  (lib (name Measurement_Point_Round-SMD-Pad_Smaller)(type Github)(uri https://github.com/kicad-rleh/Measurement_Point_Round-SMD-Pad_Smaller.pretty)(options "")(descr ""))
 )

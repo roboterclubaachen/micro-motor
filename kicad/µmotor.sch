@@ -4,31 +4,10 @@ LIBS:device
 LIBS:transistors
 LIBS:conn
 LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
 LIBS:texas
-LIBS:intel
-LIBS:audio
 LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:stm32
 LIBS:DRV8870
 LIBS:INA180A
 LIBS:AS5045B
@@ -38,6 +17,7 @@ LIBS:drv8323s
 LIBS:FDMD82xx
 LIBS:ncp4623
 LIBS:TMP006
+LIBS:stm32
 LIBS:µmotor-cache
 EELAYER 25 0
 EELAYER END
@@ -60,7 +40,6 @@ F0 "Encoder" 60
 F1 "µmotor-encoder.sch" 60
 F2 "A" O L 6800 3550 60 
 F3 "B" O L 6800 3650 60 
-F4 "3V_IN" I R 8000 3550 60 
 $EndSheet
 $Sheet
 S 8150 3850 1400 1900
@@ -142,7 +121,7 @@ Wire Wire Line
 Wire Wire Line
 	1550 4050 1150 4050
 $Sheet
-S 2100 4150 1050 400 
+S 2100 4150 1050 300 
 U 59B9FE58
 F0 "CAN" 60
 F1 "µmotor-can.sch" 60
@@ -150,7 +129,6 @@ F2 "CAN_RX" O R 3150 4350 60
 F3 "CAN_TX" I R 3150 4250 60 
 F4 "CAN_H" B L 2100 4250 60 
 F5 "CAN_L" B L 2100 4350 60 
-F6 "3V_IN" I L 2100 4450 60 
 $EndSheet
 Wire Wire Line
 	4750 4250 3150 4250
@@ -173,34 +151,34 @@ Wire Wire Line
 Wire Wire Line
 	6300 3650 6800 3650
 $Comp
-L TEST_1P J?
+L TEST_1P J102
 U 1 1 5A509596
 P 9750 3950
-F 0 "J?" V 9750 4300 50  0000 C CNN
+F 0 "J102" V 9750 4300 50  0000 C CNN
 F 1 "U" H 9750 4150 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9950 3950 50  0001 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 9950 3950 50  0001 C CNN
 F 3 "" H 9950 3950 50  0001 C CNN
 	1    9750 3950
 	0    1    1    0   
 $EndComp
 $Comp
-L TEST_1P J?
+L TEST_1P J103
 U 1 1 5A50959D
 P 9750 4050
-F 0 "J?" V 9750 4400 50  0000 C CNN
+F 0 "J103" V 9750 4400 50  0000 C CNN
 F 1 "V" H 9750 4250 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9950 4050 50  0001 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 9950 4050 50  0001 C CNN
 F 3 "" H 9950 4050 50  0001 C CNN
 	1    9750 4050
 	0    1    1    0   
 $EndComp
 $Comp
-L TEST_1P J?
+L TEST_1P J104
 U 1 1 5A5095A4
 P 9750 4150
-F 0 "J?" V 9750 4500 50  0000 C CNN
+F 0 "J104" V 9750 4500 50  0000 C CNN
 F 1 "W" H 9750 4350 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9950 4150 50  0001 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 9950 4150 50  0001 C CNN
 F 3 "" H 9950 4150 50  0001 C CNN
 	1    9750 4150
 	0    1    1    0   
@@ -212,21 +190,21 @@ Wire Wire Line
 Wire Wire Line
 	9750 4150 9550 4150
 $Comp
-L NCP4623HMX U?
+L NCP4623HMX U101
 U 1 1 5A7689A2
 P 2100 5450
-F 0 "U?" H 2100 5750 50  0000 C CNN
+F 0 "U101" H 2100 5750 50  0000 C CNN
 F 1 "NCP4623HMX033TCG" H 2100 5650 50  0000 C CNN
-F 2 "" H 2100 5450 60  0001 C CNN
+F 2 "Housings_DFN_QFN:DFN-6-1EP_2x2mm_Pitch0.5mm" H 2100 5450 60  0001 C CNN
 F 3 "" H 2100 5450 50  0000 C CNN
 	1    2100 5450
 	1    0    0    -1  
 $EndComp
 $Comp
-L +6V #PWR?
+L +6V #PWR04
 U 1 1 5A768B01
 P 1000 5400
-F 0 "#PWR?" H 1000 5250 50  0001 C CNN
+F 0 "#PWR04" H 1000 5250 50  0001 C CNN
 F 1 "+6V" H 1000 5540 50  0000 C CNN
 F 2 "" H 1000 5400 50  0001 C CNN
 F 3 "" H 1000 5400 50  0001 C CNN
@@ -234,23 +212,23 @@ F 3 "" H 1000 5400 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C C?
+L C C101
 U 1 1 5A768C33
 P 1350 5750
-F 0 "C?" H 1375 5850 50  0000 L CNN
+F 0 "C101" H 1375 5850 50  0000 L CNN
 F 1 "1µ 16V" H 1375 5650 50  0000 L CNN
-F 2 "" H 1388 5600 50  0001 C CNN
+F 2 "Capacitors_SMD:C_0603" H 1388 5600 50  0001 C CNN
 F 3 "" H 1350 5750 50  0001 C CNN
 	1    1350 5750
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C?
+L C C102
 U 1 1 5A769218
 P 2850 5750
-F 0 "C?" H 2875 5850 50  0000 L CNN
+F 0 "C102" H 2875 5850 50  0000 L CNN
 F 1 "1µ 6V3" H 2875 5650 50  0000 L CNN
-F 2 "" H 2888 5600 50  0001 C CNN
+F 2 "Capacitors_SMD:C_0603" H 2888 5600 50  0001 C CNN
 F 3 "" H 2850 5750 50  0001 C CNN
 	1    2850 5750
 	1    0    0    -1  
@@ -270,10 +248,10 @@ Wire Wire Line
 Wire Wire Line
 	2850 5400 2850 5600
 $Comp
-L GND #PWR?
+L GND #PWR05
 U 1 1 5A769C21
 P 2050 6100
-F 0 "#PWR?" H 2050 5850 50  0001 C CNN
+F 0 "#PWR05" H 2050 5850 50  0001 C CNN
 F 1 "GND" H 2050 5950 50  0000 C CNN
 F 2 "" H 2050 6100 50  0001 C CNN
 F 3 "" H 2050 6100 50  0001 C CNN
@@ -290,12 +268,6 @@ Connection ~ 2050 6000
 Wire Wire Line
 	2850 6000 2850 5900
 Connection ~ 2850 5400
-Text Label 3150 5400 2    60   ~ 0
-3V3_CAN
-Text Label 1650 4450 0    60   ~ 0
-3V3_CAN
-Wire Wire Line
-	1650 4450 2100 4450
 $Sheet
 S 4750 3450 1550 2500
 U 59B9FC4A
@@ -323,6 +295,9 @@ F20 "SenseW" I R 6300 5450 60
 F21 "GpioB1" B R 6300 5650 60 
 F22 "GpioB2" B R 6300 5750 60 
 F23 "GpioB7" B R 6300 5850 60 
+F24 "HallU" I L 4750 5250 60 
+F25 "HallV" I L 4750 5350 60 
+F26 "HallW" I L 4750 5450 60 
 $EndSheet
 Wire Wire Line
 	6300 5850 7450 5850
@@ -380,8 +355,54 @@ Wire Wire Line
 	7350 5750 7350 5200
 Wire Wire Line
 	7350 5200 8150 5200
-Text Label 8500 3550 2    60   ~ 0
-3V3_CAN
+$Comp
+L +3V3 #PWR06
+U 1 1 5A775FAA
+P 3150 5400
+F 0 "#PWR06" H 3150 5250 50  0001 C CNN
+F 1 "+3V3" H 3150 5540 50  0000 C CNN
+F 2 "" H 3150 5400 50  0001 C CNN
+F 3 "" H 3150 5400 50  0001 C CNN
+	1    3150 5400
+	0    1    1    0   
+$EndComp
+$Comp
+L TEST_1P J105
+U 1 1 5A77D176
+P 4550 5250
+F 0 "J105" V 4550 5600 50  0000 C CNN
+F 1 "U" H 4550 5450 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5250 50  0001 C CNN
+F 3 "" H 4750 5250 50  0001 C CNN
+	1    4550 5250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L TEST_1P J106
+U 1 1 5A77D554
+P 4550 5350
+F 0 "J106" V 4550 5700 50  0000 C CNN
+F 1 "V" H 4550 5550 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5350 50  0001 C CNN
+F 3 "" H 4750 5350 50  0001 C CNN
+	1    4550 5350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L TEST_1P J107
+U 1 1 5A77D6B7
+P 4550 5450
+F 0 "J107" V 4550 5800 50  0000 C CNN
+F 1 "W" H 4550 5650 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5450 50  0001 C CNN
+F 3 "" H 4750 5450 50  0001 C CNN
+	1    4550 5450
+	0    -1   -1   0   
+$EndComp
 Wire Wire Line
-	8500 3550 8000 3550
+	4550 5250 4750 5250
+Wire Wire Line
+	4750 5350 4550 5350
+Wire Wire Line
+	4550 5450 4750 5450
 $EndSCHEMATC
