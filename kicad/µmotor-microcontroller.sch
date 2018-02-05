@@ -91,9 +91,9 @@ Text HLabel 3850 3650 0    60   BiDi ~ 0
 I2C_SDA
 Text HLabel 3850 3750 0    60   Output ~ 0
 I2C_SCL
-Text HLabel 3850 3950 0    60   Input ~ 0
+Text HLabel 3850 1850 0    60   Input ~ 0
 CAN_RX
-Text HLabel 3850 3850 0    60   Output ~ 0
+Text HLabel 3850 1750 0    60   Output ~ 0
 CAN_TX
 Text HLabel 3850 3450 0    60   Output ~ 0
 PWM_CH1N
@@ -264,16 +264,16 @@ Wire Wire Line
 Wire Wire Line
 	2650 1650 4150 1650
 Wire Wire Line
-	3850 3850 4150 3850
+	3850 1750 4150 1750
 Wire Wire Line
-	4150 3950 3850 3950
+	4150 1850 3850 1850
 Text HLabel 3850 4450 0    60   Output ~ 0
 SCK
 Text HLabel 3850 4350 0    60   Input ~ 0
 MISO
 Text HLabel 3850 4250 0    60   Output ~ 0
 MOSI
-Text HLabel 3850 4150 0    60   Output ~ 0
+Text HLabel 3850 1450 0    60   Output ~ 0
 CS
 Wire Wire Line
 	3850 3650 4150 3650
@@ -344,7 +344,7 @@ SenseV
 Wire Wire Line
 	3850 2350 4150 2350
 Wire Wire Line
-	4150 4150 3850 4150
+	4150 1450 3850 1450
 $Comp
 L R R602
 U 1 1 5A5277EC
@@ -567,16 +567,16 @@ Text HLabel 3850 4050 0    60   BiDi ~ 0
 GpioB7
 Wire Wire Line
 	3850 4050 4150 4050
-Text HLabel 3850 1750 0    60   Input ~ 0
+Text HLabel 3850 3850 0    60   Input ~ 0
 HallU
-Text HLabel 3850 1850 0    60   Input ~ 0
+Text HLabel 3850 3950 0    60   Input ~ 0
 HallV
-Text HLabel 3850 1450 0    60   Input ~ 0
+Text HLabel 3850 4150 0    60   Input ~ 0
 HallW
 Wire Wire Line
-	3850 1750 4150 1750
+	3850 3850 4150 3850
 Wire Wire Line
-	4150 1850 3850 1850
+	4150 3950 3850 3950
 Wire Wire Line
-	3850 1450 4150 1450
+	3850 4150 4150 4150
 $EndSCHEMATC
