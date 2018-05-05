@@ -1,3 +1,8 @@
+# modm
+src/*/build
+src/*/modm
+src/*/SConstruct
+
 # KiCAD
 *.bak
 *.kicad_pcb-bak

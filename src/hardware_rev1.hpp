@@ -19,9 +19,11 @@
 #ifndef HARDWARE_REV1_HPP
 #define HARDWARE_REV1_HPP
 
-#include <xpcc/architecture/platform.hpp>
+#include <modm/platform/platform.hpp>
+#include <modm/architecture/interface/clock.hpp>
+#include <modm/platform/clock/clock.hpp>
 
-using namespace xpcc::stm32;
+using namespace modm::platform;
 
 namespace Board
 {
@@ -48,11 +50,12 @@ struct systemClock {
 	static constexpr uint32_t Spi2 = Frequency;
 	static constexpr uint32_t Spi3 = Frequency;
 
-	static constexpr uint32_t Can1 = Frequency;
+	//static constexpr uint32_t Can1 = Frequency;
+	static constexpr uint32_t Can1 = MHz48; // TODO real 80MHz, but driver only supports 48MHz
 
 	static constexpr uint32_t I2c1 = Frequency;
 	//static constexpr uint32_t I2c2 = Frequency;
-	static constexpr uint32_t I2c2 = xpcc::clock::MHz48; // TODO real 80MHz, but driver only supports 48MHz
+	static constexpr uint32_t I2c2 = MHz48; // TODO real 80MHz, but driver only supports 48MHz
 	static constexpr uint32_t I2c3 = Frequency;
 
 	static constexpr uint32_t Timer1  = Frequency;
@@ -81,53 +84,53 @@ struct systemClock {
 		ClockControl::setApb1Prescaler(ClockControl::Apb1Prescaler::Div1);
 		ClockControl::setApb2Prescaler(ClockControl::Apb2Prescaler::Div1);
 		// update frequencies for busy-wait delay functions
-		xpcc::clock::fcpu     = Frequency;
-		xpcc::clock::fcpu_kHz = Frequency / 1000;
-		xpcc::clock::fcpu_MHz = Frequency / 1000000;
-		xpcc::clock::ns_per_loop = ::round(3000.f / (Frequency / 1000000));
+		modm::clock::fcpu     = Frequency;
+		modm::clock::fcpu_kHz = Frequency / 1000;
+		modm::clock::fcpu_MHz = Frequency / 1000000;
+		modm::clock::ns_per_loop = ::round(3000.f / (Frequency / 1000000));
 
 		return true;
 	}
 };
 
 namespace Ui {
-	using LedRed		= xpcc::GpioInverted<GpioOutputH0>;
-	using LedBlue		= xpcc::GpioInverted<GpioOutputB12>;
+	using LedRed		= GpioInverted<GpioH0>;
+	using LedBlue		= GpioInverted<GpioB12>;
 
 	using PadC14		= GpioC14;
 	using PadBrk		= GpioA7;
 	using PadDac		= GpioA5;
 
-	using DebugUartTx	= GpioOutputA2;
+	using DebugUartTx	= GpioA2;
 	using DebugUart		= Usart2;
 	constexpr uint32_t DebugUartBaudrate = DebugUart::Baudrate::B115200;
 
 	inline void
 	initialize()
 	{
-		LedRed::setOutput(xpcc::Gpio::High);
-		LedBlue::setOutput(xpcc::Gpio::High);
+		LedRed::setOutput(modm::Gpio::High);
+		LedBlue::setOutput(modm::Gpio::High);
 
 		PadC14::setInput(Gpio::InputType::PullUp);
 
-		DebugUartTx::connect(DebugUart::Tx);
+		DebugUart::connect<DebugUartTx::Tx>();
 		DebugUart::initialize<systemClock, DebugUartBaudrate>(12);
 	}
 }
 
 namespace Motor {
-	using PhaseUN		= GpioOutputB13;
-	using PhaseUP		= GpioOutputA8;
-	using PhaseVN		= GpioOutputB14;
-	using PhaseVP		= GpioOutputA9;
-	using PhaseWN		= GpioOutputB15;
-	using PhaseWP		= GpioOutputA10;
+	using PhaseUN		= GpioB13;
+	using PhaseUP		= GpioA8;
+	using PhaseVN		= GpioB14;
+	using PhaseVP		= GpioA9;
+	using PhaseWN		= GpioB15;
+	using PhaseWP		= GpioA10;
 
 	using MotorTimer	= Timer1;
 
-	using HallU			= GpioInputB9;
-	using HallV			= GpioInputB8;
-	using HallW			= GpioInputB6;
+	using HallU			= GpioB9;
+	using HallV			= GpioB8;
+	using HallW			= GpioB6;
 
 	constexpr uint8_t HallInterruptPriority	= 4;
 	constexpr uint16_t MaxPwm{0x1FFu}; // 9 bit PWM
@@ -152,12 +155,18 @@ namespace Motor {
 		MotorTimer::enableOutput();
 		MotorTimer::applyAndReset();
 		MotorTimer::pause();
-		PhaseUN::connect(MotorTimer::Channel1N);
-		PhaseVN::connect(MotorTimer::Channel2N);
-		PhaseWN::connect(MotorTimer::Channel3N);
-		PhaseUP::connect(MotorTimer::Channel1);
-		PhaseVP::connect(MotorTimer::Channel2);
-		PhaseWP::connect(MotorTimer::Channel3);
+		MotorTimer::connect<PhaseUN::Ch1n,
+		                    PhaseVN::Ch2n,
+		                    PhaseWN::Ch3n,
+		                    PhaseUP::Ch1,
+		                    PhaseVP::Ch2,
+		                    PhaseWP::Ch3>();
+		PhaseUN::setOutput();
+		PhaseVN::setOutput();
+		PhaseWN::setOutput();
+		PhaseUP::setOutput();
+		PhaseVP::setOutput();
+		PhaseWP::setOutput();
 	}
 
 	inline void
@@ -197,27 +206,27 @@ namespace Motor {
 }
 
 namespace MotorBridge {
-	using GateDriverEnable	= GpioOutputB1;
-	using GateDriverFault	= xpcc::GpioInverted<GpioInputB2>;
+	using GateDriverEnable	= GpioB1;
+	using GateDriverFault	= GpioInverted<GpioB2>;
 
 	struct GateDriver
 	{
-		static constexpr auto SpiBaudrate = 5'000'000;
+		static constexpr auto SpiBaudrate = 312'500;
 
 		using Spi	= SpiMaster1;
-		using Cs	= GpioOutputA15;
-		using Sck	= GpioOutputB3;
-		using Miso	= GpioInputB4;
-		using Mosi	= GpioOutputB5;
+		using Cs	= GpioA15;
+		using Sck	= GpioB3;
+		using Miso	= GpioB4;
+		using Mosi	= GpioB5;
 
 		static inline void
 		initialize()
 		{
 			GateDriver::Cs::setOutput(true);
 
-			Sck::connect(Spi::Sck);
-			Mosi::connect(Spi::Mosi);
-			Miso::connect(Spi::Miso, Gpio::InputType::PullUp);
+			Spi::connect<Sck::Sck, Mosi::Mosi, Miso::Miso>();
+			Miso::setInput(Gpio::InputType::PullUp);
+
 			Spi::initialize<systemClock, SpiBaudrate>();
 		}
 	};
@@ -236,15 +245,15 @@ namespace MotorBridge {
 }
 
 namespace MotorCurrent {
-	using SenseCal	= GpioOutputB7;
+	using SenseCal	= GpioB7;
 
-	using SenseAll	= GpioInputA4;
-	using SenseV	= GpioInputA6;
-	using SenseW	= GpioInputB0;
+	using SenseAll	= GpioA4;
+	using SenseV	= GpioA6;
+	using SenseW	= GpioB0;
 	using Adc = Adc1;
 
-	using CurrentAll	= GpioInputA3; // Shorted to GpioA4 on PCB
-	using BrakeOut		= GpioOutputA7;
+	using CurrentAll	= GpioA3; // Shorted to GpioA4 on PCB
+	using BrakeOut		= GpioA7;
 	//using Comp = Comp2;
 
 	inline void
@@ -254,17 +263,15 @@ namespace MotorCurrent {
 		SenseCal::set(false);
 
 		Adc::initialize(); // TODO
-		SenseAll::connect(Adc::Channel9);
-		SenseV::connect(Adc::Channel11);
-		SenseW::connect(Adc::Channel15);
+		Adc::connect<SenseAll::In9, SenseV::In11, SenseW::In15>();
 
 		// TODO initialize comparator
 	}
 }
 
 namespace Encoder {
-	using PinA = GpioInputA0;
-	using PinB = GpioInputA1;
+	using PinA = GpioA0;
+	using PinB = GpioA1;
 	using Timer = Timer2;
 
 	inline Timer::Value getEncoderRaw()
@@ -279,8 +286,9 @@ namespace Encoder {
 		Timer::setMode(Timer::Mode::UpCounter, Timer::SlaveMode::Encoder3);
 		// Overflow must be 16bit because else a lot of our motor control code will break!
 		Timer::setOverflow(0xffff);
-		//PinA::connect(Timer::Channel1, Gpio::InputType::Floating);
-		PinB::connect(Timer::Channel2, Gpio::InputType::Floating);
+
+		Timer::connect<PinA::Ch1, PinB::Ch2>();
+
 		Timer::start();
 	}
 }
@@ -294,15 +302,14 @@ namespace TemperatureSensor {
 	inline void
 	initialize()
 	{
-		TemperatureScl::connect(TemperatureI2c::Scl);
-		TemperatureSda::connect(TemperatureI2c::Sda);
-		TemperatureI2c::initialize<systemClock, TemperatureBaudrate, xpcc::Tolerance::FivePercent>();
+		TemperatureI2c::connect<TemperatureScl::Scl, TemperatureSda::Sda>();
+		TemperatureI2c::initialize<systemClock, TemperatureBaudrate, modm::Tolerance::FivePercent>();
 	}
 }
 
 namespace CanBus {
-	using CanRx	= GpioInputA11;
-	using CanTx	= GpioOutputA12;
+	using CanRx	= GpioA11;
+	using CanTx	= GpioA12;
 	using Can = Can1;
 
 	static constexpr uint32_t CanBaudrate = Can::Bitrate::kBps125;
@@ -310,8 +317,7 @@ namespace CanBus {
 	inline void
 	initialize()
 	{
-		CanRx::connect(Can::Rx, Gpio::InputType::PullUp);
-		CanTx::connect(Can::Tx, Gpio::OutputType::PushPull);
+		Can::connect<CanRx::Rx, CanTx::Tx>(Gpio::InputType::PullUp);
 		Can::initialize<systemClock, CanBaudrate>(9);
 	}
 }
@@ -320,7 +326,7 @@ inline void
 initializeMcu()
 {
 	systemClock::enable();
-	xpcc::cortex::SysTickTimer::initialize<systemClock>();
+	modm::cortex::SysTickTimer::initialize<systemClock>();
 }
 
 inline void

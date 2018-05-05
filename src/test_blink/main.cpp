@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <xpcc/architecture/platform.hpp>
+#include <modm/platform/platform.hpp>
 
 #include "../hardware_rev1.hpp"
 
@@ -32,7 +32,7 @@ main()
 	while (1)
 	{
 		Board::Ui::LedRed::toggle();
-		xpcc::delayMilliseconds(Board::Ui::PadC14::read() ? 250 : 500);
+		modm::delayMilliseconds(Board::Ui::PadC14::read() ? 250 : 500);
 	}
 
 	return 0;
