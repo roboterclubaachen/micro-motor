@@ -133,40 +133,59 @@ namespace Motor {
 	using HallW			= GpioB6;
 
 	constexpr uint8_t HallInterruptPriority	= 4;
-	constexpr uint16_t MaxPwm{0x1FFu}; // 9 bit PWM
+	constexpr uint16_t MaxPwm{0x2FFu}; // 10 bit PWM
 
 	inline void
 	initializeMotor()
 	{
 		MotorTimer::enable();
-		MotorTimer::setMode(MotorTimer::Mode::UpCounter,
-		                    MotorTimer::SlaveMode::Disabled,
-		                    MotorTimer::SlaveModeTrigger::Internal0,
-		                    MotorTimer::MasterMode::CompareOc1Ref);
-		// MotorTimer clock: APB2 timer clock (180MHz)
+		MotorTimer::setMode(MotorTimer::Mode::UpCounter);
+
+		// MotorTimer clock: APB2 timer clock (80MHz)
 		MotorTimer::setPrescaler(1);
-		// Prescaler: 1 -> Timer counter frequency: 180MHz
-		MotorTimer::setOverflow(MaxPwm); // 9 bit PWM
-		// Pwm frequency: 180MHz / 512 = 350kHz
-		MotorTimer::configureOutputChannel(1, MotorTimer::OutputCompareMode::Pwm2, 0);
-		MotorTimer::configureOutputChannel(2, MotorTimer::OutputCompareMode::Pwm2, 0);
-		MotorTimer::configureOutputChannel(3, MotorTimer::OutputCompareMode::Pwm2, 0);
-		MotorTimer::enableCaptureComparePreloadedControl();
-		MotorTimer::enableOutput();
+		// Prescaler: 1 -> Timer counter frequency: 80MHz
+		MotorTimer::setOverflow(MaxPwm);
+		// Pwm frequency: 80MHz / 1024 = 78kHz
+
+		MotorTimer::configureOutputChannel(1,
+										   MotorTimer::OutputCompareMode::Pwm,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::OutputComparePreload::Disable
+										   );
+		MotorTimer::configureOutputChannel(2,
+										   MotorTimer::OutputCompareMode::Pwm,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::OutputComparePreload::Disable
+										   );
+		MotorTimer::configureOutputChannel(3,
+										   MotorTimer::OutputCompareMode::Pwm,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::PinState::Enable,
+										   MotorTimer::OutputComparePolarity::ActiveHigh,
+										   MotorTimer::OutputComparePreload::Disable
+										   );
+		MotorTimer::setCompareValue(1, 0);
+		MotorTimer::setCompareValue(2, 0);
+		MotorTimer::setCompareValue(3, 0);
+
 		MotorTimer::applyAndReset();
+		MotorTimer::enableOutput();
+
 		MotorTimer::pause();
+
 		MotorTimer::connect<PhaseUN::Ch1n,
 		                    PhaseVN::Ch2n,
 		                    PhaseWN::Ch3n,
 		                    PhaseUP::Ch1,
 		                    PhaseVP::Ch2,
 		                    PhaseWP::Ch3>();
-		PhaseUN::setOutput();
-		PhaseVN::setOutput();
-		PhaseWN::setOutput();
-		PhaseUP::setOutput();
-		PhaseVP::setOutput();
-		PhaseWP::setOutput();
 	}
 
 	inline void
@@ -200,7 +219,7 @@ namespace Motor {
 	inline void
 	initialize()
 	{
-		initializeHall();
+		//initializeHall();
 		initializeMotor();
 	}
 }
