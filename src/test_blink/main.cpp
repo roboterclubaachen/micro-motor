@@ -27,12 +27,13 @@ main()
 	Board::Ui::initialize();
 
 	Board::Ui::LedRed::set();
-	Board::Ui::LedBlue::set();
+	Board::Ui::LedBlue::reset();
 
 	while (1)
 	{
 		Board::Ui::LedRed::toggle();
-		modm::delayMilliseconds(Board::Ui::PadC14::read() ? 250 : 500);
+		Board::Ui::LedBlue::toggle();
+		modm::delayMilliseconds(1000);
 	}
 
 	return 0;
