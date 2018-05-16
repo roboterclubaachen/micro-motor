@@ -246,7 +246,11 @@ namespace MotorBridge {
 			GateDriver::Cs::setOutput(true);
 
 			Spi::connect<Sck::Sck, Mosi::Mosi, Miso::Miso>();
-			Miso::setInput(Gpio::InputType::PullUp);
+			// Miso::setInput(Gpio::InputType::PullUp);
+			static constexpr uint8_t pin = 4;
+			static constexpr uint32_t mask2 = 0x3 << (pin * 2);
+			static constexpr Gpio::InputType type = Gpio::InputType::PullUp;
+			GPIOB->PUPDR = (GPIOB->PUPDR & ~mask2) | (uint32_t(type) << (pin * 2));
 
 			Spi::initialize<systemClock, SpiBaudrate>();
 		}
