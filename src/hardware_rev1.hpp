@@ -105,7 +105,7 @@ namespace Ui {
 
 	using DebugUartTx	= GpioA2;
 	using DebugUart		= Usart2;
-	constexpr uint32_t DebugUartBaudrate = DebugUart::Baudrate::B115200;
+	static constexpr uint32_t DebugUartBaudrate = DebugUart::Baudrate::B115200 * 4; // 460800 baud
 
 	inline void
 	initialize()
@@ -232,7 +232,7 @@ namespace MotorBridge {
 
 	struct GateDriver
 	{
-		static constexpr auto SpiBaudrate = 312'500;
+		static constexpr auto SpiBaudrate = 312500;
 
 		using Spi	= SpiMaster1;
 		using Cs	= GpioA15;
@@ -246,11 +246,6 @@ namespace MotorBridge {
 			GateDriver::Cs::setOutput(true);
 
 			Spi::connect<Sck::Sck, Mosi::Mosi, Miso::Miso>();
-			// Miso::setInput(Gpio::InputType::PullUp);
-			static constexpr uint8_t pin = 4;
-			static constexpr uint32_t mask2 = 0x3 << (pin * 2);
-			static constexpr Gpio::InputType type = Gpio::InputType::PullUp;
-			GPIOB->PUPDR = (GPIOB->PUPDR & ~mask2) | (uint32_t(type) << (pin * 2));
 
 			Spi::initialize<systemClock, SpiBaudrate>();
 		}
