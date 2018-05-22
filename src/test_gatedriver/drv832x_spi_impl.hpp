@@ -111,7 +111,7 @@ modm::Drv832xSpi<SpiMaster, Cs>::writeData(Register address, uint16_t data)
 	inBuffer[0] = 0;
 	inBuffer[1] = 0;
 
-	static constexpr uint8_t writeBit = (0 << 7);
+	static constexpr uint8_t writeBit = (0 << 7); // 0 = write
 
 	outBuffer[0] = writeBit | (static_cast<uint8_t>(address) << 3) | ((data >> 8) & 0b111);
 	outBuffer[1] = data & 0xff;
@@ -137,7 +137,7 @@ modm::Drv832xSpi<SpiMaster, Cs>::readData(Register address)
 	inBuffer[0] = 0x55;
 	inBuffer[1] = 0x55;
 
-	static constexpr uint8_t writeBit = (0 << 7);
+	static constexpr uint8_t writeBit = (1 << 7); // 1 = read
 
 	outBuffer[0] = writeBit | (static_cast<uint8_t>(address) << 3);
 	outBuffer[1] = 0;
@@ -150,30 +150,4 @@ modm::Drv832xSpi<SpiMaster, Cs>::readData(Register address)
 
 	ret = static_cast<uint16_t>(inBuffer[1]) | (static_cast<uint16_t>(inBuffer[0] & 0b111) << 8);
 	RF_END_RETURN(ret);
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<uint8_t>
-modm::Drv832xSpi<SpiMaster, Cs>::tmp(Register address)
-{
-	RF_BEGIN();
-
-	RF_WAIT_UNTIL(this->acquireMaster());
-	Cs::reset();
-
-	inBuffer[0] = 0x55;
-	inBuffer[1] = 0x55;
-
-	static constexpr uint8_t writeBit = (0 << 7);
-
-	outBuffer[0] = writeBit | (static_cast<uint8_t>(address) << 3);
-	outBuffer[1] = 0;
-
-	RF_CALL(SpiMaster::transfer(outBuffer, inBuffer, 2));
-
-	if (this->releaseMaster()) {
-		Cs::set();
-	}
-
-	RF_END_RETURN(inBuffer[0]);
 }

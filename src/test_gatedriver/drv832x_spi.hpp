@@ -352,16 +352,12 @@ public:
 		return writeData(Register::CsaControl, data.value);
 	}
 
-public:
-//protected:
+protected:
 	modm::ResumableResult<void>
 	writeData(Register address, uint16_t data);
 
 	modm::ResumableResult<uint16_t>
 	readData(Register address);
-
-	modm::ResumableResult<uint8_t>
-	tmp(Register address);
 
 private:
 	uint8_t inBuffer[2];
