@@ -64,14 +64,19 @@ main()
 		}
 		if(gateDriverStatusTimer.execute()) {
 
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readFaultStatus1()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readVgsStatus2()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readDriverControl()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readGateDriveHS()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readGateDriveLS()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readOcpControl()) << modm::endl;
-			MODM_LOG_DEBUG << RF_CALL_BLOCKING(gateDriver.readCsaControl()) << modm::endl;
+			RF_CALL_BLOCKING(gateDriver.readAll());
+
+			MODM_LOG_DEBUG << gateDriver.faultStatus1() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.vgsStatus2() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.driverControl() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.gateDriveHS() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.gateDriveLS() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.ocpControl() << modm::endl;
+			MODM_LOG_DEBUG << gateDriver.csaControl() << modm::endl;
 			MODM_LOG_ERROR << modm::endl;
+
+			gateDriver.gateDriveHS() &= ~modm::drv832xSpi::HS_IDriveN_t::mask();
+			gateDriver.gateDriveHS() |= modm::drv832xSpi::HS_IDriveN_t(modm::drv832xSpi::IDriveN::mA740);
 		}
 	}
 
