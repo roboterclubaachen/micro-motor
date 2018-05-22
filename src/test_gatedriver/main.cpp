@@ -25,7 +25,7 @@
 #include "drv832x_spi.hpp"
 
 
-modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::DiscardIfFull > loggerDevice;
+modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
 modm::log::Logger modm::log::debug(loggerDevice);
 modm::log::Logger modm::log::info(loggerDevice);
 modm::log::Logger modm::log::warning(loggerDevice);
