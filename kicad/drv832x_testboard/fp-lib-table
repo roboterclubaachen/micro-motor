@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name DFN-12-2EP_3.3x5mm_Pitch0.65mm)(type Github)(uri https://github.com/kicad-rleh/DFN-12-2EP_3.3x5mm_Pitch0.65mm.pretty)(options "")(descr ""))
+  (lib (name Housings_VQFN)(type Github)(uri https://github.com/kicad-rleh/Housings_VQFN.pretty)(options "")(descr ""))
+)
