@@ -27,77 +27,99 @@ modm::Drv832xSpi<SpiMaster, Cs>::Drv832xSpi()
 }
 
 template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::FaultStatus1_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readFaultStatus1()
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::initialize()
 {
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::FaultStatus1));
-	RF_END_RETURN(modm::drv832xSpi::FaultStatus1_t(value));
+	return readAll();
 }
 
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::VgsStatus2_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readVgsStatus2()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::VgsStatus2));
-	RF_END_RETURN(modm::drv832xSpi::VgsStatus2_t(value));
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::DriverControl_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readDriverControl()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::DriverControl));
-	RF_END_RETURN(modm::drv832xSpi::DriverControl_t(value));
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::GateDriveHS_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readGateDriveHS()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::GateDriveHS));
-	RF_END_RETURN(modm::drv832xSpi::GateDriveHS_t(value));
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::GateDriveLS_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readGateDriveLS()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::GateDriveLS));
-	RF_END_RETURN(modm::drv832xSpi::GateDriveLS_t(value));
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::OcpControl_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readOcpControl()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::OcpControl));
-	RF_END_RETURN(modm::drv832xSpi::OcpControl_t(value));
-}
-
-template < class SpiMaster, class Cs >
-modm::ResumableResult<modm::drv832xSpi::CsaControl_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readCsaControl()
-{
-	RF_BEGIN();
-	value = RF_CALL(readData(Register::CsaControl));
-	RF_END_RETURN(modm::drv832xSpi::CsaControl_t(value));
-}
-
-
-/*
 template < class SpiMaster, class Cs >
 modm::ResumableResult<void>
-modm::Drv832xSpi<SpiMaster, Cs>::setDriverControl(modm::drv832xSpi::DriverControl_t data)
+modm::Drv832xSpi<SpiMaster, Cs>::readAll()
 {
-
+	RF_BEGIN();
+	RF_CALL(readFaultStatus1());
+	RF_CALL(readVgsStatus2());
+	RF_CALL(readDriverControl());
+	RF_CALL(readGateDriveHS());
+	RF_CALL(readGateDriveLS());
+	RF_CALL(readOcpControl());
+	RF_CALL(readCsaControl());
+	RF_END();
 }
-*/
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readFaultStatus1()
+{
+	return readData(Register::FaultStatus1, _faultStatus1.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readVgsStatus2()
+{
+	return readData(Register::VgsStatus2, _vgsStatus2.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readDriverControl()
+{
+	return readData(Register::DriverControl, _driverControl.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readGateDriveHS()
+{
+	return readData(Register::GateDriveHS, _gateDriveHS.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readGateDriveLS()
+{
+	return readData(Register::GateDriveLS, _gateDriveLS.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readOcpControl()
+{
+	return readData(Register::OcpControl, _ocpControl.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readCsaControl()
+{
+	return readData(Register::CsaControl, _csaControl.value);
+}
+
+template < class SpiMaster, class Cs >
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::commit()
+{
+	RF_BEGIN();
+	if(accessBitmap & 0b0000100) {
+		RF_CALL(writeData(Register::DriverControl, _driverControl));
+	}
+	if(accessBitmap & 0b0001000) {
+		RF_CALL(writeData(Register::GateDriveHS, _gateDriveHS));
+	}
+	if(accessBitmap & 0b0010000) {
+		RF_CALL(writeData(Register::GateDriveLS, _gateDriveLS));
+	}
+	if(accessBitmap & 0b0100000) {
+		RF_CALL(writeData(Register::OcpControl, _ocpControl));
+	}
+	if(accessBitmap & 0b1000000) {
+		RF_CALL(writeData(Register::CsaControl, _csaControl));
+	}
+	RF_END();
+}
+
 
 template < class SpiMaster, class Cs >
 modm::ResumableResult<void>
@@ -126,16 +148,16 @@ modm::Drv832xSpi<SpiMaster, Cs>::writeData(Register address, uint16_t data)
 }
 
 template < class SpiMaster, class Cs >
-modm::ResumableResult<uint16_t>
-modm::Drv832xSpi<SpiMaster, Cs>::readData(Register address)
+modm::ResumableResult<void>
+modm::Drv832xSpi<SpiMaster, Cs>::readData(Register address, uint16_t& data)
 {
 	RF_BEGIN();
 
 	RF_WAIT_UNTIL(this->acquireMaster());
 	Cs::reset();
 
-	inBuffer[0] = 0x55;
-	inBuffer[1] = 0x55;
+	inBuffer[0] = 0x00;
+	inBuffer[1] = 0x00;
 
 	static constexpr uint8_t writeBit = (1 << 7); // 1 = read
 
@@ -148,6 +170,6 @@ modm::Drv832xSpi<SpiMaster, Cs>::readData(Register address)
 		Cs::set();
 	}
 
-	ret = static_cast<uint16_t>(inBuffer[1]) | (static_cast<uint16_t>(inBuffer[0] & 0b111) << 8);
-	RF_END_RETURN(ret);
+	data = static_cast<uint16_t>(inBuffer[1]) | (static_cast<uint16_t>(inBuffer[0] & 0b111) << 8);
+	RF_END();
 }

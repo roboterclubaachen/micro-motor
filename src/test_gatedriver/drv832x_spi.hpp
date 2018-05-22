@@ -306,51 +306,74 @@ public:
 	 */
 	Drv832xSpi();
 
-	modm::ResumableResult<modm::drv832xSpi::FaultStatus1_t>
+	modm::ResumableResult<void>
 	readFaultStatus1();
 
-	modm::ResumableResult<modm::drv832xSpi::VgsStatus2_t>
+	modm::ResumableResult<void>
 	readVgsStatus2();
 
-	modm::ResumableResult<modm::drv832xSpi::DriverControl_t>
+	modm::ResumableResult<void>
 	readDriverControl();
 
-	modm::ResumableResult<modm::drv832xSpi::GateDriveHS_t>
+	modm::ResumableResult<void>
 	readGateDriveHS();
 
-	modm::ResumableResult<modm::drv832xSpi::GateDriveLS_t>
+	modm::ResumableResult<void>
 	readGateDriveLS();
 
-	modm::ResumableResult<modm::drv832xSpi::OcpControl_t>
+	modm::ResumableResult<void>
 	readOcpControl();
 
-	modm::ResumableResult<modm::drv832xSpi::CsaControl_t>
+	modm::ResumableResult<void>
 	readCsaControl();
 
 	modm::ResumableResult<void>
-	setDriverControl(modm::drv832xSpi::DriverControl_t data) {
-		return writeData(Register::DriverControl, data.value);
+	readAll();
+
+	modm::ResumableResult<void>
+	initialize();
+
+private:
+	FaultStatus1_t _faultStatus1;
+	VgsStatus2_t _vgsStatus2;
+	DriverControl_t _driverControl;
+	GateDriveHS_t _gateDriveHS;
+	GateDriveLS_t _gateDriveLS;
+	OcpControl_t _ocpControl;
+	CsaControl_t _csaControl;
+
+	// access bitmap for variables above
+	uint8_t accessBitmap = 0;
+public:
+	FaultStatus1_t& faultStatus1() {
+		return _faultStatus1;
+	}
+	VgsStatus2_t& vgsStatus2() {
+		return _vgsStatus2;
+	}
+	DriverControl_t& driverControl() {
+		accessBitmap |= 0b0000100;
+		return _driverControl;
+	}
+	GateDriveHS_t& gateDriveHS() {
+		accessBitmap |= 0b0001000;
+		return _gateDriveHS;
+	}
+	GateDriveLS_t& gateDriveLS() {
+		accessBitmap |= 0b0010000;
+		return _gateDriveLS;
+	}
+	OcpControl_t& ocpControl() {
+		accessBitmap |= 0b0100000;
+		return _ocpControl;
+	}
+	CsaControl_t& csaControl() {
+		accessBitmap |= 0b1000000;
+		return _csaControl;
 	}
 
 	modm::ResumableResult<void>
-	setGateDriveHS(modm::drv832xSpi::GateDriveHS_t data) {
-		return writeData(Register::GateDriveHS, data.value);
-	}
-
-	modm::ResumableResult<void>
-	setGateDriveLS(modm::drv832xSpi::GateDriveLS_t data) {
-		return writeData(Register::GateDriveLS, data.value);
-	}
-
-	modm::ResumableResult<void>
-	setOcpControl(modm::drv832xSpi::OcpControl_t data) {
-		return writeData(Register::OcpControl, data.value);
-	}
-
-	modm::ResumableResult<void>
-	setCsaControl(modm::drv832xSpi::CsaControl_t data) {
-		return writeData(Register::CsaControl, data.value);
-	}
+	commit();
 
 protected:
 	modm::ResumableResult<void>
@@ -359,11 +382,12 @@ protected:
 	modm::ResumableResult<uint16_t>
 	readData(Register address);
 
+	modm::ResumableResult<void>
+	readData(Register address, uint16_t& data);
+
 private:
 	uint8_t inBuffer[2];
 	uint8_t outBuffer[2];
-	uint16_t value;
-	uint16_t ret;
 };
 
 // ------------------------------------------------------------------------
