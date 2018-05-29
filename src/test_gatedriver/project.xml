@@ -29,8 +29,7 @@
     <module>modm:platform:spi:1</module>
     <module>modm:platform:i2c:2</module>
 
-    <module>modm:architecture:spi.device</module>
-    <module>modm:architecture:register</module>
+    <module>modm:driver:drv832x_spi</module>
 
     <module>modm:build.scons</module>
   </modules>

@@ -22,7 +22,7 @@
 
 #include "../hardware_rev1.hpp"
 
-#include "drv832x_spi.hpp"
+#include <modm/driver/motor/drv832x_spi.hpp>
 
 
 modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
