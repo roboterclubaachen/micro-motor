@@ -50,8 +50,7 @@ struct systemClock {
 	static constexpr uint32_t Spi2 = Frequency;
 	static constexpr uint32_t Spi3 = Frequency;
 
-	//static constexpr uint32_t Can1 = Frequency;
-	static constexpr uint32_t Can1 = MHz48; // TODO real 80MHz, but driver only supports 48MHz
+	static constexpr uint32_t Can1 = Frequency;
 
 	static constexpr uint32_t I2c1 = Frequency;
 	//static constexpr uint32_t I2c2 = Frequency;
