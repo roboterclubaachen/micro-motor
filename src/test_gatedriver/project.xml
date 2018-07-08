@@ -9,6 +9,7 @@
 
   <options>
     <option name=":build.scons:build.path">build</option>
+    <option name=":build.scons:openocd.cfg">../openocd.cfg</option>
 	<option name=":target">stm32l433ccu</option>
   </options>
 
