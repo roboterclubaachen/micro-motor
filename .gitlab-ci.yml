@@ -1,0 +1,31 @@
+image: modm/modm-build:latest
+
+variables:
+  LANG: "en_US.UTF-8"
+  SCONS_LIB_DIR: "/usr/local/lib/python3.6/dist-packages/scons-3.0.1"
+  SCONSFLAGS: "-j3"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.roboterclub.rwth-aachen.de/rca/rca-ci-helper.git
+  - rca-ci-helper/populate_rca_software.sh
+
+compile-src:
+  script:
+    - locale -a
+    - scons --version
+    - which arm-none-eabi-g++
+    - arm-none-eabi-g++ --version
+    - lbuild -h | head -n1
+    - cd src/test_blink
+    - lbuild build
+    - scons
+    - cd ../../src/test_can
+    - lbuild build
+    - scons
+    - cd ../../src/test_gatedriver
+    - lbuild build
+    - scons
+    - cd ../../src/test_pwm
+    - lbuild build
+    - scons
