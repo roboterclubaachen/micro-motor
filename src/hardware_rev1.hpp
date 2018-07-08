@@ -136,7 +136,79 @@ namespace Motor {
 	constexpr uint8_t HallInterruptPriority	= 4;
 	constexpr uint16_t MaxPwm{0x2FFu}; // 10 bit PWM
 
+	enum class
+	PhaseOutputConfig : uint32_t
+	{
+		HiZ,
+		NormalPwm,
+		High,
+		Low,
+	};
+
+	enum class
+	Phase : uint32_t
+	{
+		PhaseU = 1,
+		PhaseV = 2,
+		PhaseW = 3,
+	};
+
+	void
+	configurePhase(Phase phase, PhaseOutputConfig phaseOutputConfig)
+	{
+		switch(phaseOutputConfig) {
+			case PhaseOutputConfig::HiZ:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+						MotorTimer::OutputCompareMode::ForceActive,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveLow,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveHigh,
+						MotorTimer::OutputComparePreload::Disable
+						);
+				break;
+			case PhaseOutputConfig::NormalPwm:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+						MotorTimer::OutputCompareMode::Pwm,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveHigh,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveHigh,
+						MotorTimer::OutputComparePreload::Disable
+						);
+				break;
+			case PhaseOutputConfig::High:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+						MotorTimer::OutputCompareMode::ForceActive,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveHigh,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveHigh,
+						MotorTimer::OutputComparePreload::Disable
+						);
+				break;
+			case PhaseOutputConfig::Low:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+						MotorTimer::OutputCompareMode::ForceActive,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveLow,
+						MotorTimer::PinState::Enable,
+						MotorTimer::OutputComparePolarity::ActiveLow,
+						MotorTimer::OutputComparePreload::Disable
+						);
+				break;
+		}
+	}
+
 	inline void
+	setCompareValue(uint16_t compareValue)
+	{
+		MotorTimer::setCompareValue(1, compareValue);
+		MotorTimer::setCompareValue(2, compareValue);
+		MotorTimer::setCompareValue(3, compareValue);
+	}
+
+	void
 	initializeMotor()
 	{
 		MotorTimer::enable();
@@ -148,33 +220,11 @@ namespace Motor {
 		MotorTimer::setOverflow(MaxPwm);
 		// Pwm frequency: 80MHz / 1024 = 78kHz
 
-		MotorTimer::configureOutputChannel(1,
-										   MotorTimer::OutputCompareMode::Pwm,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::OutputComparePreload::Disable
-										   );
-		MotorTimer::configureOutputChannel(2,
-										   MotorTimer::OutputCompareMode::Pwm,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::OutputComparePreload::Disable
-										   );
-		MotorTimer::configureOutputChannel(3,
-										   MotorTimer::OutputCompareMode::Pwm,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::PinState::Enable,
-										   MotorTimer::OutputComparePolarity::ActiveHigh,
-										   MotorTimer::OutputComparePreload::Disable
-										   );
-		MotorTimer::setCompareValue(1, 0);
-		MotorTimer::setCompareValue(2, 0);
-		MotorTimer::setCompareValue(3, 0);
+		configurePhase(Phase::PhaseU, PhaseOutputConfig::HiZ);
+		configurePhase(Phase::PhaseV, PhaseOutputConfig::HiZ);
+		configurePhase(Phase::PhaseW, PhaseOutputConfig::HiZ);
+
+		setCompareValue(0);
 
 		MotorTimer::applyAndReset();
 		MotorTimer::enableOutput();
@@ -207,14 +257,6 @@ namespace Motor {
 		HallW::setInputTrigger(Gpio::InputTrigger::BothEdges);
 		HallW::enableExternalInterrupt();
 		HallW::enableExternalInterruptVector(HallInterruptPriority);
-	}
-
-	inline void
-	setCompareValue(uint16_t compareValue)
-	{
-		MotorTimer::setCompareValue(1, compareValue);
-		MotorTimer::setCompareValue(2, compareValue);
-		MotorTimer::setCompareValue(3, compareValue);
 	}
 
 	inline void
