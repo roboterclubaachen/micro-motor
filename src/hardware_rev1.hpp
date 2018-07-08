@@ -19,7 +19,7 @@
 #ifndef HARDWARE_REV1_HPP
 #define HARDWARE_REV1_HPP
 
-#include <modm/platform/platform.hpp>
+#include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
 #include <modm/platform/clock/clock.hpp>
 
