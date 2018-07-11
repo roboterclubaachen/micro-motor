@@ -132,6 +132,7 @@ namespace Motor {
 	using HallU			= GpioB9;
 	using HallV			= GpioB8;
 	using HallW			= GpioB6;
+	using HallPort		= SoftwareGpioPort<HallU, HallV, HallW>;
 
 	constexpr uint8_t HallInterruptPriority	= 4;
 	constexpr uint16_t MaxPwm{0x2FFu}; // 10 bit PWM
@@ -242,11 +243,11 @@ namespace Motor {
 	inline void
 	initializeHall()
 	{
+		static_assert(HallPort::number_of_ports == 1, "Hall pins must be at the same port to guarantee atomic read operations.");
+
 		// Timer is not used for commutation
 		// Bldc motor commutation is done using external gpio pin interrupts
-		HallU::setInput(Gpio::InputType::PullUp);
-		HallV::setInput(Gpio::InputType::PullUp);
-		HallW::setInput(Gpio::InputType::PullUp);
+		HallPort::setInput(Gpio::InputType::PullUp);
 
 		HallU::setInputTrigger(Gpio::InputTrigger::BothEdges);
 		HallU::enableExternalInterrupt();
