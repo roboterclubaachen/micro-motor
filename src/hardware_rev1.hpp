@@ -323,8 +323,12 @@ namespace MotorCurrent {
 		SenseCal::setOutput(Gpio::OutputType::PushPull);
 		SenseCal::set(false);
 
-		Adc::initialize(); // TODO
+		Adc::initialize(Adc::ClockMode::SynchronousPrescaler1,
+						Adc::ClockSource::SystemClock,
+						Adc::Prescaler::Disabled,
+						Adc::CalibrationMode::SingleEndedInputsMode, true);
 		Adc::connect<SenseAll::In9, SenseV::In11, SenseW::In15>();
+		Adc::setChannel(Adc::Channel::Channel9, Adc::SampleTime::Cycles182);
 
 		// TODO initialize comparator
 	}

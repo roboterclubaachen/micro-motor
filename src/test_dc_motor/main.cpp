@@ -32,7 +32,13 @@ modm::log::Logger modm::log::warning(loggerDevice);
 modm::log::Logger modm::log::error(loggerDevice);
 
 modm::PeriodicTimer aliveTimer{100};
-modm::PeriodicTimer gateDriverStatusTimer{1000};
+modm::PeriodicTimer gateDriverStatusTimer{50000};
+
+modm::PeriodicTimer adcTimer{10};
+uint32_t adcCounter = 0;
+constexpr std::size_t adcBufferLength = 50;
+uint16_t adcBuffer[adcBufferLength];
+
 
 modm::PeriodicTimer motorDirectionReverseTimer{1};
 enum class MotorState {
@@ -56,10 +62,16 @@ main()
 	MODM_LOG_ERROR << "Micro-Motor DC Motor Test" << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
+	RF_CALL_BLOCKING(gateDriver.initialize());
+	gateDriver.csaControl() &= ~modm::drv832xSpi::CsaGain_t::mask();
+	gateDriver.csaControl() |= modm::drv832xSpi::CsaGain_t(modm::drv832xSpi::CsaGain::Gain40);
+	RF_CALL_BLOCKING(gateDriver.commit());
 
 	Board::Motor::MotorTimer::applyAndReset();
 	Board::Motor::MotorTimer::start();
 	Board::Motor::MotorTimer::enableOutput();
+
+	Board::MotorCurrent::Adc::startConversion();
 
 	while (1)
 	{
@@ -76,7 +88,7 @@ main()
 					Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::Low);
 					Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::Low);
 					motorState = MotorState::Forward;
-					motorDirectionReverseTimer.restart(1000);
+					motorDirectionReverseTimer.restart(5000);
 					break;
 				case MotorState::Forward:
 					MODM_LOG_DEBUG << "Forward" << modm::endl;
@@ -90,7 +102,7 @@ main()
 					Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::High);
 					Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::High);
 					motorState = MotorState::Reverse;
-					motorDirectionReverseTimer.restart(1000);
+					motorDirectionReverseTimer.restart(5000);
 					break;
 				case MotorState::Reverse:
 					MODM_LOG_DEBUG << "Reverse" << modm::endl;
@@ -100,10 +112,35 @@ main()
 					motorDirectionReverseTimer.restart(20000);
 					break;
 			}
-			Board::Motor::setCompareValue(Board::Motor::MaxPwm * 7 / 8);
+			Board::Motor::setCompareValue(Board::Motor::MaxPwm * 6 / 8);
 			Board::Motor::MotorTimer::applyAndReset();
 		}
-		
+
+		if(adcTimer.execute()) {
+			if(Adc1::isConversionFinished()) {
+				adcBuffer[adcCounter] = Board::MotorCurrent::Adc::getValue();
+				adcCounter++;
+				// Start next conversion
+				Board::MotorCurrent::Adc::startConversion();
+			}
+			else {
+				MODM_LOG_DEBUG << "ADC conversion not finished." << modm::endl;
+			}
+			if(adcCounter == adcBufferLength) {
+				MODM_LOG_DEBUG << "ADC=[ ";
+				uint32_t sum = 0;
+				for(std::size_t i = 0; i < adcBufferLength; i++) {
+					sum += adcBuffer[i];
+					MODM_LOG_DEBUG << adcBuffer[i] << " ";
+				}
+				float current = ((2048.f - (sum / adcBufferLength)) * 0.000805664062 /*V/digit*/ / 0.005 /*ohms=A/V*/ / 40.f) - 0.185;
+				MODM_LOG_DEBUG << "]; sum=" << sum << " current=";
+				MODM_LOG_DEBUG.printf("%1.3f", current);
+				MODM_LOG_DEBUG << modm::endl;
+				adcCounter = 0;
+			}
+		}
+
 		if(gateDriverStatusTimer.execute()) {
 			RF_CALL_BLOCKING(gateDriver.readAll());
 			MODM_LOG_DEBUG << gateDriver.faultStatus1() << modm::endl;
