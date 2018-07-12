@@ -1,4 +1,4 @@
-# µMotor: a motor controller for BLDC and DC motors up to 50W
+# µMotor: a motor controller for BLDC and DC motors up to 250W
 
 µMotor (or micro-motor) is a motor controller PCB and software made to control any BLDC and DC motor up to 250W.
 
@@ -7,7 +7,7 @@ In addition, a limit switch can be read out and the temperature of the motor can
 
 On the microcontroller, freely configurable PID controllers and, if necessary, "motor-with limit switch" components, which can initialize and move the actuator in a parameterizable manner, should form the external interface.
 
-The software is done with [modm.io](https://modm.io/).
+The software is done with [modm.io](https://modm.io/).  
 [XPCC]() is used to communicate over the CAN bus.
 
 For more information read [this blog post](http://www.roboterclub.rwth-aachen.de/blog/2018/micro-motor-motorcontroller.html).
@@ -34,7 +34,7 @@ For more information read [this blog post](http://www.roboterclub.rwth-aachen.de
 The first prototype (PCB rev1) is assembled and basically works.
 A lot of test for different hardware functionalities (Microcontroller booting, PWM generation, CAN, ...) are available in `src/test_*`.
 
-Improvements for PCB rev2 are documented in [Issue #1](#1).
+Improvements for PCB rev2 are documented in [Issue #1](https://github.com/roboterclubaachen/micro-motor/issues/1).
 
 
 ## Folder structure
