@@ -29,3 +29,9 @@ compile-src:
     - cd ../../src/test_pwm
     - lbuild build
     - scons
+    - cd ../../src/test_dc_motor
+    - lbuild build
+    - scons
+    - cd ../../src/test_bldc_motor
+    - lbuild build
+    - scons
