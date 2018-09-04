@@ -43,102 +43,54 @@ uint16_t adcBuffer[adcBufferLength];
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs> gateDriver;
 
 
-static constexpr const uint_fast8_t outputLutI[8] = {
-	0b00'00'00, /* stop/disable */
-	0b11'00'10,
-	0b00'10'11,
-	0b11'10'00,
-	0b10'11'00,
-	0b00'11'10,
-	0b10'00'11,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t outputLutJ[8] = {
-	0b00'00'00, /* stop/disable */
-	0b10'11'00,
-	0b11'00'10,
-	0b00'11'10,
-	0b00'10'11,
-	0b10'00'11,
-	0b11'10'00,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t outputLutK[8] = {
-	0b00'00'00, /* stop/disable */
-	0b00'10'11,
-	0b10'11'00,
-	0b10'00'11,
-	0b11'00'10,
-	0b11'10'00,
-	0b00'11'10,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t outputLutL[8] = {
-	0b00'00'00, /* stop/disable */
-	0b11'10'00,
-	0b00'11'10,
-	0b11'00'10,
-	0b10'00'11,
-	0b00'10'11,
-	0b10'11'00,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t outputLutM[8] = {
-	0b00'00'00, /* stop/disable */
-	0b10'00'11,
-	0b11'10'00,
-	0b00'10'11,
-	0b00'11'10,
-	0b10'11'00,
-	0b11'00'10,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t outputLutN[8] = {
-	0b00'00'00, /* stop/disable */
-	0b00'11'10,
-	0b10'00'11,
-	0b10'11'00,
-	0b11'10'00,
-	0b11'00'10,
-	0b00'10'11,
-	0, /* invalid */
-};
-static constexpr const uint_fast8_t* outputLutLut[6] = {
-	outputLutI,
-	outputLutJ,
-	outputLutK,
-	outputLutL,
-	outputLutM,
-	outputLutN,
+// Commutation sequence:
+// ..., 1, 3, 2, 6, 4, 5, ...
+static constexpr const uint_fast8_t sequenceLut[8] = {
+	6, // invalid
+	0,			// 0b001
+	2,			// 0b010
+	1,			// 0b011
+	4,			// 0b100
+	5,			// 0b101
+	3,			// 0b110
+	6, // invalid
 };
 
-enum class
-HallPermutation : std::size_t {
-	PermutationI = 0,
-	PermutationJ = 1,
-	PermutationK = 2,
-	PermutationL = 3,
-	PermutationM = 4,
-	PermutationN = 5,
+static constexpr const uint_fast8_t commutationLut[7] = {
+	0b11'10'00, // hall 0b001 -> 0
+	0b11'00'10, // hall 0b011 -> 1
+	0b00'11'10, // hall 0b010 -> 2
+	0b10'11'00, // hall 0b110 -> 3
+	0b10'00'11, // hall 0b100 -> 4
+	0b00'10'11, // hall 0b101 -> 5
+	0b00'00'00, // hall invalid -> 6
 };
 
-HallPermutation hallPermutation = HallPermutation::PermutationL;
+uint32_t commutationOffset = 0; // 0..5
 
-void modm_always_inline
+volatile bool reverse = false;
+volatile bool disable = false;
+
+void
 doCommutation()
 {
 	uint_fast8_t hall = Board::Motor::HallPort::read();
-	if(false/*reverse*/) {
-		// Bitwise invert hall pins
-		hall ^= 0b111;
+	uint32_t index;
+	if(disable) {
+		index = 6;
 	}
-	if(false/*stop/disable*/) {
-		// Illegal hall sensor state
-		hall = 0b000;
+	else {
+		if(reverse) {
+			// Bitwise invert hall pins
+			hall ^= 0b111;
+			index = sequenceLut[hall] + (6 - commutationOffset);
+		}
+		else {
+			index = sequenceLut[hall] + commutationOffset;
+		}
+		while(index >= 6) { index -= 6; }
 	}
-	uint_fast8_t out = outputLutLut[static_cast<std::size_t>(hallPermutation)][hall];
-
-	MODM_LOG_ERROR << "h=" << hall <<  " o=" << modm::bin << static_cast<char>(out) << modm::endl;
+	uint_fast8_t out = commutationLut[index];
 
 	switch(out & 0b11) {
 		case 0b00:
