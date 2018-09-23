@@ -1,0 +1,650 @@
+EESchema Schematic File Version 4
+LIBS:macro-motor-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 6
+Title "macro-motor: micro-motor development hardware"
+Date "2018-09-20"
+Rev "rev0"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 6800 3450 1200 300 
+U 59B9FCA5
+F0 "Encoder" 60
+F1 "macro-motor-encoder.sch" 60
+F2 "A" O L 6800 3550 60 
+F3 "B" O L 6800 3650 60 
+$EndSheet
+$Sheet
+S 8150 3850 1400 1900
+U 59B9FE17
+F0 "Motor_Driver" 60
+F1 "macro-motor-motor-driver.sch" 60
+F2 "IN_U_P" I L 8150 3950 60 
+F3 "IN_U_N" I L 8150 4050 60 
+F4 "IN_V_P" I L 8150 4150 60 
+F5 "IN_V_N" I L 8150 4250 60 
+F6 "IN_W_P" I L 8150 4350 60 
+F7 "IN_W_N" I L 8150 4450 60 
+F8 "ENABLE" I L 8150 4600 60 
+F9 "MOSI" I L 8150 4750 60 
+F10 "MISO" O L 8150 4850 60 
+F11 "SCK" I L 8150 4950 60 
+F12 "~CS" I L 8150 5050 60 
+F13 "OUT_U" O R 9550 3950 60 
+F14 "OUT_W" O R 9550 4150 60 
+F15 "OUT_V" O R 9550 4050 60 
+F16 "~FAULT" O L 8150 5200 60 
+F17 "CurrentV" O L 8150 5550 50 
+F18 "CurrentU" O L 8150 5450 50 
+F19 "CurrentW" O L 8150 5650 50 
+$EndSheet
+$Comp
+L µmotor-rescue:CONN_01X05 J101
+U 1 1 59B9FEAC
+P 950 4150
+F 0 "J101" H 950 4450 50  0000 C CNN
+F 1 "CAN+PWR" V 1050 4150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x05_Pitch2.54mm" H 950 4150 50  0001 C CNN
+F 3 "" H 950 4150 50  0001 C CNN
+	1    950  4150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR01
+U 1 1 59B9FFC7
+P 1250 4150
+F 0 "#PWR01" H 1250 3900 50  0001 C CNN
+F 1 "GND" H 1250 4000 50  0000 C CNN
+F 2 "" H 1250 4150 50  0001 C CNN
+F 3 "" H 1250 4150 50  0001 C CNN
+	1    1250 4150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1250 4150 1150 4150
+Wire Wire Line
+	1150 4250 2100 4250
+Wire Wire Line
+	1150 4350 2100 4350
+$Comp
+L power:+6V #PWR02
+U 1 1 59BA046F
+P 1550 4050
+F 0 "#PWR02" H 1550 3900 50  0001 C CNN
+F 1 "+6V" V 1550 4250 50  0000 C CNN
+F 2 "" H 1550 4050 50  0001 C CNN
+F 3 "" H 1550 4050 50  0001 C CNN
+	1    1550 4050
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+24V #PWR03
+U 1 1 59BA04C0
+P 1550 3950
+F 0 "#PWR03" H 1550 3800 50  0001 C CNN
+F 1 "+24V" V 1550 4150 50  0000 C CNN
+F 2 "" H 1550 3950 50  0001 C CNN
+F 3 "" H 1550 3950 50  0001 C CNN
+	1    1550 3950
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1150 3950 1550 3950
+Wire Wire Line
+	1550 4050 1150 4050
+$Sheet
+S 2100 4150 1050 300 
+U 59B9FE58
+F0 "CAN" 60
+F1 "macro-motor-can.sch" 60
+F2 "CAN_RX" O R 3150 4350 60 
+F3 "CAN_TX" I R 3150 4250 60 
+F4 "CAN_H" B L 2100 4250 60 
+F5 "CAN_L" B L 2100 4350 60 
+$EndSheet
+Wire Wire Line
+	4750 4250 3150 4250
+Wire Wire Line
+	3150 4350 4750 4350
+$Sheet
+S 2550 3450 1350 300 
+U 59BA5FB5
+F0 "Temperature_Sensor" 60
+F1 "macro-motor-temp-sensor.sch" 60
+F2 "SDA" B R 3900 3550 60 
+F3 "SCL" I R 3900 3650 60 
+$EndSheet
+Wire Wire Line
+	4750 3650 3900 3650
+Wire Wire Line
+	3900 3550 4750 3550
+Wire Wire Line
+	6800 3550 6300 3550
+Wire Wire Line
+	6300 3650 6800 3650
+$Comp
+L µmotor-rescue:TEST_1P J102
+U 1 1 5A509596
+P 9900 3950
+F 0 "J102" V 9900 4300 50  0000 C CNN
+F 1 "U" H 9900 4150 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 10100 3950 50  0001 C CNN
+F 3 "" H 10100 3950 50  0001 C CNN
+	1    9900 3950
+	0    1    1    0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J103
+U 1 1 5A50959D
+P 9900 4050
+F 0 "J103" V 9900 4400 50  0000 C CNN
+F 1 "V" H 9900 4250 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 10100 4050 50  0001 C CNN
+F 3 "" H 10100 4050 50  0001 C CNN
+	1    9900 4050
+	0    1    1    0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J104
+U 1 1 5A5095A4
+P 9900 4150
+F 0 "J104" V 9900 4500 50  0000 C CNN
+F 1 "W" H 9900 4350 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 10100 4150 50  0001 C CNN
+F 3 "" H 10100 4150 50  0001 C CNN
+	1    9900 4150
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+6V #PWR04
+U 1 1 5A768B01
+P 900 5400
+F 0 "#PWR04" H 900 5250 50  0001 C CNN
+F 1 "+6V" H 900 5540 50  0000 C CNN
+F 2 "" H 900 5400 50  0001 C CNN
+F 3 "" H 900 5400 50  0001 C CNN
+	1    900  5400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L µmotor-rescue:C C101
+U 1 1 5A768C33
+P 1000 5750
+F 0 "C101" H 1025 5850 50  0000 L CNN
+F 1 "2µ2 16V" H 1025 5650 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 1038 5600 50  0001 C CNN
+F 3 "" H 1000 5750 50  0001 C CNN
+	1    1000 5750
+	1    0    0    -1  
+$EndComp
+$Comp
+L µmotor-rescue:C C102
+U 1 1 5A769218
+P 2850 5750
+F 0 "C102" H 2875 5850 50  0000 L CNN
+F 1 "2µ2 6V3" H 2875 5650 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0402_1005Metric" H 2888 5600 50  0001 C CNN
+F 3 "" H 2850 5750 50  0001 C CNN
+	1    2850 5750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 5500 1550 5500
+Wire Wire Line
+	1550 5500 1550 5400
+Connection ~ 1550 5400
+Wire Wire Line
+	2850 5400 2850 5600
+$Comp
+L power:GND #PWR05
+U 1 1 5A769C21
+P 2050 6100
+F 0 "#PWR05" H 2050 5850 50  0001 C CNN
+F 1 "GND" H 2050 5950 50  0000 C CNN
+F 2 "" H 2050 6100 50  0001 C CNN
+F 3 "" H 2050 6100 50  0001 C CNN
+	1    2050 6100
+	1    0    0    -1  
+$EndComp
+Connection ~ 2050 6000
+Wire Wire Line
+	2850 6000 2850 5900
+Connection ~ 2850 5400
+Wire Wire Line
+	6300 5050 8150 5050
+Wire Wire Line
+	8150 4950 6300 4950
+Wire Wire Line
+	6300 4850 8150 4850
+Wire Wire Line
+	8150 4750 6300 4750
+Wire Wire Line
+	6300 3950 8150 3950
+Wire Wire Line
+	8150 4050 6300 4050
+Wire Wire Line
+	6300 4150 8150 4150
+Wire Wire Line
+	8150 4250 6300 4250
+Wire Wire Line
+	6300 4350 8150 4350
+Wire Wire Line
+	8150 4450 6300 4450
+$Comp
+L power:+3V3 #PWR06
+U 1 1 5A775FAA
+P 3150 5400
+F 0 "#PWR06" H 3150 5250 50  0001 C CNN
+F 1 "+3V3" H 3150 5540 50  0000 C CNN
+F 2 "" H 3150 5400 50  0001 C CNN
+F 3 "" H 3150 5400 50  0001 C CNN
+	1    3150 5400
+	0    1    1    0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J105
+U 1 1 5A77D176
+P 4550 5250
+F 0 "J105" V 4550 5600 50  0000 C CNN
+F 1 "U" H 4550 5450 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5250 50  0001 C CNN
+F 3 "" H 4750 5250 50  0001 C CNN
+	1    4550 5250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J106
+U 1 1 5A77D554
+P 4550 5350
+F 0 "J106" V 4550 5700 50  0000 C CNN
+F 1 "V" H 4550 5550 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5350 50  0001 C CNN
+F 3 "" H 4750 5350 50  0001 C CNN
+	1    4550 5350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J107
+U 1 1 5A77D6B7
+P 4550 5450
+F 0 "J107" V 4550 5800 50  0000 C CNN
+F 1 "W" H 4550 5650 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4750 5450 50  0001 C CNN
+F 3 "" H 4750 5450 50  0001 C CNN
+	1    4550 5450
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4550 5250 4750 5250
+Wire Wire Line
+	4750 5350 4550 5350
+Wire Wire Line
+	4550 5450 4750 5450
+$Comp
+L µmotor-rescue:C C104
+U 1 1 5A77E4AF
+P 2850 7100
+F 0 "C104" H 2875 7200 50  0000 L CNN
+F 1 "2µ2 6V3" H 2875 7000 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0402_1005Metric" H 2888 6950 50  0001 C CNN
+F 3 "" H 2850 7100 50  0001 C CNN
+	1    2850 7100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 6850 1550 6850
+Wire Wire Line
+	1550 6850 1550 6750
+Wire Wire Line
+	2850 6750 2850 6950
+$Comp
+L power:GND #PWR08
+U 1 1 5A77E4BD
+P 2050 7450
+F 0 "#PWR08" H 2050 7200 50  0001 C CNN
+F 1 "GND" H 2050 7300 50  0000 C CNN
+F 2 "" H 2050 7450 50  0001 C CNN
+F 3 "" H 2050 7450 50  0001 C CNN
+	1    2050 7450
+	1    0    0    -1  
+$EndComp
+Connection ~ 2050 7350
+Wire Wire Line
+	2850 7350 2850 7250
+Connection ~ 2850 6750
+$Comp
+L power:+5V #PWR09
+U 1 1 5A77E77B
+P 3150 6750
+F 0 "#PWR09" H 3150 6600 50  0001 C CNN
+F 1 "+5V" H 3150 6890 50  0000 C CNN
+F 2 "" H 3150 6750 50  0001 C CNN
+F 3 "" H 3150 6750 50  0001 C CNN
+	1    3150 6750
+	0    1    1    0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J108
+U 1 1 5A7826F1
+P 3050 6650
+F 0 "J108" V 3050 7000 50  0000 C CNN
+F 1 "5V" H 3050 6850 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 3250 6650 50  0001 C CNN
+F 3 "" H 3250 6650 50  0001 C CNN
+	1    3050 6650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 6650 3050 6750
+Connection ~ 3050 6750
+$Comp
+L µmotor-rescue:TEST_1P J111
+U 1 1 5A786EB9
+P 4000 5350
+F 0 "J111" V 4000 5700 50  0000 C CNN
+F 1 "GND" H 4000 5550 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4200 5350 50  0001 C CNN
+F 3 "" H 4200 5350 50  0001 C CNN
+	1    4000 5350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR011
+U 1 1 5A7873A5
+P 4000 5450
+F 0 "#PWR011" H 4000 5200 50  0001 C CNN
+F 1 "GND" H 4000 5300 50  0000 C CNN
+F 2 "" H 4000 5450 50  0001 C CNN
+F 3 "" H 4000 5450 50  0001 C CNN
+	1    4000 5450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4000 5450 4000 5350
+$Sheet
+S 4750 3450 1550 2800
+U 59B9FC4A
+F0 "Microcontroller" 60
+F1 "macro-motor-microcontroller.sch" 60
+F2 "I2C_SDA" B L 4750 3550 60 
+F3 "I2C_SCL" O L 4750 3650 60 
+F4 "CAN_RX" I L 4750 4350 60 
+F5 "CAN_TX" O L 4750 4250 60 
+F6 "Enc_TIM2_CH1" I R 6300 3650 60 
+F7 "Enc_TIM2_CH2" I R 6300 3550 60 
+F8 "PWM_CH1N" O R 6300 4050 60 
+F9 "PWM_CH1P" O R 6300 3950 60 
+F10 "SCK" O R 6300 4950 60 
+F11 "MISO" I R 6300 4850 60 
+F12 "MOSI" O R 6300 4750 60 
+F13 "CS" O R 6300 5050 60 
+F14 "PWM_CH2P" O R 6300 4150 60 
+F15 "PWM_CH2N" O R 6300 4250 60 
+F16 "PWM_CH3P" O R 6300 4350 60 
+F17 "PWM_CH3N" O R 6300 4450 60 
+F18 "HallU" I L 4750 5250 60 
+F19 "HallV" I L 4750 5350 60 
+F20 "HallW" I L 4750 5450 60 
+F21 "CurrentU" I R 6300 5450 50 
+F22 "CurrentV" I R 6300 5550 50 
+F23 "CurrentW" I R 6300 5650 50 
+F24 "BemfU" I R 6300 5950 50 
+F25 "BemfV" I R 6300 6050 50 
+F26 "BemfW" I R 6300 6150 50 
+F27 "Enable" O R 6300 4600 50 
+F28 "Fault" I R 6300 5200 50 
+F29 "Gpio" B L 4750 5950 50 
+$EndSheet
+Wire Wire Line
+	1550 5400 1650 5400
+Wire Wire Line
+	2050 6000 2050 6100
+Wire Wire Line
+	2050 6000 2850 6000
+Wire Wire Line
+	2850 5400 3150 5400
+Wire Wire Line
+	1550 6750 1650 6750
+Wire Wire Line
+	2050 7350 2050 7450
+Wire Wire Line
+	2050 7350 2850 7350
+Wire Wire Line
+	2850 6750 3050 6750
+Wire Wire Line
+	3050 6750 3150 6750
+Wire Wire Line
+	6300 5650 8150 5650
+Wire Wire Line
+	6300 5550 8150 5550
+Wire Wire Line
+	6300 5450 8150 5450
+Wire Wire Line
+	6300 4600 8150 4600
+Wire Wire Line
+	6300 5200 8150 5200
+Wire Wire Line
+	9550 3950 9650 3950
+Wire Wire Line
+	9550 4050 9750 4050
+Wire Wire Line
+	9550 4150 9850 4150
+Wire Wire Line
+	9650 5950 9650 3950
+Connection ~ 9650 3950
+Wire Wire Line
+	9650 3950 9900 3950
+Wire Wire Line
+	9750 6050 9750 4050
+Connection ~ 9750 4050
+Wire Wire Line
+	9750 4050 9900 4050
+Connection ~ 9850 4150
+Wire Wire Line
+	9850 4150 9900 4150
+$Comp
+L Device:R_Pack04 RN102
+U 1 1 5B66A378
+P 7200 6150
+F 0 "RN102" V 6783 6150 50  0000 C CNN
+F 1 "20k" V 6874 6150 50  0000 C CNN
+F 2 "Local Footprints:EXB18V" V 7475 6150 50  0001 C CNN
+F 3 "~" H 7200 6150 50  0001 C CNN
+	1    7200 6150
+	0    -1   1    0   
+$EndComp
+Wire Wire Line
+	7400 5950 9650 5950
+Wire Wire Line
+	9750 6050 7400 6050
+Wire Wire Line
+	7400 6150 9850 6150
+Wire Wire Line
+	9850 4150 9850 6150
+Wire Wire Line
+	7000 6150 6550 6150
+Wire Wire Line
+	6300 6050 6650 6050
+Wire Wire Line
+	7000 5950 6750 5950
+$Comp
+L Device:R_Pack04 RN101
+U 1 1 5B673D52
+P 6550 6600
+F 0 "RN101" H 6270 6554 50  0000 R CNN
+F 1 "1k" H 6270 6645 50  0000 R CNN
+F 2 "Local Footprints:EXB18V" V 6825 6600 50  0001 C CNN
+F 3 "~" H 6550 6600 50  0001 C CNN
+	1    6550 6600
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6750 6400 6750 5950
+Connection ~ 6750 5950
+Wire Wire Line
+	6750 5950 6300 5950
+Wire Wire Line
+	6650 6400 6650 6050
+Connection ~ 6650 6050
+Wire Wire Line
+	6650 6050 7000 6050
+Wire Wire Line
+	6550 6400 6550 6150
+Connection ~ 6550 6150
+Wire Wire Line
+	6550 6150 6300 6150
+$Comp
+L power:GND #PWR0101
+U 1 1 5B679454
+P 6650 7000
+F 0 "#PWR0101" H 6650 6750 50  0001 C CNN
+F 1 "GND" H 6655 6827 50  0000 C CNN
+F 2 "" H 6650 7000 50  0001 C CNN
+F 3 "" H 6650 7000 50  0001 C CNN
+	1    6650 7000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 6900 6550 6900
+Wire Wire Line
+	6550 6900 6550 6800
+Wire Wire Line
+	6650 6800 6650 6900
+Connection ~ 6650 6900
+Wire Wire Line
+	6650 6900 6650 7000
+Wire Wire Line
+	6750 6800 6750 6900
+Wire Wire Line
+	6750 6900 6650 6900
+NoConn ~ 6450 6400
+NoConn ~ 6450 6800
+NoConn ~ 7000 6250
+NoConn ~ 7400 6250
+$Comp
+L µmotor-rescue:TEST_1P J109
+U 1 1 5B69A41D
+P 4450 5950
+F 0 "J109" V 4450 6300 50  0000 C CNN
+F 1 "Gpio" H 4450 6150 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4650 5950 50  0001 C CNN
+F 3 "" H 4650 5950 50  0001 C CNN
+	1    4450 5950
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R101
+U 1 1 5B69CA3E
+P 4300 5800
+F 0 "R101" V 4093 5800 50  0000 C CNN
+F 1 "10k" V 4184 5800 50  0000 C CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4230 5800 50  0001 C CNN
+F 3 "~" H 4300 5800 50  0001 C CNN
+	1    4300 5800
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+3V3 #PWR0102
+U 1 1 5B69CB4A
+P 4050 5800
+F 0 "#PWR0102" H 4050 5650 50  0001 C CNN
+F 1 "+3V3" V 4065 5928 50  0000 L CNN
+F 2 "" H 4050 5800 50  0001 C CNN
+F 3 "" H 4050 5800 50  0001 C CNN
+	1    4050 5800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4050 5800 4150 5800
+Wire Wire Line
+	4450 5800 4550 5800
+Wire Wire Line
+	4450 5950 4550 5950
+Wire Wire Line
+	4550 5800 4550 5950
+Connection ~ 4550 5950
+Wire Wire Line
+	4550 5950 4750 5950
+$Comp
+L adp7112:ADP7112 U101
+U 1 1 5B60830C
+P 2050 5500
+F 0 "U101" H 2050 5867 50  0000 C CNN
+F 1 "ADP7112ACBZ-3.3-R7" H 2050 5776 50  0000 C CNN
+F 2 "Package_CSP:WLCSP-6_1.4x1.0mm_P0.4mm" H 2050 5100 50  0001 C CIN
+F 3 "http://www.analog.com/media/en/technical-documentation/data-sheets/ADP7112.pdf" H 2050 5000 50  0001 C CNN
+	1    2050 5500
+	1    0    0    -1  
+$EndComp
+NoConn ~ 1650 5600
+Wire Wire Line
+	2450 5400 2550 5400
+Wire Wire Line
+	2550 5400 2550 5600
+Wire Wire Line
+	2550 5600 2450 5600
+Connection ~ 2550 5400
+Wire Wire Line
+	2550 5400 2850 5400
+Wire Wire Line
+	2050 5800 2050 6000
+$Comp
+L adp7112:ADP7112 U102
+U 1 1 5B612C45
+P 2050 6850
+F 0 "U102" H 2050 7217 50  0000 C CNN
+F 1 "ADP7112ACBZ-5.0-R7" H 2050 7126 50  0000 C CNN
+F 2 "Package_CSP:WLCSP-6_1.4x1.0mm_P0.4mm" H 2050 6450 50  0001 C CIN
+F 3 "http://www.analog.com/media/en/technical-documentation/data-sheets/ADP7112.pdf" H 2050 6350 50  0001 C CNN
+	1    2050 6850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2450 6750 2550 6750
+Wire Wire Line
+	2550 6750 2550 6950
+Wire Wire Line
+	2550 6950 2450 6950
+Connection ~ 2550 6750
+Wire Wire Line
+	2550 6750 2850 6750
+Wire Wire Line
+	2050 7150 2050 7350
+NoConn ~ 1650 6950
+Wire Wire Line
+	900  5400 1000 5400
+Wire Wire Line
+	1000 5400 1000 5600
+Connection ~ 1000 5400
+Wire Wire Line
+	1000 5900 1000 6000
+$Comp
+L power:GND #PWR0107
+U 1 1 5B62DEF3
+P 1000 6000
+F 0 "#PWR0107" H 1000 5750 50  0001 C CNN
+F 1 "GND" H 1000 5850 50  0000 C CNN
+F 2 "" H 1000 6000 50  0001 C CNN
+F 3 "" H 1000 6000 50  0001 C CNN
+	1    1000 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 5400 1450 5400
+Wire Wire Line
+	1550 6750 1450 6750
+Wire Wire Line
+	1450 6750 1450 5400
+Connection ~ 1550 6750
+Connection ~ 1450 5400
+Wire Wire Line
+	1450 5400 1550 5400
+$EndSCHEMATC

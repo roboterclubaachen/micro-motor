@@ -1,0 +1,253 @@
+EESchema Schematic File Version 4
+LIBS:µmotor-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 6
+Title "µmotor - Micro Motor Controller"
+Date "2017-09-14"
+Rev "rev1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L AS5045B:AS5045B U201
+U 1 1 59BAD84A
+P 5600 3800
+F 0 "U201" H 5600 4300 60  0000 C CNN
+F 1 "AS5045B" H 5600 3300 60  0000 C CNN
+F 2 "Package_SO:SSOP-16_4.4x5.2mm_P0.65mm" H 5650 3800 60  0001 C CNN
+F 3 "" H 5650 3800 60  0001 C CNN
+	1    5600 3800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6300 2400 6300 3450
+Wire Wire Line
+	6200 3450 6300 3450
+Wire Wire Line
+	6300 3550 6200 3550
+Connection ~ 6300 3450
+$Comp
+L power:GND #PWR013
+U 1 1 59BAD8B0
+P 4900 4250
+F 0 "#PWR013" H 4900 4000 50  0001 C CNN
+F 1 "GND" H 4900 4100 50  0000 C CNN
+F 2 "" H 4900 4250 50  0001 C CNN
+F 3 "" H 4900 4250 50  0001 C CNN
+	1    4900 4250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4900 4250 4900 4150
+Wire Wire Line
+	4900 4050 5000 4050
+Wire Wire Line
+	5000 4150 4900 4150
+Connection ~ 4900 4150
+NoConn ~ 5000 3950
+$Comp
+L µmotor-rescue:LED D202
+U 1 1 59BAD8DC
+P 4900 2800
+AR Path="/59BAD8DC" Ref="D202"  Part="1" 
+AR Path="/59B9FCA5/59BAD8DC" Ref="D202"  Part="1" 
+F 0 "D202" H 4900 2900 50  0000 C CNN
+F 1 "Yellow" H 4900 2700 50  0000 C CNN
+F 2 "LED_SMD:LED_0402_1005Metric" H 4900 2800 50  0001 C CNN
+F 3 "" H 4900 2800 50  0001 C CNN
+	1    4900 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L µmotor-rescue:LED D201
+U 1 1 59BAD913
+P 4600 2800
+AR Path="/59BAD913" Ref="D201"  Part="1" 
+AR Path="/59B9FCA5/59BAD913" Ref="D201"  Part="1" 
+F 0 "D201" H 4600 2900 50  0000 C CNN
+F 1 "Red" H 4600 2700 50  0000 C CNN
+F 2 "LED_SMD:LED_0402_1005Metric" H 4600 2800 50  0001 C CNN
+F 3 "" H 4600 2800 50  0001 C CNN
+	1    4600 2800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4600 3350 4600 3550
+Wire Wire Line
+	4600 3550 5000 3550
+Wire Wire Line
+	5000 3450 4900 3450
+Wire Wire Line
+	4900 3450 4900 3350
+$Comp
+L µmotor-rescue:R R202
+U 1 1 59BAD94F
+P 4900 3200
+AR Path="/59BAD94F" Ref="R202"  Part="1" 
+AR Path="/59B9FCA5/59BAD94F" Ref="R202"  Part="1" 
+F 0 "R202" V 4980 3200 50  0000 C CNN
+F 1 "1k" V 4900 3200 50  0000 C CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4830 3200 50  0001 C CNN
+F 3 "" H 4900 3200 50  0001 C CNN
+	1    4900 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L µmotor-rescue:R R201
+U 1 1 59BAD99D
+P 4600 3200
+AR Path="/59BAD99D" Ref="R201"  Part="1" 
+AR Path="/59B9FCA5/59BAD99D" Ref="R201"  Part="1" 
+F 0 "R201" V 4680 3200 50  0000 C CNN
+F 1 "1k" V 4600 3200 50  0000 C CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4530 3200 50  0001 C CNN
+F 3 "" H 4600 3200 50  0001 C CNN
+	1    4600 3200
+	1    0    0    -1  
+$EndComp
+NoConn ~ 6200 4150
+NoConn ~ 6200 4050
+NoConn ~ 6200 3950
+NoConn ~ 6200 3850
+Text HLabel 3150 3650 0    60   Output ~ 0
+A
+Text HLabel 3150 3750 0    60   Output ~ 0
+B
+Wire Wire Line
+	3150 3750 3900 3750
+Wire Wire Line
+	3150 3650 3900 3650
+$Comp
+L µmotor-rescue:C C201
+U 1 1 59BADC52
+P 6750 3700
+AR Path="/59BADC52" Ref="C201"  Part="1" 
+AR Path="/59B9FCA5/59BADC52" Ref="C201"  Part="1" 
+F 0 "C201" H 6775 3800 50  0000 L CNN
+F 1 "100n" H 6775 3600 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0402_1005Metric" H 6788 3550 50  0001 C CNN
+F 3 "" H 6750 3700 50  0001 C CNN
+	1    6750 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR014
+U 1 1 59BADC9E
+P 6750 3950
+F 0 "#PWR014" H 6750 3700 50  0001 C CNN
+F 1 "GND" H 6750 3800 50  0000 C CNN
+F 2 "" H 6750 3950 50  0001 C CNN
+F 3 "" H 6750 3950 50  0001 C CNN
+	1    6750 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6750 3950 6750 3850
+Wire Wire Line
+	6750 3450 6750 3550
+Wire Wire Line
+	4900 3050 4900 2950
+Wire Wire Line
+	4600 3050 4600 2950
+Wire Wire Line
+	4750 2400 4750 2550
+Wire Wire Line
+	4600 2550 4750 2550
+Wire Wire Line
+	4600 2550 4600 2650
+Wire Wire Line
+	4900 2550 4900 2650
+Connection ~ 4750 2550
+$Comp
+L µmotor-rescue:TEST_1P J201
+U 1 1 5A76BD44
+P 3900 3850
+AR Path="/5A76BD44" Ref="J201"  Part="1" 
+AR Path="/59B9FCA5/5A76BD44" Ref="J201"  Part="1" 
+F 0 "J201" H 3900 4120 50  0000 C CNN
+F 1 "A" H 3900 4050 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4100 3850 50  0001 C CNN
+F 3 "" H 4100 3850 50  0001 C CNN
+	1    3900 3850
+	-1   0    0    1   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J202
+U 1 1 5A76BDAC
+P 3900 3550
+AR Path="/5A76BDAC" Ref="J202"  Part="1" 
+AR Path="/59B9FCA5/5A76BDAC" Ref="J202"  Part="1" 
+F 0 "J202" H 3900 3820 50  0000 C CNN
+F 1 "B" H 3900 3750 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 4100 3550 50  0001 C CNN
+F 3 "" H 4100 3550 50  0001 C CNN
+	1    3900 3550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3900 3650 3900 3550
+Wire Wire Line
+	3900 3750 3900 3850
+Connection ~ 3900 3750
+Connection ~ 3900 3650
+Wire Wire Line
+	4400 2400 4750 2400
+Connection ~ 4750 2400
+$Comp
+L power:+3V3 #PWR015
+U 1 1 5A777D5D
+P 4400 2400
+F 0 "#PWR015" H 4400 2250 50  0001 C CNN
+F 1 "+3V3" H 4400 2540 50  0000 C CNN
+F 2 "" H 4400 2400 50  0001 C CNN
+F 3 "" H 4400 2400 50  0001 C CNN
+	1    4400 2400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L µmotor-rescue:TEST_1P J204
+U 1 1 5A77A12B
+P 3600 4750
+AR Path="/5A77A12B" Ref="J204"  Part="1" 
+AR Path="/59B9FCA5/5A77A12B" Ref="J204"  Part="1" 
+F 0 "J204" H 3600 5020 50  0000 C CNN
+F 1 "GND" H 3600 4950 50  0000 C CNN
+F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 3800 4750 50  0001 C CNN
+F 3 "" H 3800 4750 50  0001 C CNN
+	1    3600 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR017
+U 1 1 5A77A357
+P 3600 4850
+F 0 "#PWR017" H 3600 4600 50  0001 C CNN
+F 1 "GND" H 3600 4700 50  0000 C CNN
+F 2 "" H 3600 4850 50  0001 C CNN
+F 3 "" H 3600 4850 50  0001 C CNN
+	1    3600 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 4850 3600 4750
+Wire Wire Line
+	6300 3450 6300 3550
+Wire Wire Line
+	6300 3450 6750 3450
+Wire Wire Line
+	4900 4150 4900 4050
+Wire Wire Line
+	4750 2550 4900 2550
+Wire Wire Line
+	3900 3750 5000 3750
+Wire Wire Line
+	3900 3650 5000 3650
+Wire Wire Line
+	4750 2400 6300 2400
+$EndSCHEMATC
