@@ -1,5 +1,5 @@
 EESchema Schematic File Version 4
-LIBS:µmotor-cache
+LIBS:macro-motor-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -31,10 +31,10 @@ F 3 "" H 4100 2200 60  0001 C CNN
 $EndComp
 NoConn ~ 4550 2200
 $Comp
-L power:GND #PWR034
+L power:GND #PWR0503
 U 1 1 5A76B49A
 P 4650 2500
-F 0 "#PWR034" H 4650 2250 50  0001 C CNN
+F 0 "#PWR0503" H 4650 2250 50  0001 C CNN
 F 1 "GND" H 4650 2350 50  0000 C CNN
 F 2 "" H 4650 2500 50  0001 C CNN
 F 3 "" H 4650 2500 50  0001 C CNN
@@ -49,10 +49,10 @@ Wire Wire Line
 	4650 2300 4550 2300
 Connection ~ 4650 2400
 $Comp
-L power:GND #PWR035
+L power:GND #PWR0502
 U 1 1 5A76B4B9
 P 3550 2400
-F 0 "#PWR035" H 3550 2150 50  0001 C CNN
+F 0 "#PWR0502" H 3550 2150 50  0001 C CNN
 F 1 "GND" H 3550 2250 50  0000 C CNN
 F 2 "" H 3550 2400 50  0001 C CNN
 F 3 "" H 3550 2400 50  0001 C CNN
@@ -67,10 +67,10 @@ Wire Wire Line
 	3650 2200 3550 2200
 Connection ~ 3550 2300
 $Comp
-L power:+3V3 #PWR036
+L power:+3V3 #PWR0501
 U 1 1 5A76B4E0
 P 3550 2000
-F 0 "#PWR036" H 3550 1850 50  0001 C CNN
+F 0 "#PWR0501" H 3550 1850 50  0001 C CNN
 F 1 "+3V3" H 3550 2140 50  0000 C CNN
 F 2 "" H 3550 2000 50  0001 C CNN
 F 3 "" H 3550 2000 50  0001 C CNN
@@ -86,27 +86,27 @@ Wire Wire Line
 Wire Wire Line
 	4550 2100 4850 2100
 $Comp
-L µmotor-rescue:TEST_1P J501
+L Connector:TestPoint J?
 U 1 1 5A76B941
 P 5200 1900
-AR Path="/5A76B941" Ref="J501"  Part="1" 
+AR Path="/5A76B941" Ref="J?"  Part="1" 
 AR Path="/59BA5FB5/5A76B941" Ref="J501"  Part="1" 
 F 0 "J501" H 5200 2170 50  0000 C CNN
 F 1 "SCL" H 5200 2100 50  0000 C CNN
-F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 5400 1900 50  0001 C CNN
+F 2 "Connector_Pin:Pin_D1.0mm_L10.0mm" H 5400 1900 50  0001 C CNN
 F 3 "" H 5400 1900 50  0001 C CNN
 	1    5200 1900
 	1    0    0    -1  
 $EndComp
 $Comp
-L µmotor-rescue:TEST_1P J502
+L Connector:TestPoint J?
 U 1 1 5A76B97E
 P 5200 2200
-AR Path="/5A76B97E" Ref="J502"  Part="1" 
+AR Path="/5A76B97E" Ref="J?"  Part="1" 
 AR Path="/59BA5FB5/5A76B97E" Ref="J502"  Part="1" 
 F 0 "J502" H 5200 2470 50  0000 C CNN
 F 1 "SDA" H 5200 2400 50  0000 C CNN
-F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 5400 2200 50  0001 C CNN
+F 2 "Connector_Pin:Pin_D1.0mm_L10.0mm" H 5400 2200 50  0001 C CNN
 F 3 "" H 5400 2200 50  0001 C CNN
 	1    5200 2200
 	-1   0    0    1   
@@ -118,36 +118,36 @@ Wire Wire Line
 	5200 2000 5200 1900
 Connection ~ 5200 2000
 $Comp
-L µmotor-rescue:TEST_1P J503
+L Connector:TestPoint J?
 U 1 1 5A77F3B3
 P 6450 2100
-AR Path="/5A77F3B3" Ref="J503"  Part="1" 
+AR Path="/5A77F3B3" Ref="J?"  Part="1" 
 AR Path="/59BA5FB5/5A77F3B3" Ref="J503"  Part="1" 
 F 0 "J503" H 6450 2370 50  0000 C CNN
 F 1 "3V3" H 6450 2300 50  0000 C CNN
-F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 6650 2100 50  0001 C CNN
+F 2 "Connector_Pin:Pin_D1.0mm_L10.0mm" H 6650 2100 50  0001 C CNN
 F 3 "" H 6650 2100 50  0001 C CNN
 	1    6450 2100
 	1    0    0    -1  
 $EndComp
 $Comp
-L µmotor-rescue:TEST_1P J504
+L Connector:TestPoint J?
 U 1 1 5A77F3FB
 P 6700 2100
-AR Path="/5A77F3FB" Ref="J504"  Part="1" 
+AR Path="/5A77F3FB" Ref="J?"  Part="1" 
 AR Path="/59BA5FB5/5A77F3FB" Ref="J504"  Part="1" 
 F 0 "J504" H 6700 2370 50  0000 C CNN
 F 1 "GND" H 6700 2300 50  0000 C CNN
-F 2 "Measurement_Point_Round-SMD-Pad_Smaller:Measurement_Point_Round-SMD-Pad_Smaller_0.75mm" H 6900 2100 50  0001 C CNN
+F 2 "Connector_Pin:Pin_D1.0mm_L10.0mm" H 6900 2100 50  0001 C CNN
 F 3 "" H 6900 2100 50  0001 C CNN
 	1    6700 2100
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR037
+L power:GND #PWR0506
 U 1 1 5A77F465
 P 6700 2200
-F 0 "#PWR037" H 6700 1950 50  0001 C CNN
+F 0 "#PWR0506" H 6700 1950 50  0001 C CNN
 F 1 "GND" H 6700 2050 50  0000 C CNN
 F 2 "" H 6700 2200 50  0001 C CNN
 F 3 "" H 6700 2200 50  0001 C CNN
@@ -157,10 +157,10 @@ $EndComp
 Wire Wire Line
 	6700 2200 6700 2100
 $Comp
-L power:+3V3 #PWR038
+L power:+3V3 #PWR0505
 U 1 1 5A77F497
 P 6450 2200
-F 0 "#PWR038" H 6450 2050 50  0001 C CNN
+F 0 "#PWR0505" H 6450 2050 50  0001 C CNN
 F 1 "+3V3" H 6450 2340 50  0000 C CNN
 F 2 "" H 6450 2200 50  0001 C CNN
 F 3 "" H 6450 2200 50  0001 C CNN
@@ -170,10 +170,10 @@ $EndComp
 Wire Wire Line
 	6450 2200 6450 2100
 $Comp
-L µmotor-rescue:R R501
+L Device:R R?
 U 1 1 5B469BD6
 P 4650 1600
-AR Path="/5B469BD6" Ref="R501"  Part="1" 
+AR Path="/5B469BD6" Ref="R?"  Part="1" 
 AR Path="/59BA5FB5/5B469BD6" Ref="R501"  Part="1" 
 F 0 "R501" V 4730 1600 50  0000 C CNN
 F 1 "4k7" V 4650 1600 50  0000 C CNN
@@ -183,10 +183,10 @@ F 3 "" H 4650 1600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L µmotor-rescue:R R502
+L Device:R R?
 U 1 1 5B469C77
 P 4850 1600
-AR Path="/5B469C77" Ref="R502"  Part="1" 
+AR Path="/5B469C77" Ref="R?"  Part="1" 
 AR Path="/59BA5FB5/5B469C77" Ref="R502"  Part="1" 
 F 0 "R502" V 4930 1600 50  0000 C CNN
 F 1 "4k7" V 4850 1600 50  0000 C CNN
@@ -202,10 +202,10 @@ Wire Wire Line
 	4850 1750 4850 2100
 Connection ~ 4850 2100
 $Comp
-L power:+3V3 #PWR039
+L power:+3V3 #PWR0504
 U 1 1 5B469D07
 P 4750 1250
-F 0 "#PWR039" H 4750 1100 50  0001 C CNN
+F 0 "#PWR0504" H 4750 1100 50  0001 C CNN
 F 1 "+3V3" H 4750 1390 50  0000 C CNN
 F 2 "" H 4750 1250 50  0001 C CNN
 F 3 "" H 4750 1250 50  0001 C CNN
