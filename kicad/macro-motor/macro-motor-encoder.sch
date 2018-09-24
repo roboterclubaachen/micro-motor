@@ -328,8 +328,6 @@ F 3 "" H 2900 4250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2900 4250 2900 4350
-Text Notes 3200 3950 0    50   ~ 0
-TODO: RC Filter\n
 Wire Wire Line
 	7050 3750 7150 3750
 Wire Wire Line
