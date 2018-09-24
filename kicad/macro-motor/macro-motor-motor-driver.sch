@@ -573,8 +573,7 @@ Wire Wire Line
 	9000 2800 9100 2800
 Wire Wire Line
 	3200 2150 4250 2150
-NoConn ~ 5050 5500
-Text Notes 4500 5700 0    50   ~ 0
+Text Notes 4550 5850 0    50   ~ 0
 Calibration can be done via SPI
 Wire Wire Line
 	8450 3900 9400 3900
@@ -1280,4 +1279,19 @@ Wire Wire Line
 	10100 2750 10100 5600
 Connection ~ 10100 2750
 Connection ~ 10100 5600
+$Comp
+L power:GND #PWR0136
+U 1 1 5BADAC6F
+P 4950 5600
+F 0 "#PWR0136" H 4950 5350 50  0001 C CNN
+F 1 "GND" H 4950 5450 50  0000 C CNN
+F 2 "" H 4950 5600 50  0001 C CNN
+F 3 "" H 4950 5600 50  0001 C CNN
+	1    4950 5600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4950 5600 4950 5500
+Wire Wire Line
+	4950 5500 5050 5500
 $EndSCHEMATC

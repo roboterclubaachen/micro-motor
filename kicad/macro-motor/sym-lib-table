@@ -6,4 +6,5 @@
   (lib (name drv8323s)(type Legacy)(uri ${KIPRJMOD}/../lib/drv8323s.lib)(options "")(descr ""))
   (lib (name stm32)(type Legacy)(uri ${KIPRJMOD}/../lib/stm32.lib)(options "")(descr ""))
   (lib (name adp7112)(type Legacy)(uri ${KIPRJMOD}/../lib/adp7112.lib)(options "")(descr ""))
+  (lib (name ISL3280E)(type Legacy)(uri /home/raphael/src/RCA/2016/micro-motor/kicad/lib/ISL3280E.lib)(options "")(descr ""))
 )
