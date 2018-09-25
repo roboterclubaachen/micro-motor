@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 78)
+    (drawings 77)
     (tracks 1285)
     (zones 0)
     (modules 122)
@@ -5348,7 +5348,6 @@
     )
   )
 
-  (target plus (at 152.5 70) (size 5) (width 0.1) (layer Edge.Cuts))
   (gr_text "2x ISL3280E" (at 112.55 66.15 90) (layer F.SilkS)
     (effects (font (size 0.65 0.65) (thickness 0.1)))
   )
