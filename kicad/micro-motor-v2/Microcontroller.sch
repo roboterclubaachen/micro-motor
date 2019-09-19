@@ -1,0 +1,231 @@
+EESchema Schematic File Version 4
+EELAYER 29 0
+EELAYER END
+$Descr A3 16535 11693
+encoding utf-8
+Sheet 3 4
+Title "Micro-Motor V2"
+Date "2019-09-19"
+Rev ""
+Comp "RCA"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 1 1 5DA18CE7
+P 9700 2300
+AR Path="/5DA18CE7" Ref="U?"  Part="1" 
+AR Path="/5D99156F/5DA18CE7" Ref="U?"  Part="1" 
+F 0 "U?" H 9383 1243 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 9383 1334 50  0000 C CNN
+F 2 "LQFP48" H 9383 1425 50  0000 C CIN
+F 3 "" H 9700 2300 50  0000 C CNN
+	1    9700 2300
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 2 1 5DA18CED
+P 9000 6250
+AR Path="/5DA18CED" Ref="U?"  Part="2" 
+AR Path="/5D99156F/5DA18CED" Ref="U?"  Part="2" 
+F 0 "U?" H 8683 5193 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 8683 5284 50  0000 C CNN
+F 2 "LQFP48" H 8683 5375 50  0000 C CIN
+F 3 "" H 9000 6250 50  0000 C CNN
+	2    9000 6250
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 3 1 5DA36BC9
+P 10050 9400
+AR Path="/5DA36BC9" Ref="U?"  Part="3" 
+AR Path="/5D99156F/5DA36BC9" Ref="U?"  Part="3" 
+F 0 "U?" H 10133 8943 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 10133 9034 50  0000 C CNN
+F 2 "LQFP48" H 10133 9125 50  0000 C CIN
+F 3 "" H 10050 9400 50  0000 C CNN
+	3    10050 9400
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 4 1 5DA36BCF
+P 9950 10800
+AR Path="/5DA36BCF" Ref="U?"  Part="4" 
+AR Path="/5D99156F/5DA36BCF" Ref="U?"  Part="4" 
+F 0 "U?" H 10008 10443 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 10008 10534 50  0000 C CNN
+F 2 "LQFP48" H 10008 10625 50  0000 C CIN
+F 3 "" H 9950 10800 50  0000 C CNN
+	4    9950 10800
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 5 1 5DA36BD5
+P 4600 9850
+AR Path="/5DA36BD5" Ref="U?"  Part="5" 
+AR Path="/5D99156F/5DA36BD5" Ref="U?"  Part="5" 
+F 0 "U?" H 4608 9493 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 4608 9584 50  0000 C CNN
+F 2 "LQFP48" H 4608 9675 50  0000 C CIN
+F 3 "" H 4600 9850 50  0000 C CNN
+	5    4600 9850
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 6 1 5DA36BDB
+P 1700 9750
+AR Path="/5DA36BDB" Ref="U?"  Part="6" 
+AR Path="/5D99156F/5DA36BDB" Ref="U?"  Part="6" 
+F 0 "U?" H 1857 9393 50  0000 C CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 1857 9484 50  0000 C CNN
+F 2 "LQFP48" H 1857 9575 50  0000 C CIN
+F 3 "" H 1700 9750 50  0000 C CNN
+	6    1700 9750
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 7 1 5DA36BE1
+P 1400 10800
+AR Path="/5DA36BE1" Ref="U?"  Part="7" 
+AR Path="/5D99156F/5DA36BE1" Ref="U?"  Part="7" 
+F 0 "U?" H 1170 10759 50  0000 R CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 1170 10850 50  0000 R CNN
+F 2 "LQFP48" H 1170 10941 50  0000 R CIN
+F 3 "" H 1400 10800 50  0000 C CNN
+	7    1400 10800
+	-1   0    0    1   
+$EndComp
+$Comp
+L stm32:STM32G474C(B-C-E)Tx_u U?
+U 8 1 5DA36BE7
+P 1400 10200
+AR Path="/5DA36BE7" Ref="U?"  Part="8" 
+AR Path="/5D99156F/5DA36BE7" Ref="U?"  Part="8" 
+F 0 "U?" H 1170 10159 50  0000 R CNN
+F 1 "STM32G474C(B-C-E)Tx_u" H 1170 10250 50  0000 R CNN
+F 2 "LQFP48" H 1170 10341 50  0000 R CIN
+F 3 "" H 1400 10200 50  0000 C CNN
+	8    1400 10200
+	-1   0    0    1   
+$EndComp
+Text HLabel 2650 6150 0    50   Output ~ 0
+CAN_TX
+Text HLabel 2650 6250 0    50   Input ~ 0
+CAN_RX
+Wire Wire Line
+	3000 6150 2650 6150
+Wire Wire Line
+	3000 6250 2650 6250
+$Comp
+L Device:Thermistor_NTC TH?
+U 1 1 5DC71185
+P 950 7050
+F 0 "TH?" H 1048 7096 50  0000 L CNN
+F 1 "Thermistor_NTC" H 1048 7005 50  0000 L CNN
+F 2 "" H 950 7100 50  0001 C CNN
+F 3 "~" H 950 7100 50  0001 C CNN
+	1    950  7050
+	1    0    0    -1  
+$EndComp
+Text HLabel 2450 1600 0    50   Input ~ 0
+HALL_W
+Text HLabel 2450 1700 0    50   Input ~ 0
+HALL_V
+Text HLabel 2450 1800 0    50   Input ~ 0
+HALL_U
+Wire Wire Line
+	2450 1600 3000 1600
+Wire Wire Line
+	2450 1700 3000 1700
+Wire Wire Line
+	2450 1800 3000 1800
+Text HLabel 2450 2100 0    50   Output ~ 0
+PWM_CH3P
+Text HLabel 2450 2200 0    50   Output ~ 0
+PWM_CH2P
+Text HLabel 2450 2300 0    50   Output ~ 0
+PWM_CH1P
+Wire Wire Line
+	2450 2300 3000 2300
+Wire Wire Line
+	2450 2200 3000 2200
+Wire Wire Line
+	2450 2100 3000 2100
+Text HLabel 2400 5550 0    50   Output ~ 0
+PWM_CH3N
+Text HLabel 2400 5650 0    50   Output ~ 0
+PWM_CH2N
+Text HLabel 2400 5750 0    50   Output ~ 0
+PWM_CH1N
+Wire Wire Line
+	2400 5550 3000 5550
+Wire Wire Line
+	2400 5650 3000 5650
+Wire Wire Line
+	2400 5750 3000 5750
+$Comp
+L power:GND #PWR?
+U 1 1 5DD32979
+P 950 7350
+F 0 "#PWR?" H 950 7100 50  0001 C CNN
+F 1 "GND" H 955 7177 50  0000 C CNN
+F 2 "" H 950 7350 50  0001 C CNN
+F 3 "" H 950 7350 50  0001 C CNN
+	1    950  7350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 5DD32EF1
+P 950 6300
+F 0 "#PWR?" H 950 6150 50  0001 C CNN
+F 1 "+3V3" H 965 6473 50  0000 C CNN
+F 2 "" H 950 6300 50  0001 C CNN
+F 3 "" H 950 6300 50  0001 C CNN
+	1    950  6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 6850 950  6850
+Wire Wire Line
+	950  6850 950  6750
+Wire Wire Line
+	950  6900 950  6850
+Connection ~ 950  6850
+Wire Wire Line
+	950  7200 950  7350
+Wire Wire Line
+	950  6450 950  6300
+$Comp
+L Device:R R?
+U 1 1 5DD53792
+P 950 6600
+F 0 "R?" H 1020 6646 50  0000 L CNN
+F 1 "10k" H 1020 6555 50  0000 L CNN
+F 2 "" V 880 6600 50  0001 C CNN
+F 3 "~" H 950 6600 50  0001 C CNN
+	1    950  6600
+	1    0    0    -1  
+$EndComp
+Text HLabel 2650 6550 0    50   Input ~ 0
+A
+Text HLabel 2650 6650 0    50   Input ~ 0
+B
+Text HLabel 2650 6750 0    50   Input ~ 0
+INDEX_I
+Wire Wire Line
+	2650 6550 3000 6550
+Wire Wire Line
+	2650 6650 3000 6650
+Wire Wire Line
+	2650 6750 3000 6750
+$EndSCHEMATC

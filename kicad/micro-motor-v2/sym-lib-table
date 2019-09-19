@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name stm32)(type Legacy)(uri ${KIPRJMOD}/../lib/stm32.lib)(options "")(descr ""))
+  (lib (name FDMD82xx)(type Legacy)(uri ${KIPRJMOD}/../lib/FDMD82xx.lib)(options "")(descr ""))
+  (lib (name drv8323s)(type Legacy)(uri ${KIPRJMOD}/../lib/drv8323s.lib)(options "")(descr ""))
+)

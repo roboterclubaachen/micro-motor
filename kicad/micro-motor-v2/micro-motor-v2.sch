@@ -1,0 +1,193 @@
+EESchema Schematic File Version 4
+EELAYER 29 0
+EELAYER END
+$Descr A3 16535 11693
+encoding utf-8
+Sheet 1 4
+Title "Micro-Motor V2"
+Date "2019-09-19"
+Rev ""
+Comp "RCA"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 3100 3800 1700 500 
+U 5DA8F67A
+F0 "Can" 50
+F1 "Can.sch" 50
+$EndSheet
+$Comp
+L Connector:TestPoint TP?
+U 1 1 5DCBDE8A
+P 4900 6050
+F 0 "TP?" V 4900 6450 50  0000 C CNN
+F 1 "U" H 4900 6250 50  0000 C CNN
+F 2 "" H 5100 6050 50  0001 C CNN
+F 3 "~" H 5100 6050 50  0001 C CNN
+	1    4900 6050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP?
+U 1 1 5DCBFCAE
+P 4900 6150
+F 0 "TP?" V 4900 6550 50  0000 C CNN
+F 1 "V" H 4900 6350 50  0000 C CNN
+F 2 "" H 5100 6150 50  0001 C CNN
+F 3 "~" H 5100 6150 50  0001 C CNN
+	1    4900 6150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP?
+U 1 1 5DCC06A0
+P 4900 6250
+F 0 "TP?" V 4900 6650 50  0000 C CNN
+F 1 "W" H 4900 6450 50  0000 C CNN
+F 2 "" H 5100 6250 50  0001 C CNN
+F 3 "~" H 5100 6250 50  0001 C CNN
+	1    4900 6250
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4900 6150 5350 6150
+Wire Wire Line
+	4900 6250 5150 6250
+$Comp
+L Connector_Generic_MountingPin:Conn_01x05_MountingPin J?
+U 1 1 5DCC1C32
+P 5350 5200
+F 0 "J?" V 5650 5150 50  0000 L CNN
+F 1 "Conn_01x05_MountingPin" V 5550 4700 50  0000 L CNN
+F 2 "" H 5350 5200 50  0001 C CNN
+F 3 "~" H 5350 5200 50  0001 C CNN
+	1    5350 5200
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	5150 5400 5150 6250
+Connection ~ 5150 6250
+Wire Wire Line
+	5150 6250 6000 6250
+Wire Wire Line
+	5350 5400 5350 6150
+Connection ~ 5350 6150
+Wire Wire Line
+	5350 6150 6000 6150
+Wire Wire Line
+	4900 6050 5450 6050
+Wire Wire Line
+	5450 5400 5450 6050
+Connection ~ 5450 6050
+Wire Wire Line
+	5450 6050 6000 6050
+$Comp
+L power:GND #PWR?
+U 1 1 5DCD04C9
+P 5550 5500
+F 0 "#PWR?" H 5550 5250 50  0001 C CNN
+F 1 "GND" H 5555 5327 50  0000 C CNN
+F 2 "" H 5550 5500 50  0001 C CNN
+F 3 "" H 5550 5500 50  0001 C CNN
+	1    5550 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 5DCD0A88
+P 5250 5500
+F 0 "#PWR?" H 5250 5350 50  0001 C CNN
+F 1 "+5V" H 5265 5673 50  0000 C CNN
+F 2 "" H 5250 5500 50  0001 C CNN
+F 3 "" H 5250 5500 50  0001 C CNN
+	1    5250 5500
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5250 5400 5250 5500
+Wire Wire Line
+	5550 5400 5550 5500
+Text HLabel 4800 3950 0    50   Output ~ 0
+CAN_Tx
+Text HLabel 4800 4050 0    50   Input ~ 0
+CAN_Rx
+Wire Wire Line
+	4800 3950 6000 3950
+Wire Wire Line
+	4800 4050 6000 4050
+$Sheet
+S 6000 3050 2450 3650
+U 5D99156F
+F0 "Microcontroller" 50
+F1 "Microcontroller.sch" 50
+F2 "HALL_U" I L 6000 6050 50 
+F3 "HALL_V" I L 6000 6150 50 
+F4 "HALL_W" I L 6000 6250 50 
+F5 "CAN_Tx" O L 6000 3950 50 
+F6 "CAN_Rx" I L 6000 4050 50 
+F7 "PWM_CH3P" O R 8450 4100 50 
+F8 "PWM_CH2P" O R 8450 4200 50 
+F9 "PWM_CH1P" O R 8450 4300 50 
+F10 "PWM_CH3N" O R 8450 4400 50 
+F11 "PWM_CH2N" O R 8450 4500 50 
+F12 "PWM_CH1N" O R 8450 4600 50 
+$EndSheet
+$Comp
+L Connector_Generic_MountingPin:Conn_01x05_MountingPin J?
+U 1 1 5DD43487
+P 9600 3400
+F 0 "J?" H 9688 3364 50  0000 L CNN
+F 1 "Conn_01x05_MountingPin" H 9688 3273 50  0000 L CNN
+F 2 "" H 9600 3400 50  0001 C CNN
+F 3 "~" H 9600 3400 50  0001 C CNN
+	1    9600 3400
+	1    0    0    -1  
+$EndComp
+Text HLabel 8450 3400 0    50   Output ~ 0
+A
+Text HLabel 8450 3200 0    50   Output ~ 0
+B
+Text HLabel 8450 3500 0    50   Output ~ 0
+INDEX_I
+Wire Wire Line
+	8450 3200 9400 3200
+Wire Wire Line
+	8450 3400 9400 3400
+Wire Wire Line
+	8450 3500 9400 3500
+$Comp
+L power:GND #PWR?
+U 1 1 5DD5FFAD
+P 9200 3600
+F 0 "#PWR?" H 9200 3350 50  0001 C CNN
+F 1 "GND" V 9205 3472 50  0000 R CNN
+F 2 "" H 9200 3600 50  0001 C CNN
+F 3 "" H 9200 3600 50  0001 C CNN
+	1    9200 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 5DD60844
+P 9200 3300
+F 0 "#PWR?" H 9200 3150 50  0001 C CNN
+F 1 "+5V" V 9215 3428 50  0000 L CNN
+F 2 "" H 9200 3300 50  0001 C CNN
+F 3 "" H 9200 3300 50  0001 C CNN
+	1    9200 3300
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9200 3300 9400 3300
+Wire Wire Line
+	9200 3600 9400 3600
+$Sheet
+S 11450 3900 1450 2950
+U 5DD6FA6F
+F0 "Motordriver" 50
+F1 "Motordriver.sch" 50
+$EndSheet
+$EndSCHEMATC
