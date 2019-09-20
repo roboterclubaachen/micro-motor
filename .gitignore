@@ -6,6 +6,7 @@ src/*/SConstruct
 # KiCAD
 *.bak
 *.kicad_pcb-bak
+*.sch-bak
 *.net
 *.bck
 *.FCStd

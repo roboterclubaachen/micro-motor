@@ -1,13 +1,14 @@
 EESchema Schematic File Version 4
-EELAYER 29 0
+LIBS:micro-motor-v2-cache
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 4
-Title ""
-Date ""
-Rev ""
-Comp ""
+Sheet 2 5
+Title "Micro-Motor V2"
+Date "2019-09-20"
+Rev "0"
+Comp "Roboterclub Aachen e.V."
 Comment1 ""
 Comment2 ""
 Comment3 ""
