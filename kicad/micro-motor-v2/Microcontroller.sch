@@ -727,9 +727,9 @@ Text Label 10100 8800 3    50   ~ 0
 DAC2
 Text Notes 9150 8600 0    50   ~ 0
 Debug LEDs
-Text HLabel 2650 5600 0    50   Input ~ 0
-ADC_NTC
 Text HLabel 2650 5700 0    50   Input ~ 0
+ADC_NTC
+Text HLabel 2650 5600 0    50   Input ~ 0
 ADC_Vsupply
 Wire Wire Line
 	2650 5700 3000 5700

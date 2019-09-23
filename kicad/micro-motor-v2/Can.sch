@@ -120,4 +120,8 @@ F 3 "" H 5800 2900 50  0001 C CNN
 	1    5800 2900
 	1    0    0    -1  
 $EndComp
+Text Label 6250 3350 0    50   ~ 0
+CANH
+Text Label 6250 3550 0    50   ~ 0
+CANL
 $EndSCHEMATC
