@@ -214,11 +214,9 @@ Wire Wire Line
 	2650 3000 3000 3000
 Wire Wire Line
 	3000 3100 2650 3100
-Text HLabel 2650 2500 0    50   Input ~ 0
-Volt_U
 Text HLabel 2650 2400 0    50   Input ~ 0
 Volt_V
-Text HLabel 2650 5800 0    50   Input ~ 0
+Text HLabel 2650 2500 0    50   Input ~ 0
 Volt_W
 Wire Wire Line
 	2650 5800 3000 5800
@@ -784,4 +782,6 @@ Wire Wire Line
 Wire Wire Line
 	14650 9400 14050 9400
 Connection ~ 14050 9400
+Text HLabel 2650 5800 0    50   Input ~ 0
+Volt_U
 $EndSCHEMATC
