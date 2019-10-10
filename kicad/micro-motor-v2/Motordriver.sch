@@ -599,10 +599,6 @@ Wire Wire Line
 Text HLabel 8800 5250 1    50   Output ~ 0
 Curr_U
 Wire Wire Line
-	9000 5600 9000 5800
-Wire Wire Line
-	9000 5800 9200 5800
-Wire Wire Line
 	9400 5400 9500 5400
 Wire Wire Line
 	9500 5400 9500 5550
@@ -619,17 +615,9 @@ Connection ~ 9600 5050
 Wire Wire Line
 	9600 5050 9600 5150
 Wire Wire Line
-	9100 5600 9100 5700
-Wire Wire Line
 	7350 5450 7350 5550
 Text HLabel 6550 5250 1    50   Output ~ 0
 Curr_W
-Wire Wire Line
-	6750 5600 6750 5800
-Wire Wire Line
-	6750 5800 6950 5800
-Wire Wire Line
-	6950 5800 6950 5600
 Wire Wire Line
 	7150 5400 7250 5400
 Wire Wire Line
@@ -646,10 +634,6 @@ Wire Wire Line
 Connection ~ 7350 5050
 Wire Wire Line
 	7350 5050 7350 5150
-Wire Wire Line
-	6850 5600 6850 5700
-Wire Wire Line
-	6850 5700 6600 5700
 Connection ~ 7350 4400
 Wire Wire Line
 	7350 4400 7350 5050
@@ -686,10 +670,6 @@ Text HLabel 7750 5700 0    50   Input ~ 0
 VREF
 Text HLabel 8850 5700 0    50   Input ~ 0
 VREF
-Wire Wire Line
-	9200 5800 9200 5600
-Wire Wire Line
-	8850 5700 9100 5700
 Wire Wire Line
 	7750 5700 8000 5700
 Text Notes 6950 6300 0    50   ~ 0
@@ -1016,14 +996,8 @@ F 3 "" H 9200 5900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9200 5900 9200 5800
-Connection ~ 9200 5800
-Wire Wire Line
 	8100 5800 8100 5900
 Connection ~ 8100 5800
-Wire Wire Line
-	6950 5800 6950 5900
-Connection ~ 6950 5800
 $Comp
 L power:GND #PWR0125
 U 1 1 5D92A2AB
@@ -1112,4 +1086,30 @@ F 3 "" H 2850 2600 50  0001 C CNN
 	1    2850 2650
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	6950 5600 6950 5700
+Wire Wire Line
+	6600 5700 6750 5700
+Wire Wire Line
+	6750 5700 6750 5600
+Wire Wire Line
+	6850 5600 6850 5700
+Wire Wire Line
+	6850 5700 6950 5700
+Connection ~ 6950 5700
+Wire Wire Line
+	6950 5700 6950 5900
+Wire Wire Line
+	9200 5600 9200 5700
+Wire Wire Line
+	8850 5700 9000 5700
+Wire Wire Line
+	9000 5700 9000 5600
+Wire Wire Line
+	9100 5600 9100 5700
+Wire Wire Line
+	9100 5700 9200 5700
+Connection ~ 9200 5700
+Wire Wire Line
+	9200 5700 9200 5900
 $EndSCHEMATC
