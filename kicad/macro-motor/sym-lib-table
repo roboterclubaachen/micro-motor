@@ -1,0 +1,10 @@
+(sym_lib_table
+  (lib (name AS5045B)(type Legacy)(uri ${KIPRJMOD}/../lib/AS5045B.lib)(options "")(descr ""))
+  (lib (name FDMD82xx)(type Legacy)(uri ${KIPRJMOD}/../lib/FDMD82xx.lib)(options "")(descr ""))
+  (lib (name TCAN33x)(type Legacy)(uri ${KIPRJMOD}/../lib/TCAN33x.lib)(options "")(descr ""))
+  (lib (name TMP006)(type Legacy)(uri ${KIPRJMOD}/../lib/TMP006.lib)(options "")(descr ""))
+  (lib (name drv8323s)(type Legacy)(uri ${KIPRJMOD}/../lib/drv8323s.lib)(options "")(descr ""))
+  (lib (name stm32)(type Legacy)(uri ${KIPRJMOD}/../lib/stm32.lib)(options "")(descr ""))
+  (lib (name adp7112)(type Legacy)(uri ${KIPRJMOD}/../lib/adp7112.lib)(options "")(descr ""))
+  (lib (name ISL3280E)(type Legacy)(uri ${KIPRJMOD}/../lib/ISL3280E.lib)(options "")(descr ""))
+)

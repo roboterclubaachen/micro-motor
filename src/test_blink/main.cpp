@@ -18,7 +18,7 @@
 
 #include <modm/platform.hpp>
 
-#include "../hardware_rev1.hpp"
+#include "../hardware_rev2.hpp"
 
 int
 main()
@@ -26,13 +26,11 @@ main()
 	Board::initializeMcu();
 	Board::Ui::initialize();
 
-	Board::Ui::LedRed::set();
-	Board::Ui::LedBlue::reset();
+	Board::Ui::Led::set();
 
 	while (1)
 	{
-		Board::Ui::LedRed::toggle();
-		Board::Ui::LedBlue::toggle();
+		Board::Ui::Led::toggle();
 		modm::delayMilliseconds(1000);
 	}
 

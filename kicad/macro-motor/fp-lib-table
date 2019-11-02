@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name WCSP-8_1.6x1.6mm_P0.5mm)(type Github)(uri https://github.com/kicad-rleh/WCSP-8_1.6x1.6mm_P0.5mm.pretty)(options "")(descr ""))
+  (lib (name DFN-12-2EP_3.3x5mm_Pitch0.65mm)(type Github)(uri https://github.com/kicad-rleh/DFN-12-2EP_3.3x5mm_Pitch0.65mm.pretty)(options "")(descr ""))
+  (lib (name local-lib)(type KiCad)(uri ${KIPRJMOD}/../lib)(options "")(descr ""))
+)

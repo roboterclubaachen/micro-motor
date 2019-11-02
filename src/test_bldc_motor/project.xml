@@ -27,7 +27,8 @@
     <module>modm:platform:can:1</module>
     <module>modm:platform:adc:1</module>
     <module>modm:platform:timer:**</module>
-    <module>modm:platform:spi:1</module>
+    <module>modm:platform:uart.spi:1</module>
+    <module>modm:platform:spi.bitbang</module>
     <module>modm:platform:i2c:2</module>
 
     <module>modm:driver:drv832x_spi</module>

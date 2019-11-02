@@ -20,7 +20,7 @@
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
 
-#include "../hardware_rev1.hpp"
+#include "../hardware_rev2.hpp"
 
 #include <modm/driver/motor/drv832x_spi.hpp>
 
@@ -32,8 +32,8 @@ modm::log::Logger modm::log::info(loggerDevice);
 modm::log::Logger modm::log::warning(loggerDevice);
 modm::log::Logger modm::log::error(loggerDevice);
 
-//modm::PeriodicTimer aliveTimer{100};
-modm::PeriodicTimer gateDriverStatusTimer{50000};
+modm::PeriodicTimer aliveTimer{1};
+modm::PeriodicTimer gateDriverStatusTimer{5000};
 
 modm::PeriodicTimer adcTimer{10};
 uint32_t adcCounter = 0;
@@ -66,7 +66,7 @@ static constexpr const uint_fast8_t commutationLut[7] = {
 	0b00'00'00, // hall invalid -> 6
 };
 
-uint32_t commutationOffset = 0; // 0..5
+uint32_t commutationOffset = 1; // 0..5
 
 volatile bool reverse = false;
 volatile bool disable = false;
@@ -132,14 +132,14 @@ doCommutation()
 	// Generate update event
 	Board::Motor::MotorTimer::generateEvent(Board::Motor::MotorTimer::Event::CaptureCompareControlUpdate);
 
-	Board::Ui::LedBlue::toggle();
+	//Board::Ui::LedBlue::toggle();
 }
 
-MODM_ISR(EXTI9_5)
+MODM_ISR(EXTI15_10)
 {
-	static_assert(std::is_same<Board::Motor::HallU, GpioB9>::value, "Commutation Interrupt assumes HallU is GpioB9");
-	static_assert(std::is_same<Board::Motor::HallV, GpioB8>::value, "Commutation Interrupt assumes HallV is GpioB8");
-	static_assert(std::is_same<Board::Motor::HallW, GpioB6>::value, "Commutation Interrupt assumes HallW is GpioB6");
+	static_assert(std::is_same<Board::Motor::HallU, GpioC13>::value, "Commutation Interrupt assumes HallU is GpioC13");
+	static_assert(std::is_same<Board::Motor::HallV, GpioC14>::value, "Commutation Interrupt assumes HallV is GpioC14");
+	static_assert(std::is_same<Board::Motor::HallW, GpioC15>::value, "Commutation Interrupt assumes HallW is GpioC15");
 	Board::Motor::HallU::acknowledgeExternalInterruptFlag();
 	Board::Motor::HallV::acknowledgeExternalInterruptFlag();
 	Board::Motor::HallW::acknowledgeExternalInterruptFlag();
@@ -152,34 +152,44 @@ main()
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
 
-	Board::Ui::LedRed::reset();
-	Board::Ui::LedBlue::set();
+	Board::Ui::Led::reset();
 	MODM_LOG_ERROR << "Micro-Motor BLDC Motor Test" << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
+	gateDriver.csaControl().set(modm::drv832xSpi::CsaControl::CsaFet);
+	gateDriver.csaControl().set(modm::drv832xSpi::CsaControl::LowSideReference);
 	gateDriver.csaControl() &= ~modm::drv832xSpi::CsaGain_t::mask();
 	gateDriver.csaControl() |= modm::drv832xSpi::CsaGain_t(modm::drv832xSpi::CsaGain::Gain40);
 	RF_CALL_BLOCKING(gateDriver.commit());
+
+	MODM_LOG_ERROR << "Gate driver initialized" << modm::endl;
 
 	Board::Motor::initializeHall();
 
 	Board::Motor::MotorTimer::start();
 	Board::Motor::MotorTimer::enableOutput();
-	Board::Motor::setCompareValue(Board::Motor::MaxPwm * 1 / 8);
+	Board::Motor::setCompareValue(Board::Motor::MaxPwm * 16 / 32);
 	Board::Motor::MotorTimer::applyAndReset();
 	// initial commutation
 	doCommutation();
 
+	MODM_LOG_ERROR << "Motor timer initialized" << modm::endl;
+
 	Board::MotorCurrent::Adc::startConversion();
+
+	MODM_LOG_ERROR << "Adc timer initialized" << modm::endl;
 
 	while (1)
 	{
-		Board::Ui::LedRed::set(Board::MotorBridge::GateDriverFault::read());
-		modm::delayMilliseconds(1);
+		Board::Ui::Led::set(Board::MotorBridge::GateDriverFault::read());
+		//modm::delayMilliseconds(1);
 
 		/*if(aliveTimer.execute()) {
-			Board::Ui::LedBlue::toggle();
+			//Board::Ui::LedBlue::toggle();
+			static bool toggle = false;
+			Board::Motor::setCompareValue(toggle ? 0 : Board::Motor::MaxPwm * 16 / 32);
+			toggle = !toggle;
 		}*/
 
 		/*if(adcTimer.execute()) {
@@ -205,7 +215,7 @@ main()
 				MODM_LOG_DEBUG << modm::endl;
 				adcCounter = 0;
 			}
-		}*/
+		} */
 
 		if(gateDriverStatusTimer.execute()) {
 			RF_CALL_BLOCKING(gateDriver.readAll());
@@ -218,6 +228,11 @@ main()
 			MODM_LOG_DEBUG << gateDriver.csaControl() << modm::endl;
 			MODM_LOG_ERROR << modm::endl;
 		}
+
+		static bool toggle = false;
+		Board::Motor::setCompareValue(toggle ? 0 : Board::Motor::MaxPwm * 24 / 32);
+		toggle = !toggle;
+		modm::delayMicroseconds(50);
 	}
 	return 0;
 }
