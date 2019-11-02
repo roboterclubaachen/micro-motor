@@ -7,10 +7,14 @@ In addition, a limit switch can be read out and the temperature of the motor can
 
 On the microcontroller, freely configurable PID controllers and, if necessary, "motor-with limit switch" components, which can initialize and move the actuator in a parameterizable manner, should form the external interface.
 
-The software is done with [modm.io](https://modm.io/).  
-[XPCC]() is used to communicate over the CAN bus.
+The software is done with [modm.io](https://modm.io/).
 
-For more information read [this blog post](http://www.roboterclub.rwth-aachen.de/blog/2018/micro-motor-motorcontroller.html).
+For more information read the following blog posts about the project (in German):
+* [µMotor: Idee](http://www.roboterclub.rwth-aachen.de/blog/2018/micro-motor-motorcontroller.html)
+* [µMotor: Inbetriebnahme und Debugging](http://www.roboterclub.rwth-aachen.de/blog/2018/micro-motor-debugging-inbetriebnahme.html)
+* [µMotor 2 - Teil 1: Konzept](http://www.roboterclub.rwth-aachen.de/blog/2019/micro-motor-2-teil-1.html)
+* [µMotor 2 - Teil 2: Strommessung](http://www.roboterclub.rwth-aachen.de/blog/2019/micro-motor-2-teil-2.html)
+* [µMotor 2 - Teil 3: Microcontroller & Stromversorgung](http://www.roboterclub.rwth-aachen.de/blog/2019/micro-motor-2-teil-3.html)
 
 
 ## Technical data
@@ -31,28 +35,24 @@ For more information read [this blog post](http://www.roboterclub.rwth-aachen.de
 
 ## Status
 
-The first prototype (PCB rev1) is assembled and basically works.
-A lot of test for different hardware functionalities (Microcontroller booting, PWM generation, CAN, ...) are available in `src/test_*`.
+PCBs *micro-motor-v1 (rev1)* and *macro-motor* are not supported anymore.
 
-Improvements for PCB rev2 are documented in [Issue #1](https://github.com/roboterclubaachen/micro-motor/issues/1).
+The second version *micro-motor-v2* is basically functional, software improvements are in progress.
 
 
 ## Folder structure
 
-#### `kicad/µmotor-*`
-* KiCad files of the µMotor PCB incl. Gerber fabrication data.
-
-#### `kicad/drv832x_testboard/`
-* KiCad files for a DRV8323 test board. WIP!
+#### `kicad/pcb_name/`
+* KiCad files of the PCBs
 
 #### `STM32CubeMX/`
-* Pinout configuration of the STM32L433CU microcontroller done with [STs CubeMX software](https://www.st.com/en/development-tools/stm32cubemx.html).
+* Pinout configuration of the STM32 microcontrollers done with [STs CubeMX software](https://www.st.com/en/development-tools/stm32cubemx.html)
 
 #### `src/test_*/`
-* Test software. Useful during PCB assembly.
+* Test software. Useful during PCB assembly
 
-#### `src/micro-motor`
-* Software. TODO.
+#### `src/app/`
+* Main Software
 
 ## License
 
