@@ -1,6 +1,6 @@
 /* hardware_rev2.hpp
  *
- * Copyright (C) 2018 Raphael Lehmann <raphael@rleh.de>
+ * Copyright (C) 2019 Raphael Lehmann <raphael@rleh.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,98 +16,128 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HARDWARE_REV2_HPP
-#define HARDWARE_REV2_HPP
+#ifndef HARDWARE_V2_HPP
+#define HARDWARE_V2_HPP
 
 #include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
-#include <modm/platform/clock/clock.hpp>
 
 using namespace modm::platform;
 
 namespace Board
 {
+	using namespace modm::literals;
 
-/// STM32L4 running at 80MHz generated with the PLL from 4MHz MSI clock
+/// STM32G474RE running at 170MHz generated from the internal 16MHz crystal
+// Dummy clock for devices
+struct SystemClock {
+	static constexpr uint32_t Frequency = 170_MHz;
+	static constexpr uint32_t Ahb1      = Frequency;
+	static constexpr uint32_t Ahb2      = Frequency;
+	static constexpr uint32_t Apb1      = Frequency;
+	static constexpr uint32_t Apb2      = Frequency;
 
-struct systemClock {
-	static constexpr uint32_t Frequency = 80 * MHz1;
-	static constexpr uint32_t Ahb = Frequency;
-	static constexpr uint32_t Apb1 = Frequency;
-	static constexpr uint32_t Apb2 = Frequency;
+	static constexpr uint32_t Cordic    = Ahb1;
+	static constexpr uint32_t Crc       = Ahb1;
+	static constexpr uint32_t Dma       = Ahb1;
+	static constexpr uint32_t Dma1      = Dma;
+	static constexpr uint32_t Dma2      = Dma;
+	static constexpr uint32_t DmaMux    = Dma;
+	static constexpr uint32_t Fmac      = Ahb1;
 
-	static constexpr uint32_t Usart1 = Apb2;
-	static constexpr uint32_t Usart2 = Apb1;
-	static constexpr uint32_t Usart3 = Apb1;
-	static constexpr uint32_t Usart4 = Apb1;
-	static constexpr uint32_t Usart5 = Apb1;
+	static constexpr uint32_t Adc       = Ahb2;
+	static constexpr uint32_t Adc1      = Adc;
+	static constexpr uint32_t Adc2      = Adc;
+	static constexpr uint32_t Adc3      = Adc;
+	static constexpr uint32_t Adc4      = Adc;
+	static constexpr uint32_t Adc5      = Adc;
+	static constexpr uint32_t Dac       = Ahb2;
+	static constexpr uint32_t Dac1      = Dac;
+	static constexpr uint32_t Dac2      = Dac;
+	static constexpr uint32_t Dac3      = Dac;
+	static constexpr uint32_t Dac4      = Dac;
+	static constexpr uint32_t Rng       = Ahb2;
 
-	static constexpr uint32_t Adc = Frequency;
+	static constexpr uint32_t Can       = Apb1;
+	static constexpr uint32_t Fdcan1    = Can;
+	static constexpr uint32_t Fdcan2    = Can;
+	static constexpr uint32_t Fdcan3    = Can;
+	static constexpr uint32_t I2c       = Apb1;
+	static constexpr uint32_t I2c1      = I2c;
+	static constexpr uint32_t I2c2      = I2c;
+	static constexpr uint32_t I2c3      = I2c;
+	static constexpr uint32_t I2c4      = I2c;
+	static constexpr uint32_t Lptim     = Apb1;
+	static constexpr uint32_t Lpuart    = Apb1;
+	static constexpr uint32_t Rtc       = Apb1;
+	static constexpr uint32_t Spi2      = Apb1;
+	static constexpr uint32_t Spi3      = Apb1;
+	static constexpr uint32_t Uart4     = Apb1;
+	static constexpr uint32_t Uart5     = Apb1;
+	static constexpr uint32_t Usart2    = Apb1;
+	static constexpr uint32_t Usart3    = Apb1;
+	static constexpr uint32_t Usb       = Apb1;
+	static constexpr uint32_t Apb1Timer = Apb1 * 1;
+	static constexpr uint32_t Timer2    = Apb1Timer;
+	static constexpr uint32_t Timer3    = Apb1Timer;
+	static constexpr uint32_t Timer4    = Apb1Timer;
+	static constexpr uint32_t Timer5    = Apb1Timer;
+	static constexpr uint32_t Timer6    = Apb1Timer;
+	static constexpr uint32_t Timer7    = Apb1Timer;
 
-	static constexpr uint32_t Dac = Frequency;
-
-	static constexpr uint32_t Spi1 = Frequency;
-	static constexpr uint32_t Spi2 = Frequency;
-	static constexpr uint32_t Spi3 = Frequency;
-
-	static constexpr uint32_t Can1 = Frequency;
-
-	static constexpr uint32_t I2c1 = Frequency;
-	//static constexpr uint32_t I2c2 = Frequency;
-	static constexpr uint32_t I2c2 = MHz48; // TODO real 80MHz, but driver only supports 48MHz
-	static constexpr uint32_t I2c3 = Frequency;
-
-	static constexpr uint32_t Timer1  = Frequency;
-	static constexpr uint32_t Timer2  = Frequency;
-	static constexpr uint32_t Timer6  = Frequency;
-	static constexpr uint32_t Timer7  = Frequency;
-	static constexpr uint32_t Timer15 = Frequency;
-	static constexpr uint32_t Timer16 = Frequency;
+	static constexpr uint32_t Sai1      = Apb2;
+	static constexpr uint32_t Spi1      = Apb2;
+	static constexpr uint32_t Usart1    = Apb2;
+	static constexpr uint32_t Apb2Timer = Apb2 * 1;
+	static constexpr uint32_t Timer1    = Apb2Timer;
+	static constexpr uint32_t Timer8    = Apb2Timer;
+	static constexpr uint32_t Timer15   = Apb2Timer;
+	static constexpr uint32_t Timer16   = Apb2Timer;
+	static constexpr uint32_t Timer17   = Apb2Timer;
+	static constexpr uint32_t Timer20   = Apb2Timer;
 
 	static bool inline
 	enable()
 	{
-		ClockControl::enableInternalClock();
-
-		ClockControl::enablePll(
-			ClockControl::PllSource::Hsi,
-			1,	// 16Hz / M=1 -> 16MHz
-			10,	// 16MHz * N=10 -> 160MHz <= 344MHz = PLL VCO output max, >= 64 MHz = PLL VCO out min
-			2,	// 160MHz / P=2 -> 80MHz = F_cpu
-			2	// 80MHz / Q=2 -> 40MHz = F_usb
+		Rcc::enableInternalClock();	// 16MHz
+		Rcc::enablePll(
+			Rcc::PllSource::InternalClock,
+			4,	//  16MHz / N= 4 -> 4MHz
+			85,	//   4MHz * M=85 -> 340MHz
+			2	// 336MHz / P= 2 -> 170MHz = F_cpu
 		);
-		ClockControl::setFlashLatency(Frequency);
-
+		// set flash latency for 170MHz
+		Rcc::setFlashLatency<Frequency>();
 		// switch system clock to PLL output
-		ClockControl::enableSystemClock(ClockControl::SystemClockSource::Pll);
-		ClockControl::setAhbPrescaler(ClockControl::AhbPrescaler::Div1);
-		// APB1 has max. 80MHz
-		ClockControl::setApb1Prescaler(ClockControl::Apb1Prescaler::Div1);
-		ClockControl::setApb2Prescaler(ClockControl::Apb2Prescaler::Div1);
+		Rcc::enableSystemClock(Rcc::SystemClockSource::Pll);
+		Rcc::setAhbPrescaler(Rcc::AhbPrescaler::Div1);
+		// APB1 has max. 170MHz
+		Rcc::setApb1Prescaler(Rcc::Apb1Prescaler::Div1);
+		Rcc::setApb2Prescaler(Rcc::Apb2Prescaler::Div1);
 		// update frequencies for busy-wait delay functions
-		modm::clock::fcpu     = Frequency;
-		modm::clock::fcpu_kHz = Frequency / 1000;
-		modm::clock::fcpu_MHz = Frequency / 1000000;
-		modm::clock::ns_per_loop = ::round(3000.f / (Frequency / 1000000));
+		Rcc::updateCoreFrequency<Frequency>();
 
 		return true;
 	}
 };
 
 namespace Ui {
-	using Led			= GpioB12;
+	using LedRed		= GpioA4; // DAC1
+	using LedGreen		= GpioA5; // DAC2
 
-	using DebugUartTx	= GpioA2;
-	using DebugUart		= Usart2;
-	static constexpr uint32_t DebugUartBaudrate = DebugUart::Baudrate::B115200 * 4; // 460800 baud
+	using DebugUartTx	= GpioB6;
+	using DebugUartRx	= GpioB7;
+	using DebugUart		= Usart1;
+	static constexpr uint32_t DebugUartBaudrate = 460800_Bd;
 
 	inline void
 	initialize()
 	{
-		Led::setInput(Gpio::InputType::Floating);
+		LedRed::setOutput(false);
+		LedGreen::setOutput(false);
 
-		DebugUart::connect<DebugUartTx::Tx>();
-		DebugUart::initialize<systemClock, DebugUartBaudrate>(12);
+		DebugUart::connect<DebugUartTx::Tx, DebugUartRx::Rx>();
+		DebugUart::initialize<SystemClock, DebugUartBaudrate>(12);
 	}
 }
 
@@ -126,8 +156,10 @@ namespace Motor {
 	using HallW			= GpioC15;
 	using HallPort		= SoftwareGpioPort<HallU, HallV, HallW>;
 
-	constexpr uint8_t HallInterruptPriority	= 4;
-	constexpr uint16_t MaxPwm{511u}; // 9 bit PWM
+//	constexpr uint8_t HallInterruptPriority	= 4; // Please don't use pin change interrupts on hall pins! Danger!
+
+/*
+	 constexpr uint16_t MaxPwm{511u}; // 9 bit PWM
 
 	enum class
 	PhaseOutputConfig : uint32_t
@@ -262,38 +294,29 @@ namespace Motor {
 		//initializeHall();
 		initializeMotor();
 	}
+*/
 }
 
 namespace MotorBridge {
-	using GateDriverEnable	= GpioA11;
-	using GateDriverFault	= GpioInverted<GpioB4>;
+	using GateDriverEnable	= GpioF0;
 
 	struct GateDriver
 	{
-		static constexpr auto SpiBaudrate = 312500;
+		static constexpr auto SpiBaudrate = 100'000;
 
-		using Cs	= GpioA12;
-		using Sck	= GpioB5;
-		using Mosi	= GpioB6;
-		using Miso	= GpioB7;
+		using Cs	= GpioF1;
+		using Sck	= GpioB12;
+		using Miso	= GpioB11;
+		using Mosi	= GpioB10;
 
-		//using Spi	= UartSpiMaster1;
-		using Spi	= BitBangSpiMaster<Sck, Mosi, Miso>;
+		using Spi	= UartSpiMaster3;
 
 		static inline void
 		initialize()
 		{
 			Cs::setOutput(true);
-
-			Sck::setOutput(true);
-			Mosi::setOutput(true);
-			Miso::setInput(Gpio::InputType::Floating);
-			Spi::connect<Sck::BitBang, Mosi::BitBang, Miso::BitBang>();
-
-			/*
-			Spi::initialize<systemClock, SpiBaudrate>();
 			Spi::connect<Sck::Ck, Mosi::Tx, Miso::Rx>();
-			*/
+			Spi::initialize<SystemClock, SpiBaudrate>();
 		}
 	};
 
@@ -302,18 +325,15 @@ namespace MotorBridge {
 	{
 		GateDriverEnable::setOutput(Gpio::OutputType::PushPull);
 		GateDriverEnable::set(false);
-
-		GateDriverFault::setInput(Gpio::InputType::PullUp);
-
 		GateDriver::initialize();
 
 	}
 }
 
 namespace BackEmf {
-	using BemfU		= GpioA7;
-	using BemfV		= GpioB1;
-	using BemfW		= GpioB0;
+	using BemfU		= GpioB0;
+	using BemfV		= GpioA7;
+	using BemfW		= GpioA5;
 
 	// ... (TODO)
 	inline void
@@ -327,48 +347,52 @@ namespace BackEmf {
 }
 
 namespace MotorCurrent {
-	using SenseU	= GpioA4;
-	using SenseV	= GpioA5;
-	using SenseSum	= GpioA3;
+	using SenseU	= GpioA0;
+	using SenseV	= GpioA1;
+	using SenseW	= GpioA3;
 	using Adc = Adc1;
 
-	using CurrentAll	= SenseSum; // Shorted to GpioA4 on PCB
-	//using Comp = Comp2;
+	using CompU = Comp3;
+	using CompV = Comp1;
+	using CompW = Comp2;
 
 	inline void
 	initialize()
 	{
 		SenseU::setAnalogInput();
 		SenseV::setAnalogInput();
-		SenseSum::setAnalogInput();
+		SenseW::setAnalogInput();
 
-		// initialize STM32 internal OPAMP and DAC
-		RCC->APB1ENR1 |= RCC_APB1ENR1_OPAMPEN | RCC_APB1ENR1_DAC1EN;
+		// TODO: Connect DAC3_OUT1 to COMP1_INM
+		// TODO: Connect DAC3_OUT2 to COMP2_INM
+		// TODO: Connect DAC3_OUT1 to COMP3_INM
 
-		OPAMP1->CSR = OPAMP1_CSR_OPARANGE;
-		OPAMP1->CSR = OPAMP_CSR_OPAMPxEN | OPAMP_CSR_VPSEL;
+		// TODO initialize comparator
+		// TODO: Connect COMP{1,2,3}_OUT to TIM1_BKIN
 
-		DAC1->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
-		DAC1->CR = DAC_CR_EN1 | DAC_CR_EN2;
-		DAC1->DHR12R1 = 0xFFF / 2;
-		DAC1->DHR12R2 = 0xFFF / 2;
+		// initialize STM32 internal DAC3
+		Rcc::enable<Peripheral::Dac3>();
+		//RCC->AHB2ENR1 |= RCC_AHB2ENR_DAC3EN;
 
+		DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
+		DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
+		DAC3->DHR12R1 = 0xFFF / 2;
+		DAC3->DHR12R2 = 0xFFF / 2;
 
 		Adc::initialize(Adc::ClockMode::SynchronousPrescaler1,
 						Adc::ClockSource::SystemClock,
 						Adc::Prescaler::Disabled,
 						Adc::CalibrationMode::SingleEndedInputsMode, true);
-		Adc::connect<SenseSum::In8, SenseU::In9, SenseV::In10>();
-		Adc::setChannel(Adc::Channel::Channel8, Adc::SampleTime::Cycles182);
-
-		// TODO initialize comparator
+		Adc::connect<SenseU::In1, SenseV::In2, SenseW::In4>();
+		// TODO: Sample ADC
 	}
 }
 
 namespace Encoder {
-	using PinA = GpioB3;
-	using PinB = GpioA15;
-	using Timer = Timer2;
+	using PinA			= GpioB5;
+	using PinB			= GpioB4;
+	using PinIndex		= GpioB3;
+	using Timer			= Timer3;
 
 	inline Timer::Value getEncoderRaw()
 	{
@@ -389,54 +413,61 @@ namespace Encoder {
 	}
 }
 
-namespace TemperatureSensor {
-	using TemperatureScl	= GpioB10;
-	using TemperatureSda	= GpioB11;
-	using TemperatureI2c	= I2cMaster2;
-	static constexpr uint32_t TemperatureBaudrate = TemperatureI2c::Baudrate::Standard;
+namespace Sensor {
+	using Switch		= GpioA15;
+
+	//using Adc 			= Adc??
+	using Ntc			= GpioB1; // ADC1_IN12 or ADC3_IN1
+	using Vsupply		= GpioB2; // ADC2_IN12
 
 	inline void
 	initialize()
 	{
-		TemperatureI2c::connect<TemperatureScl::Scl, TemperatureSda::Sda>();
-		TemperatureI2c::initialize<systemClock, TemperatureBaudrate, modm::Tolerance::FivePercent>();
+		// external pull-up
+		Switch::setInput(Gpio::InputType::Floating);
+		Ntc::setAnalogInput();
+		Vsupply::setAnalogInput();
+		
+		// TODO: Adc...
 	}
 }
 
+/*
 namespace CanBus {
-	using CanRx	= GpioB8;
-	using CanTx	= GpioB9;
-	using Can = Can1;
+	using CanRx			= GpioB8;
+	using CanTx			= GpioB9;
+	using Can			= Fdcan1;
 
-	static constexpr uint32_t CanBaudrate = Can::Bitrate::kBps125;
+	static constexpr uint32_t CanBaudrate = 1_Mbps;
 
 	inline void
 	initialize()
 	{
 		Can::connect<CanRx::Rx, CanTx::Tx>(Gpio::InputType::PullUp);
-		Can::initialize<systemClock, CanBaudrate>(9);
+		Can::initialize<SystemClock, CanBaudrate>(9);
 	}
 }
+*/
 
 inline void
 initializeMcu()
 {
-	systemClock::enable();
-	modm::cortex::SysTickTimer::initialize<systemClock>();
+	SystemClock::enable();
+	modm::cortex::SysTickTimer::initialize<SystemClock>();
 }
 
 inline void
 initializeAllPeripherals()
 {
 	Ui::initialize();
-	Motor::initialize();
+	//Motor::initialize();
 	MotorBridge::initialize();
 	MotorCurrent::initialize();
 	Encoder::initialize();
-	TemperatureSensor::initialize();
-	CanBus::initialize();
+	Sensor::initialize();
+	//CanBus::initialize();
 }
 
 }
 
-#endif // HARDWARE_REV2_HPP
+#endif // HARDWARE_V2_HPP

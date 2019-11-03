@@ -1,6 +1,6 @@
 /* main.hpp
  *
- * Copyright (C) 2018 Raphael Lehmann <raphael@rleh.de>
+ * Copyright (C) 2018-2019 Raphael Lehmann <raphael@rleh.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 #include <modm/platform.hpp>
 
-#include "../hardware_rev2.hpp"
+#include "../hardware_v2.hpp"
 
 int
 main()
@@ -26,11 +26,13 @@ main()
 	Board::initializeMcu();
 	Board::Ui::initialize();
 
-	Board::Ui::Led::set();
+	Board::Ui::LedRed::set();
+	Board::Ui::LedGreen::reset();
 
 	while (1)
 	{
-		Board::Ui::Led::toggle();
+		Board::Ui::LedRed::toggle();
+		Board::Ui::LedGreen::toggle();
 		modm::delayMilliseconds(1000);
 	}
 

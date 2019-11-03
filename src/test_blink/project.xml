@@ -10,7 +10,7 @@
   <options>
     <option name=":build:build.path">build</option>
     <option name=":build:openocd.cfg">../openocd.cfg</option>
-	<option name=":target">stm32l433ccu</option>
+	<option name=":target">stm32g474cet6</option>
   </options>
 
   <modules>
@@ -19,12 +19,17 @@
     <module>modm:platform:core</module>
     <module>modm:platform:gpio</module>
 
-    <module>modm:platform:uart:2</module>
-    <module>modm:platform:can:1</module>
+    <module>modm:platform:uart:1</module>
     <module>modm:platform:adc:1</module>
-    <module>modm:platform:timer:**</module>
-    <module>modm:platform:uart.spi:*</module>
-    <module>modm:platform:i2c:2</module>
+    <module>modm:platform:timer:1</module>
+    <module>modm:platform:timer:3</module>
+    <module>modm:platform:uart.spi:3</module>
+    <module>modm:platform:comp:1</module>
+    <module>modm:platform:comp:2</module>
+    <module>modm:platform:comp:3</module>
+<!--
+    <module>modm:platform:can:1</module>
+	-->
 
     <module>modm:build:scons</module>
   </modules>
