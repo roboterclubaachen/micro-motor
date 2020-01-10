@@ -21,6 +21,7 @@
 
 #include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
+#include <modm/platform/uart/uart_1.hpp>
 
 using namespace modm::platform;
 
@@ -102,9 +103,9 @@ struct SystemClock {
 		Rcc::enableInternalClock();	// 16MHz
 		Rcc::enablePll(
 			Rcc::PllSource::InternalClock,
-			4,	//  16MHz / N= 4 -> 4MHz
-			85,	//   4MHz * M=85 -> 340MHz
-			2	// 336MHz / P= 2 -> 170MHz = F_cpu
+			4,	//  16MHz / M= 4 -> 4MHz
+			85,	//   4MHz * N=85 -> 340MHz
+			2	// 340MHz / R= 2 -> 170MHz = F_cpu
 		);
 		// set flash latency for 170MHz
 		Rcc::setFlashLatency<Frequency>();
@@ -158,8 +159,15 @@ namespace Motor {
 
 //	constexpr uint8_t HallInterruptPriority	= 4; // Please don't use pin change interrupts on hall pins! Danger!
 
-/*
-	 constexpr uint16_t MaxPwm{511u}; // 9 bit PWM
+	inline void
+	setCompareValue(uint16_t compareValue)
+	{
+		MotorTimer::setCompareValue(1, compareValue);
+		MotorTimer::setCompareValue(2, compareValue);
+		MotorTimer::setCompareValue(3, compareValue);
+	}
+
+	constexpr uint16_t MaxPwm{511u}; // 9 bit PWM
 
 	enum class
 	PhaseOutputConfig : uint32_t
@@ -225,14 +233,6 @@ namespace Motor {
 		}
 	}
 
-	inline void
-	setCompareValue(uint16_t compareValue)
-	{
-		MotorTimer::setCompareValue(1, compareValue);
-		MotorTimer::setCompareValue(2, compareValue);
-		MotorTimer::setCompareValue(3, compareValue);
-	}
-
 	void
 	initializeMotor()
 	{
@@ -264,6 +264,7 @@ namespace Motor {
 		                    PhaseWP::Ch3>();
 	}
 
+/*
 	inline void
 	initializeHall()
 	{

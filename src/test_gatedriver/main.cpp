@@ -20,7 +20,7 @@
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
 
-#include "../hardware_rev1.hpp"
+#include "../hardware_v2.hpp"
 
 #include <modm/driver/motor/drv832x_spi.hpp>
 
@@ -43,24 +43,26 @@ main()
 	Board::initializeAllPeripherals();
 
 	Board::Ui::LedRed::reset();
-	Board::Ui::LedBlue::set();
+	Board::Ui::LedGreen::set();
 	MODM_LOG_ERROR << "Micro-Motor Gatedriver Test" << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
 
-	Board::Motor::setCompareValue(Board::Motor::MaxPwm / 2);
-	Board::Motor::MotorTimer::applyAndReset();
+	Board::Motor::initializeMotor();
 	Board::Motor::MotorTimer::start();
-	Board::Motor::MotorTimer::enableOutput();
+
+	Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::NormalPwm);
+	Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::Low);
+	Board::Motor::configurePhase(Board::Motor::Phase::PhaseW, Board::Motor::PhaseOutputConfig::Low);
+
+	Board::Motor::setCompareValue(Board::Motor::MaxPwm / 2);
 
 	while (1)
 	{
-		Board::Ui::LedRed::set(Board::MotorBridge::GateDriverFault::read());
+		Board::Ui::LedRed::set(/* GateDriverFault */ false);
 		modm::delayMilliseconds(1);
 		if(aliveTimer.execute()) {
-			Board::Ui::LedBlue::set();
-			modm::delayMilliseconds(1);
-			Board::Ui::LedBlue::reset();
+			Board::Ui::LedGreen::toggle();
 		}
 		if(gateDriverStatusTimer.execute()) {
 
