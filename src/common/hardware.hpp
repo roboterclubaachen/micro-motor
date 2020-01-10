@@ -1,6 +1,4 @@
-/* hardware_rev2.hpp
- *
- * Copyright (C) 2019 Raphael Lehmann <raphael@rleh.de>
+/* Copyright (C) 2019 Raphael Lehmann <raphael@rleh.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -471,4 +469,4 @@ initializeAllPeripherals()
 
 }
 
-#endif // HARDWARE_V2_HPP
+#endif

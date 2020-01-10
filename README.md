@@ -46,6 +46,7 @@ The second version *micro-motor-v2* is basically functional, software improvemen
 PCB _micro-motor-v2.1_ is similar to _v2_, but with added RC filters at encoder connector,
 added 1 µF capacitor to the STM32 _VREFBUF_ output and changed DC/DC converter modules (caused by component shortage).
 
+Any software (Git HEAD) is only for the latest hardware version.
 
 ## Folder structure
 

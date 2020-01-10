@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) 2019, Raphael Lehmann
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+def init(module):
+    module.name = ":common"
+
+def prepare(module, options):
+    module.depends(
+        "modm:debug",
+        "modm:architecture:clock",
+        "modm:platform:clock",
+        "modm:platform:core",
+        "modm:platform:gpio",
+        "modm:processing:protothread",
+        "modm:processing:resumable",
+        "modm:processing:timer",
+        "modm:platform:uart:1",
+        "modm:platform:adc:1",
+        "modm:platform:timer:1",
+        "modm:platform:timer:3",
+        "modm:platform:uart.spi:3",
+        "modm:platform:comp:1",
+        "modm:platform:comp:2",
+        "modm:platform:comp:3",
+#        "modm:platform:can:1",
+        "modm:driver:drv832x_spi",
+        "modm:build:scons",
+        "librobots2:motor",
+        "librobots2:motor-can:slave",
+    )
+    return True
+
+def build(env):
+    env.outbasepath = "micro-motor/src/micro-motor"
+    env.copy("hardware.hpp")
+    #env.copy("imotor.hpp")
+    #env.copy("imotor.cpp")
+    #env.copy("logger.cpp")
+    #env.copy("configuration.hpp")
+    #env.copy("motor_bridge.hpp")
+    #env.copy("motor_bridge_impl.hpp")
+    env.collect("modm:build:openocd.source", localpath("openocd.cfg"))
