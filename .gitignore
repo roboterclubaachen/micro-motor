@@ -4,6 +4,14 @@ src/*/modm
 src/*/SConstruct
 project.xml.log
 
+modm/
+micro-motor/
+librobots2/
+build/
+
+# lbuild
+__pycache__/
+
 # KiCAD
 *.bak
 *.kicad_pcb-bak
