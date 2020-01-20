@@ -1,8 +1,6 @@
 image: modm/modm-build:latest
 
 variables:
-  LANG: "en_US.UTF-8"
-  SCONS_LIB_DIR: "/usr/local/lib/python3.6/dist-packages/scons-3.0.1"
   SCONSFLAGS: "-j3"
   GIT_SUBMODULE_STRATEGY: recursive
 
@@ -27,28 +25,32 @@ gen-kicad-pcb-pdfs:
 # The latest artifacts of a branch or tag will be kept (with the default settings)!
 # So no need to remove or increase the expiring time.
 
-compile-src:
+compile-app:
   script:
     - locale -a
     - scons --version
+    - python --version
+    - python3 --version
     - which arm-none-eabi-g++
     - arm-none-eabi-g++ --version
+    - lbuild --version
     - lbuild -h | head -n1
-    - cd src/test_blink
+    #
+    - pushd app
     - lbuild build
     - scons
-    - cd ../../src/test_can
-    - lbuild build
-    - scons
-    - cd ../../src/test_gatedriver
-    - lbuild build
-    - scons
-    - cd ../../src/test_pwm
-    - lbuild build
-    - scons
-    - cd ../../src/test_dc_motor
-    - lbuild build
-    - scons
-    - cd ../../src/test_bldc_motor
-    - lbuild build
-    - scons
+    - popd
+
+compile-tests:
+  script:
+    - locale -a
+    - scons --version
+    - python --version
+    - python3 --version
+    - which arm-none-eabi-g++
+    - arm-none-eabi-g++ --version
+    - lbuild --version
+    - lbuild -h | head -n1
+    #
+    - cd tests
+    - bash build-tests.sh
