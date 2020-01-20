@@ -18,7 +18,7 @@
 
 #include <modm/platform.hpp>
 
-#include "../hardware_v2.hpp"
+#include <micro-motor/hardware.hpp>
 
 int
 main()
