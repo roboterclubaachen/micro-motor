@@ -332,7 +332,7 @@ namespace MotorBridge {
 namespace BackEmf {
 	using BemfU		= GpioB0;
 	using BemfV		= GpioA7;
-	using BemfW		= GpioA5;
+	using BemfW		= GpioA6;
 
 	// ... (TODO)
 	inline void
@@ -355,6 +355,12 @@ namespace MotorCurrent {
 	using CompV = Comp1;
 	using CompW = Comp2;
 
+	inline void setCurrentLimit(uint16_t limit) {
+		// Limit to 12 bit
+		DAC3->DHR12R1 = limit >> 4;
+		DAC3->DHR12R2 = limit >> 4;
+	}
+
 	inline void
 	initialize()
 	{
@@ -362,26 +368,29 @@ namespace MotorCurrent {
 		SenseV::setAnalogInput();
 		SenseW::setAnalogInput();
 
-		// TODO: Connect DAC3_OUT1 to COMP1_INM
-		// TODO: Connect DAC3_OUT2 to COMP2_INM
-		// TODO: Connect DAC3_OUT1 to COMP3_INM
+		// Initialize comparator
+		CompU::initialize(CompU::InvertingInput::Dac3Ch1, CompU::NonInvertingInput::GpioA0);
+		CompV::initialize(CompV::InvertingInput::Dac3Ch1, CompV::NonInvertingInput::GpioA1);
+		CompW::initialize(CompW::InvertingInput::Dac3Ch2, CompW::NonInvertingInput::GpioA3);
+		// Connect comparators INPs to Gpios
+		// Connect DAC3_OUT1 to COMP1_INM,
+		// DAC3_OUT2 to COMP2_INM,
+		// and DAC3_OUT1 to COMP3_INM
 
-		// TODO initialize comparator
-		// TODO: Connect COMP{1,2,3}_OUT to TIM1_BKIN
+		// Connect COMP{1,2,3}_OUT to TIM1_BKIN
+		TIM1->AF1 |= (TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
 
-		// initialize STM32 internal DAC3
+		// Initialize STM32 internal DAC3
 		Rcc::enable<Peripheral::Dac3>();
 		//RCC->AHB2ENR1 |= RCC_AHB2ENR_DAC3EN;
-
 		DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
 		DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
-		DAC3->DHR12R1 = 0xFFF / 2;
-		DAC3->DHR12R2 = 0xFFF / 2;
+		setCurrentLimit(0xFFFF / 2); // 50%
 
 		Adc::initialize(Adc::ClockMode::SynchronousPrescaler1,
 						Adc::ClockSource::SystemClock,
-						Adc::Prescaler::Disabled,
-						Adc::CalibrationMode::SingleEndedInputsMode, true);
+						Adc::Prescaler::Div1,
+						Adc::CalibrationMode::DoNotCalibrate, false);
 		Adc::connect<SenseU::In1, SenseV::In2, SenseW::In4>();
 		// TODO: Sample ADC
 	}
