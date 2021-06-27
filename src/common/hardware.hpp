@@ -461,7 +461,7 @@ inline void
 initializeMcu()
 {
 	SystemClock::enable();
-	modm::cortex::SysTickTimer::initialize<SystemClock>();
+	modm::platform::SysTickTimer::initialize<SystemClock>();
 }
 
 inline void
