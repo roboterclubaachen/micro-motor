@@ -167,7 +167,7 @@ namespace Motor {
 		MotorTimer::setCompareValue(3, compareValue);
 	}
 
-	constexpr uint16_t MaxPwm{511u}; // 9 bit PWM
+	constexpr uint16_t MaxPwm{2047}; // 11 bit PWM
 
 	enum class
 	PhaseOutputConfig : uint32_t
@@ -239,11 +239,11 @@ namespace Motor {
 		MotorTimer::enable();
 		MotorTimer::setMode(MotorTimer::Mode::UpCounter);
 
-		// MotorTimer clock: APB2 timer clock (80MHz)
+		// MotorTimer clock: APB2 timer clock (170MHz)
 		MotorTimer::setPrescaler(1);
-		// Prescaler: 1 -> Timer counter frequency: 80MHz
+		// Prescaler: 1 -> Timer counter frequency: 170MHz
 		MotorTimer::setOverflow(MaxPwm);
-		// Pwm frequency: 80MHz / 1024 = 78kHz
+		// Pwm frequency: 170MHz / 2048 = 83kHz
 
 		configurePhase(Phase::PhaseU, PhaseOutputConfig::HiZ);
 		configurePhase(Phase::PhaseV, PhaseOutputConfig::HiZ);
@@ -437,7 +437,7 @@ namespace Sensor {
 		Switch::setInput(Gpio::InputType::Floating);
 		Ntc::setAnalogInput();
 		Vsupply::setAnalogInput();
-		
+
 		// TODO: Adc...
 	}
 }
