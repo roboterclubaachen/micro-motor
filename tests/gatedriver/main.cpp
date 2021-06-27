@@ -60,7 +60,7 @@ main()
 	while (1)
 	{
 		Board::Ui::LedRed::set(/* GateDriverFault */ false);
-		modm::delayMilliseconds(1);
+		modm::delay_ms(1);
 		if(aliveTimer.execute()) {
 			Board::Ui::LedGreen::toggle();
 		}

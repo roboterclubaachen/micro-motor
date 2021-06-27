@@ -33,7 +33,7 @@ main()
 	{
 		Board::Ui::LedRed::toggle();
 		Board::Ui::LedGreen::toggle();
-		modm::delayMilliseconds(1000);
+		modm::delay_ms(1000);
 	}
 
 	return 0;

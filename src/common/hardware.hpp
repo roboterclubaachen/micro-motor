@@ -99,12 +99,12 @@ struct SystemClock {
 	enable()
 	{
 		Rcc::enableInternalClock();	// 16MHz
-		Rcc::enablePll(
-			Rcc::PllSource::InternalClock,
-			4,	//  16MHz / M= 4 -> 4MHz
-			85,	//   4MHz * N=85 -> 340MHz
-			2	// 340MHz / R= 2 -> 170MHz = F_cpu
-		);
+		Rcc::PllFactors pllFactors{
+			.pllM = 4,	//  16MHz / M= 4 ->   4MHz
+			.pllN = 85,	//   4MHz * N=85 -> 340MHz
+			.pllR = 2,	// 336MHz / R= 2 -> 170MHz = F_cpu
+		};
+		Rcc::enablePll(Rcc::PllSource::InternalClock, pllFactors);
 		// set flash latency for 170MHz
 		Rcc::setFlashLatency<Frequency>();
 		// switch system clock to PLL output
@@ -136,7 +136,7 @@ namespace Ui {
 		LedGreen::setOutput(false);
 
 		DebugUart::connect<DebugUartTx::Tx, DebugUartRx::Rx>();
-		DebugUart::initialize<SystemClock, DebugUartBaudrate>(12);
+		DebugUart::initialize<SystemClock, DebugUartBaudrate>();
 	}
 }
 

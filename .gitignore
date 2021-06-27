@@ -8,6 +8,7 @@ modm/
 micro-motor/
 librobots2/
 build/
+SConstruct
 
 # lbuild
 __pycache__/
