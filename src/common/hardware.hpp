@@ -440,7 +440,6 @@ namespace Sensor {
 	}
 }
 
-/*
 namespace CanBus {
 	using CanRx			= GpioB8;
 	using CanTx			= GpioB9;
@@ -455,7 +454,6 @@ namespace CanBus {
 		Can::initialize<SystemClock, CanBaudrate>(9);
 	}
 }
-*/
 
 inline void
 initializeMcu()
@@ -473,7 +471,7 @@ initializeAllPeripherals()
 	MotorCurrent::initialize();
 	Encoder::initialize();
 	Sensor::initialize();
-	//CanBus::initialize();
+	CanBus::initialize();
 }
 
 }

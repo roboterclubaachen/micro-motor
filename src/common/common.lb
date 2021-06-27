@@ -36,7 +36,7 @@ def prepare(module, options):
         "modm:platform:comp:1",
         "modm:platform:comp:2",
         "modm:platform:comp:3",
-#        "modm:platform:can:1",
+        "modm:platform:can:1",
         "modm:driver:drv832x_spi",
         "modm:build:scons",
         "librobots2:motor",
