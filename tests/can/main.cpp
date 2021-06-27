@@ -20,7 +20,7 @@
 #include <modm/debug/logger.hpp>
 #include <modm/processing/timer.hpp>
 
-#include "../hardware_rev1.hpp"
+#include <micro-motor/hardware.hpp>
 
 // Create an IODeviceWrapper around the Uart Peripheral we want to use
 modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
@@ -68,31 +68,33 @@ displayMessage(const modm::can::Message& message)
 int
 main()
 {
+	using namespace Board::CanBus;
+
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
 
 	Board::Ui::LedRed::set();
-	Board::Ui::LedBlue::reset();
+	Board::Ui::LedGreen::set();
 	MODM_LOG_ERROR << "Micro-Motor CAN Test" << modm::endl;
 
 	MODM_LOG_INFO << "Setting up Filter for Can ..." << modm::endl;
 	// Receive every message
-	CanFilter::setFilter(0, CanFilter::FIFO0,
-			CanFilter::ExtendedIdentifier(0),
-			CanFilter::ExtendedFilterMask(0));
+	Can::setExtendedFilter(0, Can::FilterConfig::Fifo0,
+			modm::can::ExtendedIdentifier(0),
+			modm::can::ExtendedMask(0));
 
 	// Send a message
 	MODM_LOG_INFO << "Sending message on Can ..." << modm::endl;
 	modm::can::Message msg1(1, 1);
 	msg1.setExtended(true);
 	msg1.data[0] = 0x11;
-	Board::CanBus::Can::sendMessage(msg1);
+	Can::sendMessage(msg1);
 
 	modm::PeriodicTimer pTimer(100);
 
 	while (1)
 	{
-		if (Board::CanBus::Can::isMessageAvailable())
+		if (Can::isMessageAvailable())
 		{
 			MODM_LOG_INFO << "Can: Message is available..." << modm::endl;
 			modm::can::Message message;
@@ -101,18 +103,17 @@ main()
 		}
 
 		if (pTimer.execute()) {
-			Board::Ui::LedBlue::reset();
+			Board::Ui::LedGreen::toggle();
 
 			static uint8_t idx = 0;
 			modm::can::Message msg1(1, 1);
 			msg1.setExtended(true);
 			msg1.data[0] = idx;
-			Board::CanBus::Can::sendMessage(msg1);
+			Can::sendMessage(msg1);
 
 			++idx;
 		}
 	}
-
 
 	return 0;
 }
