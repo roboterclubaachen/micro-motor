@@ -134,8 +134,14 @@ namespace Ui {
 	inline void
 	initialize()
 	{
-		LedRed::setOutput(false);
-		LedGreen::setOutput(false);
+		//LedRed::setOutput(false);
+		//LedGreen::setOutput(false);
+		Dac1::connect<LedRed::Out1, LedGreen::Out2>();
+		Dac1::initialize<Board::SystemClock>();
+		Dac1::setMode(Dac1::Channel::Channel1, Dac1::Mode::ExternalWithBuffer);
+		Dac1::setMode(Dac1::Channel::Channel2, Dac1::Mode::ExternalWithBuffer);
+		Dac1::enableChannel(Dac1::Channel::Channel1);
+		Dac1::enableChannel(Dac1::Channel::Channel2);
 
 		DebugUart::connect<DebugUartTx::Tx, DebugUartRx::Rx>();
 		DebugUart::initialize<SystemClock, DebugUartBaudrate>();
@@ -167,7 +173,7 @@ namespace Motor {
 		MotorTimer::setCompareValue(3, compareValue);
 	}
 
-	constexpr uint16_t MaxPwm{2047}; // 11 bit PWM
+	constexpr uint16_t MaxPwm{1023}; // 10 bit PWM
 
 	enum class
 	PhaseOutputConfig : uint32_t
@@ -237,13 +243,14 @@ namespace Motor {
 	initializeMotor()
 	{
 		MotorTimer::enable();
-		MotorTimer::setMode(MotorTimer::Mode::UpCounter);
+		//MotorTimer::setMode(MotorTimer::Mode::UpCounter);
+		MotorTimer::setMode(MotorTimer::Mode::CenterAligned1);
 
 		// MotorTimer clock: APB2 timer clock (170MHz)
-		MotorTimer::setPrescaler(1);
+		MotorTimer::setPrescaler(2);
 		// Prescaler: 1 -> Timer counter frequency: 170MHz
 		MotorTimer::setOverflow(MaxPwm);
-		// Pwm frequency: 170MHz / 2048 = 83kHz
+		// Pwm frequency: 170MHz / 1024  / 2 = 83kHz
 
 		configurePhase(Phase::PhaseU, PhaseOutputConfig::HiZ);
 		configurePhase(Phase::PhaseV, PhaseOutputConfig::HiZ);
@@ -252,6 +259,19 @@ namespace Motor {
 		setCompareValue(0);
 
 		MotorTimer::applyAndReset();
+
+		// repetition counter = 1
+		// only trigger interrupt on timer underflow in center-aligned mode
+		// must be set directly after starting the timer
+		TIM1->RCR = 1;
+		// 0b1101: "tim_oc4refc rising or tim_oc6refc falling edges generate pulses on tim_trgo2"
+		TIM1->CR2 |= (0b1101 << TIM_CR2_MMS2_Pos);
+
+        MotorTimer::configureOutputChannel(4, MotorTimer::OutputCompareMode::Pwm2, int(MaxPwm*0.95));
+
+		//MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
+		//MotorTimer::enableInterrupt(MotorTimer::Interrupt::Update);
+
 		MotorTimer::enableOutput();
 
 		MotorTimer::pause();
@@ -351,7 +371,8 @@ namespace MotorCurrent {
 	using SenseU	= GpioA0;
 	using SenseV	= GpioA1;
 	using SenseW	= GpioA3;
-	using Adc = Adc1;
+	using AdcU = Adc1;
+	using AdcV = Adc2;
 
 	using CompU = Comp3;
 	using CompV = Comp1;
@@ -369,6 +390,10 @@ namespace MotorCurrent {
 		SenseU::setAnalogInput();
 		SenseV::setAnalogInput();
 		SenseW::setAnalogInput();
+
+		// Set VREFBUF output to 2.9 V
+		//VREFBUF->CSR &= ~(VREFBUF_CSR_HIZ | VREFBUF_CSR_VRS_0);
+		//VREFBUF->CSR |= (VREFBUF_CSR_ENVR | VREFBUF_CSR_VRS_1);
 
 		// Initialize comparator
 		CompU::initialize(CompU::InvertingInput::Dac3Ch1, CompU::NonInvertingInput::GpioA0);
@@ -389,12 +414,30 @@ namespace MotorCurrent {
 		DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
 		setCurrentLimit(0xFFFF / 2); // 50%
 
-		Adc::initialize(Adc::ClockMode::SynchronousPrescaler1,
-						Adc::ClockSource::SystemClock,
-						Adc::Prescaler::Div1,
-						Adc::CalibrationMode::DoNotCalibrate, false);
-		Adc::connect<SenseU::In1, SenseV::In2, SenseW::In4>();
-		// TODO: Sample ADC
+		AdcU::initialize(AdcU::ClockMode::SynchronousPrescaler4,
+						 AdcU::ClockSource::SystemClock,
+						 AdcU::Prescaler::Disabled,
+						 AdcU::CalibrationMode::SingleEndedInputsMode);
+
+		AdcV::initialize(AdcV::ClockMode::SynchronousPrescaler4,
+						 AdcV::ClockSource::SystemClock,
+						 AdcV::Prescaler::Disabled,
+						 AdcV::CalibrationMode::SingleEndedInputsMode);
+
+		AdcU::connect<SenseU::In1>();
+		AdcV::connect<SenseV::In2>();
+
+		// Trigger ADC1,2 from timer 1 TRGO2
+		ADC1->CFGR |= ADC_CFGR_EXTEN_0 | (10 << ADC_CFGR_EXTSEL_Pos) | ADC_CFGR_OVRMOD;
+		ADC2->CFGR |= ADC_CFGR_EXTEN_0 | (10 << ADC_CFGR_EXTSEL_Pos) | ADC_CFGR_OVRMOD;
+
+		AdcU::setPinChannel<SenseU>(AdcU::SampleTime::Cycles13);
+		//AdcU::setChannel(AdcU::Channel::Channel1, AdcU::SampleTime::Cycles13);
+		AdcV::setPinChannel<SenseV>(AdcV::SampleTime::Cycles13);
+		//AdcV::setChannel(AdcV::Channel::Channel2, AdcV::SampleTime::Cycles13);
+
+		AdcU::startConversion();
+		AdcV::startConversion();
 	}
 }
 
@@ -469,8 +512,8 @@ initializeAllPeripherals()
 {
 	Ui::initialize();
 	//Motor::initialize();
-	MotorBridge::initialize();
 	MotorCurrent::initialize();
+	MotorBridge::initialize();
 	Encoder::initialize();
 	Sensor::initialize();
 	CanBus::initialize();
