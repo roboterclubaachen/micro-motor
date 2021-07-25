@@ -28,6 +28,8 @@
 
 #include <cmsis/dsp/arm_math.h>
 
+#include <librobots2/motor/bldc_motor_foc.hpp>
+
 #include "svm.hpp"
 #include "encoder.hpp"
 
@@ -37,17 +39,24 @@ modm::log::Logger modm::log::info(loggerDevice);
 modm::log::Logger modm::log::warning(loggerDevice);
 modm::log::Logger modm::log::error(loggerDevice);
 
-modm::PeriodicTimer aliveTimer{100};
-modm::PeriodicTimer gateDriverStatusTimer{1000};
-modm::PeriodicTimer debugTimer{1000};
+using namespace std::literals;
+
+modm::PeriodicTimer aliveTimer{100ms};
+modm::PeriodicTimer gateDriverStatusTimer{1000ms};
+modm::PeriodicTimer debugTimer{1000ms};
 
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs> gateDriver;
 
+using librobots2::motor::BldcMotorFoc;
+using librobots2::motor::setSvmOutput;
+
+BldcMotorFoc<Board::Motor> motor;
 
 namespace
 {
 
-void setOutputAlphaBeta(float alpha, float beta)
+
+/*void setOutputAlphaBeta(float alpha, float beta)
 {
 	alpha = std::max(std::min(alpha, 1.0f), -1.0f);
 	beta = std::max(std::min(beta, 1.0f), -1.0f);
@@ -64,14 +73,14 @@ void setOutputAlphaBeta(float alpha, float beta)
 	Board::Motor::MotorTimer::setCompareValue(1, aDutyCycle);
 	Board::Motor::MotorTimer::setCompareValue(2, bDutyCycle);
 	Board::Motor::MotorTimer::setCompareValue(3, cDutyCycle);
-}
+}*/
 
 
 constexpr auto clarkeTransform(float u, float v)
 	-> std::tuple<float, float>
 {
-	constexpr float one_by_sqrt3 = 1.f / sqrt(3);
-	constexpr float two_by_sqrt3 = 2.f / sqrt(3);
+	constexpr float one_by_sqrt3 = 1.f / sqrt(3.f);
+	constexpr float two_by_sqrt3 = 2.f / sqrt(3.f);
 
 	return {u, u * one_by_sqrt3 + v * two_by_sqrt3};
 }
@@ -93,7 +102,7 @@ constexpr float convertCurrentToA(uint16_t adcValue)
 void alignMotor()
 {
 	for (int i = 1; i <= 10; ++i) {
-		setOutputAlphaBeta(0.02*i, 0);
+		setSvmOutput<Board::Motor>(0.02*i, 0);
 		modm::delay_ms(100);
 	}
 	Board::Encoder::Timer::setValue(0);
@@ -141,6 +150,8 @@ uint16_t lastEncoderValue = 0;
 volatile int16_t velocity = 0;
 volatile int16_t targetVelocity = 200;
 
+volatile bool runVelocityControl = false;
+
 MODM_ISR(TIM1_UP_TIM16)
 {
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
@@ -149,7 +160,7 @@ MODM_ISR(TIM1_UP_TIM16)
 
 	// Run velocity controller at reduced rate
 	static uint16_t counter = 0;
-	if (counter++ % 200 == 0) {
+	if (counter++ % 200 == 0 && runVelocityControl) {
 		const auto currentVelocity = (int16_t)(uint16_t)(encoderValue - lastEncoderValue);
 		velocity = currentVelocity;
 		lastEncoderValue = encoderValue;
@@ -178,31 +189,11 @@ MODM_ISR(TIM1_UP_TIM16)
 	// transform phase currents to alpha/beta coordinates
 	const auto [currentAlpha, currentBeta] = clarkeTransform(currentU, currentV);
 
-	/* transform current in alpha/beta stator coordinates
-	 * to rotor-referenced dq coordinates
-	 * q: torque generating current at 90°
-	 * d: flux generating current at 0°
-	 */
-	float sine{}, cosine{};
-	arm_sin_cos_f32(angleDegrees, &sine, &cosine);
-	currentD =  cosine * currentAlpha + sine   * currentBeta;
-	currentQ =  -sine  * currentAlpha + cosine * currentBeta;
-
-	// run current controllers
-	controllerD.update(currentD - commandedCurrentD);
-	controllerQ.update(currentQ - commandedCurrentQ);
-
-	float voltageD = controllerD.getValue();
-	float voltageQ = controllerQ.getValue();
-
-	voltageD = std::clamp(voltageD, -0.9f, 0.9f);
-	voltageQ = std::clamp(voltageQ, -0.9f, 0.9f);
-
-	// transform voltage back to alpha/beta coordinates
-	voltageAlpha = cosine * voltageD -   sine * voltageQ;
-	voltageBeta  =   sine * voltageD + cosine * voltageQ;
-
-	setOutputAlphaBeta(-voltageAlpha, -voltageBeta);
+	motor.setFluxCurrentSetpoint(0);
+	motor.setSetpoint(commandedCurrentQ);
+	motor.setCurrentMeasurement(currentAlpha, currentBeta);
+	motor.setMotorAngle(angleDegrees);
+	motor.update();
 }
 
 int
@@ -217,19 +208,20 @@ main()
 	RF_CALL_BLOCKING(gateDriver.initialize());
 	RF_CALL_BLOCKING(gateDriver.commit());
 
-	Board::Motor::initializeMotor();
+	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::NormalPwm);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::NormalPwm);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseW, Board::Motor::PhaseOutputConfig::NormalPwm);
+	motor.setControllerParameters(currentControllerParameters);
+	motor.enable();
 
-	Board::Motor::setCompareValue(0);
+
 	alignMotor();
 
+	runVelocityControl = true;
 	using MotorTimer = Board::Motor::MotorTimer;
 	MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
 	MotorTimer::enableInterrupt(MotorTimer::Interrupt::Update);
+
 
 	float angle = 0;
 	while (1)

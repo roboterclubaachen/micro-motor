@@ -40,8 +40,8 @@ public:
 private:
     int32_t position_ = 0;
     int32_t angle_ = 0;
-    int16_t velocity_ = 0;
-    uint16_t lastValue_;
     int32_t cycleTicks_;
+    uint16_t lastValue_;
+    int16_t velocity_ = 0;
 };
 

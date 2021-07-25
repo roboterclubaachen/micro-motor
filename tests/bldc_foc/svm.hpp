@@ -6,8 +6,8 @@
 #include <utility>
 #include <tuple>
 
-constexpr float one_by_sqrt3 = 1.f / sqrt(3);
-constexpr float two_by_sqrt3 = 2.f / sqrt(3);
+constexpr float one_by_sqrt3 = 1.f / sqrt(3.f);
+constexpr float two_by_sqrt3 = 2.f / sqrt(3.f);
 
 constexpr auto svm(float alpha, float beta)
     -> std::tuple<float, float, float, bool>
