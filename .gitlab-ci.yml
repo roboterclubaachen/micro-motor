@@ -1,4 +1,4 @@
-image: modm/modm-build:latest
+image: ghcr.io/modm-ext/modm-build-cortex-m:latest
 
 variables:
   SCONSFLAGS: "-j3"
