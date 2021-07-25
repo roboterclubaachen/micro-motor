@@ -159,6 +159,7 @@ MODM_ISR(TIM1_UP_TIM16)
 
 	const auto angleDegrees = encoder.angle() * (360.f / EncoderTicksPerCycle);
 
+	// Motor phase current measured in phases U,V in low-side
 	// Zero current is centered at 0x7ff
 	const float adcU = Board::MotorCurrent::AdcU::getValue() - 0x7ff;
 	const float adcV = Board::MotorCurrent::AdcV::getValue() - 0x7ff;
@@ -173,6 +174,8 @@ MODM_ISR(TIM1_UP_TIM16)
 
 	const float currentU = adcU; // convertCurrentToA(adcU);
 	const float currentV = adcV; // convertCurrentToA(adcV);
+
+	// transform phase currents to alpha/beta coordinates
 	const auto [currentAlpha, currentBeta] = clarkeTransform(currentU, currentV);
 
 	/* transform current in alpha/beta stator coordinates
@@ -184,6 +187,8 @@ MODM_ISR(TIM1_UP_TIM16)
 	arm_sin_cos_f32(angleDegrees, &sine, &cosine);
 	currentD =  cosine * currentAlpha + sine   * currentBeta;
 	currentQ =  -sine  * currentAlpha + cosine * currentBeta;
+
+	// run current controllers
 	controllerD.update(currentD - commandedCurrentD);
 	controllerQ.update(currentQ - commandedCurrentQ);
 
