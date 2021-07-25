@@ -89,6 +89,16 @@ constexpr float convertCurrentToA(uint16_t adcValue)
 	return current;
 }
 
+/// Align motor to 0°
+void alignMotor()
+{
+	for (int i = 1; i <= 10; ++i) {
+		setOutputAlphaBeta(0.02*i, 0);
+		modm::delay_ms(100);
+	}
+	Board::Encoder::Timer::setValue(0);
+}
+
 }
 
 volatile float currentAlpha = 0;
@@ -108,8 +118,8 @@ modm::Pid<float> controllerD{currentControllerParameters};
 modm::Pid<float> controllerQ{currentControllerParameters};
 
 PidParameters velocityControllerParameters = {
-	2,   // P
-	0.4, //0.2,    // I
+	1.5,   // P
+	0.3, //0.2,    // I
 	0, //0,    // D
 	600, //1,  // max I error sum
 	2000  // max output
@@ -129,13 +139,15 @@ EncoderAngleEvaluation encoder{EncoderTicksPerCycle};
 uint16_t lastEncoderValue = 0;
 
 volatile int16_t velocity = 0;
-volatile int16_t targetVelocity = 400;
+volatile int16_t targetVelocity = 200;
 
 MODM_ISR(TIM1_UP_TIM16)
 {
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
 	const auto encoderValue = Board::Encoder::getEncoderRaw();
 	encoder.update(encoderValue);
+
+	// Run velocity controller at reduced rate
 	static uint16_t counter = 0;
 	if (counter++ % 200 == 0) {
 		const auto currentVelocity = (int16_t)(uint16_t)(encoderValue - lastEncoderValue);
@@ -147,6 +159,7 @@ MODM_ISR(TIM1_UP_TIM16)
 
 	const auto angleDegrees = encoder.angle() * (360.f / EncoderTicksPerCycle);
 
+	// Zero current is centered at 0x7ff
 	const float adcU = Board::MotorCurrent::AdcU::getValue() - 0x7ff;
 	const float adcV = Board::MotorCurrent::AdcV::getValue() - 0x7ff;
 
@@ -158,12 +171,15 @@ MODM_ISR(TIM1_UP_TIM16)
 	AdcV::acknowledgeInterruptFlag(AdcV::InterruptFlag::EndOfRegularConversion |
 		AdcV::InterruptFlag::EndOfSampling | AdcV::InterruptFlag::Overrun);
 
-	Dac1::setOutput1(adcU);
-	Dac1::setOutput2(adcV);
-	const float currentU = adcU; //convertCurrentToA(adcU);
+	const float currentU = adcU; // convertCurrentToA(adcU);
 	const float currentV = adcV; // convertCurrentToA(adcV);
 	const auto [currentAlpha, currentBeta] = clarkeTransform(currentU, currentV);
 
+	/* transform current in alpha/beta stator coordinates
+	 * to rotor-referenced dq coordinates
+	 * q: torque generating current at 90°
+	 * d: flux generating current at 0°
+	 */
 	float sine{}, cosine{};
 	arm_sin_cos_f32(angleDegrees, &sine, &cosine);
 	currentD =  cosine * currentAlpha + sine   * currentBeta;
@@ -177,6 +193,7 @@ MODM_ISR(TIM1_UP_TIM16)
 	voltageD = std::clamp(voltageD, -0.9f, 0.9f);
 	voltageQ = std::clamp(voltageQ, -0.9f, 0.9f);
 
+	// transform voltage back to alpha/beta coordinates
 	voltageAlpha = cosine * voltageD -   sine * voltageQ;
 	voltageBeta  =   sine * voltageD + cosine * voltageQ;
 
@@ -203,11 +220,7 @@ main()
 	Board::Motor::configurePhase(Board::Motor::Phase::PhaseW, Board::Motor::PhaseOutputConfig::NormalPwm);
 
 	Board::Motor::setCompareValue(0);
-	for (int i = 1; i <= 10; ++i) {
-		setOutputAlphaBeta(0.02*i, 0);
-		modm::delay_ms(100);
-	}
-	Board::Encoder::Timer::setValue(0);
+	alignMotor();
 
 	using MotorTimer = Board::Motor::MotorTimer;
 	MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
