@@ -1,4 +1,6 @@
-/* Copyright (C) 2019 Raphael Lehmann <raphael@rleh.de>
+/*
+ * Copyright (C) 2019 Raphael Lehmann <raphael@rleh.de>
+ * Copyright (C) 2021 Christopher Durand
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +22,8 @@
 #include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
 #include <modm/platform/uart/uart_1.hpp>
+
+#include <librobots2/motor/motor_bridge.hpp>
 
 using namespace modm::platform;
 
@@ -148,7 +152,7 @@ namespace Ui {
 	}
 }
 
-namespace Motor {
+struct Motor {
 	using PhaseUN		= GpioB13;
 	using PhaseUP		= GpioA8;
 	using PhaseVN		= GpioB14;
@@ -165,7 +169,13 @@ namespace Motor {
 
 //	constexpr uint8_t HallInterruptPriority	= 4; // Please don't use pin change interrupts on hall pins! Danger!
 
-	inline void
+	using Phase = librobots2::motor::Phase;
+	using PhaseConfig = librobots2::motor::PhaseConfig;
+	using BridgeConfig = librobots2::motor::BridgeConfig;
+
+	static constexpr uint16_t MaxPwm{1023}; // 10 bit PWM
+
+	static inline void
 	setCompareValue(uint16_t compareValue)
 	{
 		MotorTimer::setCompareValue(1, compareValue);
@@ -173,31 +183,24 @@ namespace Motor {
 		MotorTimer::setCompareValue(3, compareValue);
 	}
 
-	constexpr uint16_t MaxPwm{1023}; // 10 bit PWM
-
-	enum class
-	PhaseOutputConfig : uint32_t
+	static inline void
+	setCompareValue(Phase phase, uint16_t compareValue)
 	{
-		HiZ,
-		NormalPwm,
-		High,
-		Low,
-	};
+		if (phase == Phase::PhaseU) {
+			MotorTimer::setCompareValue(1, compareValue);
+		} else if (phase == Phase::PhaseV) {
+			MotorTimer::setCompareValue(2, compareValue);
+		} else {
+			MotorTimer::setCompareValue(3, compareValue);
+		}
+	}
 
-	enum class
-	Phase : uint32_t
-	{
-		PhaseU = 1,
-		PhaseV = 2,
-		PhaseW = 3,
-	};
-
-	void
-	configurePhase(Phase phase, PhaseOutputConfig phaseOutputConfig)
+	static void
+	configure(Phase phase, PhaseConfig phaseOutputConfig)
 	{
 		switch(phaseOutputConfig) {
-			case PhaseOutputConfig::HiZ:
-				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+			case PhaseConfig::HiZ:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase) + 1,
 						MotorTimer::OutputCompareMode::ForceActive,
 						MotorTimer::PinState::Enable,
 						MotorTimer::OutputComparePolarity::ActiveLow,
@@ -206,8 +209,8 @@ namespace Motor {
 						MotorTimer::OutputComparePreload::Disable
 						);
 				break;
-			case PhaseOutputConfig::NormalPwm:
-				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+			case PhaseConfig::Pwm:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase) + 1,
 						MotorTimer::OutputCompareMode::Pwm,
 						MotorTimer::PinState::Enable,
 						MotorTimer::OutputComparePolarity::ActiveHigh,
@@ -216,8 +219,8 @@ namespace Motor {
 						MotorTimer::OutputComparePreload::Disable
 						);
 				break;
-			case PhaseOutputConfig::High:
-				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+			case PhaseConfig::High:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase) + 1,
 						MotorTimer::OutputCompareMode::ForceActive,
 						MotorTimer::PinState::Enable,
 						MotorTimer::OutputComparePolarity::ActiveHigh,
@@ -226,8 +229,8 @@ namespace Motor {
 						MotorTimer::OutputComparePreload::Disable
 						);
 				break;
-			case PhaseOutputConfig::Low:
-				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase),
+			case PhaseConfig::Low:
+				MotorTimer::configureOutputChannel(static_cast<uint32_t>(phase) + 1,
 						MotorTimer::OutputCompareMode::ForceActive,
 						MotorTimer::PinState::Enable,
 						MotorTimer::OutputComparePolarity::ActiveLow,
@@ -239,8 +242,24 @@ namespace Motor {
 		}
 	}
 
-	void
-	initializeMotor()
+	static inline void
+	configure(const BridgeConfig& config)
+	{
+		configure(Phase::PhaseU, config.config[0]);
+		configure(Phase::PhaseV, config.config[1]);
+		configure(Phase::PhaseW, config.config[2]);
+	}
+
+	static inline void
+	configure(PhaseConfig config)
+	{
+		configure(Phase::PhaseU, config);
+		configure(Phase::PhaseV, config);
+		configure(Phase::PhaseW, config);
+	}
+
+	static void
+	initialize()
 	{
 		MotorTimer::enable();
 		//MotorTimer::setMode(MotorTimer::Mode::UpCounter);
@@ -252,9 +271,9 @@ namespace Motor {
 		MotorTimer::setOverflow(MaxPwm);
 		// Pwm frequency: 170MHz / 1024  / 2 = 83kHz
 
-		configurePhase(Phase::PhaseU, PhaseOutputConfig::HiZ);
-		configurePhase(Phase::PhaseV, PhaseOutputConfig::HiZ);
-		configurePhase(Phase::PhaseW, PhaseOutputConfig::HiZ);
+		configure(Phase::PhaseU, PhaseConfig::HiZ);
+		configure(Phase::PhaseV, PhaseConfig::HiZ);
+		configure(Phase::PhaseW, PhaseConfig::HiZ);
 
 		setCompareValue(0);
 
@@ -316,7 +335,7 @@ namespace Motor {
 		initializeMotor();
 	}
 */
-}
+};
 
 namespace MotorBridge {
 	using GateDriverEnable	= GpioF0;
