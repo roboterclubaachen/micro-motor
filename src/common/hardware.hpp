@@ -258,6 +258,30 @@ struct Motor {
 		configure(Phase::PhaseW, config);
 	}
 
+	static inline void
+	initializeHall()
+	{
+		static_assert(HallPort::number_of_ports == 1, "Hall pins must be at the same port to guarantee atomic read operations.");
+
+		// Timer is not used for commutation
+		// Bldc motor commutation is done using external gpio pin interrupts
+		//HallPort::setInput(Gpio::InputType::PullUp);
+
+		HallU::setInput(Gpio::InputType::PullUp);
+		HallV::setInput(Gpio::InputType::PullUp);
+		HallW::setInput(Gpio::InputType::PullUp);
+
+		/*HallU::setInputTrigger(Gpio::InputTrigger::BothEdges);
+		HallU::enableExternalInterrupt();
+		HallU::enableExternalInterruptVector(HallInterruptPriority);
+		HallV::setInputTrigger(Gpio::InputTrigger::BothEdges);
+		HallV::enableExternalInterrupt();
+		HallV::enableExternalInterruptVector(HallInterruptPriority);
+		HallW::setInputTrigger(Gpio::InputTrigger::BothEdges);
+		HallW::enableExternalInterrupt();
+		HallW::enableExternalInterruptVector(HallInterruptPriority);*/
+	}
+
 	static void
 	initialize()
 	{
@@ -301,40 +325,8 @@ struct Motor {
 		                    PhaseUP::Ch1,
 		                    PhaseVP::Ch2,
 		                    PhaseWP::Ch3>();
+		initializeHall();
 	}
-
-/*
-	inline void
-	initializeHall()
-	{
-		static_assert(HallPort::number_of_ports == 1, "Hall pins must be at the same port to guarantee atomic read operations.");
-
-		// Timer is not used for commutation
-		// Bldc motor commutation is done using external gpio pin interrupts
-		//HallPort::setInput(Gpio::InputType::PullUp);
-
-		HallU::setInput(Gpio::InputType::PullUp);
-		HallV::setInput(Gpio::InputType::PullUp);
-		HallW::setInput(Gpio::InputType::PullUp);
-
-		HallU::setInputTrigger(Gpio::InputTrigger::BothEdges);
-		HallU::enableExternalInterrupt();
-		HallU::enableExternalInterruptVector(HallInterruptPriority);
-		HallV::setInputTrigger(Gpio::InputTrigger::BothEdges);
-		HallV::enableExternalInterrupt();
-		HallV::enableExternalInterruptVector(HallInterruptPriority);
-		HallW::setInputTrigger(Gpio::InputTrigger::BothEdges);
-		HallW::enableExternalInterrupt();
-		HallW::enableExternalInterruptVector(HallInterruptPriority);
-	}
-
-	inline void
-	initialize()
-	{
-		//initializeHall();
-		initializeMotor();
-	}
-*/
 };
 
 namespace MotorBridge {
