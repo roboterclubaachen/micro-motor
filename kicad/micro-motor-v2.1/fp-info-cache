@@ -1,0 +1,176 @@
+39146407953991
+Package_LGA
+AMS_LGA-10-1EP_2.7x4mm_P0.6mm
+LGA-10, http://ams.com/eng/content/download/951091/2269479/471718
+lga land grid array
+0
+13
+11
+Package_LGA
+AMS_LGA-20_4.7x4.5mm_P0.65mm
+http://ams.com/eng/content/download/1008631/2361759/498838
+AMS LGA
+0
+20
+20
+Package_LGA
+Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering
+LGA-8
+lga land grid array
+0
+8
+8
+Package_LGA
+Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering
+LGA-8, https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-18.pdf
+lga land grid array
+0
+8
+8
+Package_LGA
+Bosch_LGA-8_3x3mm_P0.8mm_ClockwisePinNumbering
+Bosch  LGA, 8 Pin (https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME680-DS001-00.pdf#page=44), generated with kicad-footprint-generator ipc_noLead_generator.py
+Bosch LGA NoLead
+0
+8
+8
+Package_LGA
+Bosch_LGA-14_3x2.5mm_P0.5mm
+LGA-14 Bosch https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMI160-DS000-07.pdf
+lga land grid array
+0
+14
+14
+Package_LGA
+Kionix_LGA-12_2x2mm_P0.5mm_LayoutBorder2x4y
+Kionix  LGA, 12 Pin (http://kionixfs.kionix.com/en/document/TN008-PCB-Design-Guidelines-for-2x2-LGA-Sensors.pdf#page=4), generated with kicad-footprint-generator ipc_noLead_generator.py
+Kionix LGA NoLead
+0
+12
+12
+Package_LGA
+LGA-8_3x5mm_P1.25mm
+LGA-8
+lga land grid array
+0
+8
+8
+Package_LGA
+LGA-12_2x2mm_P0.5mm
+LGA12
+lga land grid array
+0
+12
+12
+Package_LGA
+LGA-14_2x2mm_P0.35mm_LayoutBorder3x4y
+LGA, 14 Pin (http://www.st.com/resource/en/datasheet/lis2dh.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+LGA NoLead
+0
+14
+14
+Package_LGA
+LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y
+LGA, 14 Pin (http://www.st.com/resource/en/datasheet/lsm6ds3.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+LGA NoLead
+0
+14
+14
+Package_LGA
+LGA-14_3x5mm_P0.8mm_LayoutBorder1x6y
+LGA, 14 Pin (http://www.st.com/resource/en/datasheet/lsm303dlhc.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+LGA NoLead
+0
+14
+14
+Package_LGA
+LGA-16_3x3mm_P0.5mm
+http://www.memsic.com/userfiles/files/DataSheets/Magnetic-Sensors-Datasheets/MMC5883MA-RevC.pdf
+lga land grid array
+0
+16
+16
+Package_LGA
+LGA-16_3x3mm_P0.5mm_LayoutBorder3x5y
+LGA, 16 Pin (http://www.st.com/resource/en/datasheet/lis331hh.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+LGA NoLead
+0
+16
+16
+Package_LGA
+LGA-16_4x4mm_P0.65mm_LayoutBorder4x4y
+LGA, 16 Pin (http://www.st.com/resource/en/datasheet/l3gd20.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+LGA NoLead
+0
+16
+16
+Package_LGA
+LGA-24L_3x3.5mm_P0.43mm
+LGA 24L 3x3.5mm Pitch 0.43mm
+LGA 24L 3x3.5mm Pitch 0.43mm
+0
+24
+24
+Package_LGA
+LGA-28_5.2x3.8mm_P0.5mm
+LGA 28 5.2x3.8mm Pitch 0.5mm
+LGA 28 5.2x3.8mm Pitch 0.5mm
+0
+28
+28
+Package_LGA
+Linear_LGA-133_15.0x15.0mm_Layout12x12_P1.27mm
+Analog Devices (Linear Tech), 133-pin LGA uModule, 15.0x15.0x4.32mm, https://www.analog.com/media/en/technical-documentation/data-sheets/4637fc.pdf
+133 pin lga
+0
+133
+133
+Package_LGA
+NXP_LGA-8_3x5mm_P1.25mm_H1.1mm
+NXP  LGA, 8 Pin (https://www.nxp.com/docs/en/data-sheet/MPL3115A2.pdf#page=42), generated with kicad-footprint-generator ipc_noLead_generator.py
+NXP LGA NoLead
+0
+8
+8
+Package_LGA
+NXP_LGA-8_3x5mm_P1.25mm_H1.2mm
+NXP  LGA, 8 Pin (https://www.nxp.com/docs/en/data-sheet/MPL115A1.pdf#page=15), generated with kicad-footprint-generator ipc_noLead_generator.py
+NXP LGA NoLead
+0
+8
+8
+Package_LGA
+ST_HLGA-10_2.5x2.5mm_P0.6mm_LayoutBorder3x2y
+ST  HLGA, 10 Pin (https://www.st.com/resource/en/datasheet/lps25hb.pdf#page=46), generated with kicad-footprint-generator ipc_noLead_generator.py
+ST HLGA NoLead
+0
+10
+10
+Package_LGA
+Texas_SIL0008D_MicroSiP-8-1EP_2.8x3mm_P0.65mm_EP1.1x1.9mm
+Texas SIL0008D MicroSiP, 8 Pin (http://www.ti.com/lit/ds/symlink/tps82130.pdf#page=19), generated with kicad-footprint-generator ipc_noLead_generator.py
+Texas MicroSiP NoLead
+0
+12
+9
+Package_LGA
+Texas_SIL0008D_MicroSiP-8-1EP_2.8x3mm_P0.65mm_EP1.1x1.9mm_ThermalVias
+Texas SIL0008D MicroSiP, 8 Pin (http://www.ti.com/lit/ds/symlink/tps82130.pdf#page=19), generated with kicad-footprint-generator ipc_noLead_generator.py
+Texas MicroSiP NoLead
+0
+16
+9
+Package_LGA
+Texas_SIL0010A_MicroSiP-10-1EP_3.8x3mm_P0.6mm_EP0.7x2.9mm
+Texas SIL0010A MicroSiP, 10 Pin (http://www.ti.com/lit/ml/mpds579b/mpds579b.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+Texas MicroSiP NoLead
+0
+14
+11
+Package_LGA
+Texas_SIL0010A_MicroSiP-10-1EP_3.8x3mm_P0.6mm_EP0.7x2.9mm_ThermalVias
+Texas SIL0010A MicroSiP, 10 Pin (http://www.ti.com/lit/ml/mpds579b/mpds579b.pdf), generated with kicad-footprint-generator ipc_noLead_generator.py
+Texas MicroSiP NoLead
+0
+18
+11
