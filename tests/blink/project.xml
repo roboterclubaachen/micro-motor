@@ -13,6 +13,8 @@
   </options>
 
   <modules>
-    <module>librobots2:motor</module>
+    <module>modm:debug</module>
+
+    <module>modm:build:scons</module>
   </modules>
 </library>

@@ -24,9 +24,6 @@
 #include <micro-motor/hardware.hpp>
 
 #include <modm/driver/motor/drv832x_spi.hpp>
-#include <modm/math/filter/pid.hpp>
-
-#include <cmsis/dsp/arm_math.h>
 
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 

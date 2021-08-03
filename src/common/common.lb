@@ -20,25 +20,30 @@ def init(module):
 
 def prepare(module, options):
     module.depends(
-        "modm:debug",
+        # basics
         "modm:architecture:clock",
+        "modm:debug",
         "modm:platform:clock",
         "modm:platform:core",
-        "modm:platform:gpio",
-        "modm:processing:protothread",
-        "modm:processing:resumable",
-        "modm:processing:timer",
-        "modm:platform:uart:1",
+        # driver etc.
         "modm:platform:adc:1",
-        "modm:platform:timer:1",
-        "modm:platform:timer:3",
-        "modm:platform:uart.spi:3",
+        "modm:platform:adc:2",
+        "modm:platform:can:1",
         "modm:platform:comp:1",
         "modm:platform:comp:2",
         "modm:platform:comp:3",
-        "modm:platform:can:1",
+        "modm:platform:dac:1",
+        "modm:platform:dac:2",
+        "modm:platform:gpio",
+        "modm:platform:timer:1",
+        "modm:platform:timer:3",
+        "modm:platform:uart:1",
+        "modm:platform:uart.spi:3",
+        "modm:processing:protothread",
+        "modm:processing:resumable",
+        "modm:processing:timer",
         "modm:driver:drv832x_spi",
-        "modm:build:scons",
+        # ext
         "librobots2:motor",
         "librobots2:motor-can:slave",
     )
