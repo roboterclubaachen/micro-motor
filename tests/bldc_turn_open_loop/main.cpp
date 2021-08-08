@@ -84,12 +84,12 @@ main()
 	RF_CALL_BLOCKING(gateDriver.initialize());
 	RF_CALL_BLOCKING(gateDriver.commit());
 
-	Board::Motor::initializeMotor();
+	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::NormalPwm);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::NormalPwm);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseW, Board::Motor::PhaseOutputConfig::NormalPwm);
+	Board::Motor::configure(Board::Motor::Phase::PhaseU, Board::Motor::PhaseConfig::Pwm);
+	Board::Motor::configure(Board::Motor::Phase::PhaseV, Board::Motor::PhaseConfig::Pwm);
+	Board::Motor::configure(Board::Motor::Phase::PhaseW, Board::Motor::PhaseConfig::Pwm);
 
 	Board::Motor::setCompareValue(0);
 
