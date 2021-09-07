@@ -136,19 +136,46 @@ namespace Ui {
 	static constexpr uint32_t DebugUartBaudrate = 460800_Bd;
 
 	inline void
-	initialize()
+	initializeDebugUart()
 	{
-		//LedRed::setOutput(false);
-		//LedGreen::setOutput(false);
+		DebugUart::connect<DebugUartTx::Tx, DebugUartRx::Rx>();
+		DebugUart::initialize<SystemClock, DebugUartBaudrate>();
+	}
+
+	/**
+	 * Should be used mutually exclusive to `initializeDac`
+	 *
+	 * Initializes the LEDs as standard outputs
+	 *
+	 * Calls `initializeDebugUart` internally
+	 */
+	inline void
+	initializeLeds()
+	{
+		initializeDebugUart();
+
+		LedRed::setOutput(false);
+		LedGreen::setOutput(false);
+	}
+
+	/**
+	 * Should be used mutually exclusive to `initializeLeds`
+	 *
+	 * Initializes the LEDs using the DAC
+	 *
+	 * Calls `initializeDebugUart` internally
+	 */
+	inline void
+	initializeDac()
+	{
+		initializeDebugUart();
+
 		Dac1::connect<LedRed::Out1, LedGreen::Out2>();
 		Dac1::initialize<Board::SystemClock>();
 		Dac1::setMode(Dac1::Channel::Channel1, Dac1::Mode::ExternalWithBuffer);
 		Dac1::setMode(Dac1::Channel::Channel2, Dac1::Mode::ExternalWithBuffer);
 		Dac1::enableChannel(Dac1::Channel::Channel1);
 		Dac1::enableChannel(Dac1::Channel::Channel2);
-
-		DebugUart::connect<DebugUartTx::Tx, DebugUartRx::Rx>();
-		DebugUart::initialize<SystemClock, DebugUartBaudrate>();
 	}
 }
 
@@ -521,7 +548,7 @@ initializeMcu()
 inline void
 initializeAllPeripherals()
 {
-	Ui::initialize();
+	Ui::initializeLeds();
 	//Motor::initialize();
 	MotorCurrent::initialize();
 	MotorBridge::initialize();

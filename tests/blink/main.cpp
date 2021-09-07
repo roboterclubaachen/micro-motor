@@ -24,7 +24,7 @@ int
 main()
 {
 	Board::initializeMcu();
-	Board::Ui::initialize();
+	Board::Ui::initializeLeds();
 
 	Board::Ui::LedRed::set();
 	Board::Ui::LedGreen::reset();
