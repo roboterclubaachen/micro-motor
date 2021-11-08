@@ -10,6 +10,23 @@ before_script:
   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.roboterclub.rwth-aachen.de/rca/rca-ci-helper.git
   - rca-ci-helper/populate_rca_software.sh
 
+gen-kicad-pcb-pdfs:
+  image: ghcr.io/rleh/kicad5_and_pandoc:latest
+  before_script:
+    - which kicad
+    - which kibot
+    - kibot --version
+  script:
+    - export CONFIGFILE=$(readlink -f config.kibot.yaml)
+    - cd kicad
+    - for d in macro-motor/ micro-motor-v2/; do pushd $d; kibot -c ${CONFIGFILE}; popd; done
+  artifacts:
+    paths:
+      - kicad/**/*pdf
+    expire_in: 2 hours
+# The latest artifacts of a branch or tag will be kept (with the default settings)!
+# So no need to remove or increase the expiring time.
+
 compile-src:
   script:
     - locale -a
