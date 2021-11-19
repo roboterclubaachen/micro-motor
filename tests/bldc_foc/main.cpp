@@ -187,7 +187,7 @@ MODM_ISR(TIM1_UP_TIM16)
 	const float currentV = adcV; // convertCurrentToA(adcV);
 
 	// transform phase currents to alpha/beta coordinates
-	const auto [currentAlpha, currentBeta] = clarkeTransform(currentU, currentV);
+	std::tie(currentAlpha, currentBeta) = clarkeTransform(currentU, currentV);
 
 	motor.setFluxCurrentSetpoint(0);
 	motor.setSetpoint(commandedCurrentQ);
@@ -203,13 +203,12 @@ main()
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
 
-	MODM_LOG_ERROR << "Micro-Motor Gatedriver Test" << modm::endl;
+	MODM_LOG_ERROR << "Micro-Motor BLDC FOC Test" << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
 	RF_CALL_BLOCKING(gateDriver.commit());
 
-	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 
 	motor.setControllerParameters(currentControllerParameters);
@@ -224,7 +223,6 @@ main()
 	MotorTimer::enableInterrupt(MotorTimer::Interrupt::Update);
 
 
-	float angle = 0;
 	while (1)
 	{
 		modm::delay_ms(1);
@@ -236,7 +234,6 @@ main()
 		Board::CanBus::Can::sendMessage(msg);
 
 		if(gateDriverStatusTimer.execute()) {
-			MODM_LOG_DEBUG << "angle: " << angle << modm::endl;
 			MODM_LOG_DEBUG << "current: " << currentAlpha << ", " << currentBeta << modm::endl;
 			MODM_LOG_DEBUG << "encoder: " << Board::Encoder::getEncoderRaw() << modm::endl;
 		}

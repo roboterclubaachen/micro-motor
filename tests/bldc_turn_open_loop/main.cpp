@@ -79,13 +79,12 @@ main()
 
 	Board::Ui::LedRed::reset();
 	Board::Ui::LedGreen::set();
-	MODM_LOG_ERROR << "Micro-Motor Gatedriver Test" << modm::endl;
+	MODM_LOG_ERROR << "Micro-Motor BLDC Open Loop Test" << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
 	RF_CALL_BLOCKING(gateDriver.commit());
 
-	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 
 	Board::Motor::configure(Board::Motor::Phase::PhaseU, Board::Motor::PhaseConfig::Pwm);
