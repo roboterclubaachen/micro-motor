@@ -11,6 +11,7 @@ TESTS+=" bldc_block"
 TESTS+=" bldc_foc"
 TESTS+=" can"
 TESTS+=" gatedriver"
+TESTS+=" current_measurement"
 
 for test in $TESTS
 do
