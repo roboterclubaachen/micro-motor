@@ -2,6 +2,7 @@
 <library>
   <repositories>
     <repository><path>../repo.lb</path></repository>
+    <repository><path>../../modm-canopen/repo.lb</path></repository>
   </repositories>
 
   <extends>micro-motor:board</extends>
@@ -10,9 +11,11 @@
     <option name=":build:build.path">../build</option>
     <option name="modm:build:info.git">Info+Status</option>
     <option name="modm:build:info.build">True</option>
+    <option name="modm-canopen:device:eds_file">micro-motor.eds</option>
   </options>
 
   <modules>
     <module>librobots2:motor</module>
+    <module>modm-canopen:device</module>
   </modules>
 </library>

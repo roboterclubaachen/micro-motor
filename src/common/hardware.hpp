@@ -327,7 +327,7 @@ struct Motor {
 		// 0b1101: "tim_oc4refc rising or tim_oc6refc falling edges generate pulses on tim_trgo2"
 		TIM1->CR2 |= (0b1101 << TIM_CR2_MMS2_Pos);
 
-        MotorTimer::configureOutputChannel(4, MotorTimer::OutputCompareMode::Pwm2, int(MaxPwm*0.95));
+		MotorTimer::configureOutputChannel(4, MotorTimer::OutputCompareMode::Pwm2, int(MaxPwm*0.95));
 
 		//MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
 		//MotorTimer::enableInterrupt(MotorTimer::Interrupt::Update);
@@ -337,11 +337,11 @@ struct Motor {
 		MotorTimer::pause();
 
 		MotorTimer::connect<PhaseUN::Ch1n,
-		                    PhaseVN::Ch2n,
-		                    PhaseWN::Ch3n,
-		                    PhaseUP::Ch1,
-		                    PhaseVP::Ch2,
-		                    PhaseWP::Ch3>();
+							PhaseVN::Ch2n,
+							PhaseWN::Ch3n,
+							PhaseUP::Ch1,
+							PhaseVP::Ch2,
+							PhaseWP::Ch3>();
 		initializeHall();
 	}
 };
