@@ -10,6 +10,9 @@ librobots2/
 build/
 SConstruct
 
+# Codium/Code
+**/.vscode/
+
 # lbuild
 __pycache__/
 
