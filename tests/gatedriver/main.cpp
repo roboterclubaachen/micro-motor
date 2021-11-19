@@ -20,7 +20,7 @@
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
 
-#include "../hardware_v2.hpp"
+#include <micro-motor/hardware.hpp>
 
 #include <modm/driver/motor/drv832x_spi.hpp>
 
@@ -41,6 +41,7 @@ main()
 {
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
+	Board::Ui::initializeLeds();
 
 	Board::Ui::LedRed::reset();
 	Board::Ui::LedGreen::set();
@@ -48,12 +49,9 @@ main()
 
 	Board::MotorBridge::GateDriverEnable::set();
 
-	Board::Motor::initializeMotor();
-	Board::Motor::MotorTimer::start();
-
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseU, Board::Motor::PhaseOutputConfig::NormalPwm);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseV, Board::Motor::PhaseOutputConfig::Low);
-	Board::Motor::configurePhase(Board::Motor::Phase::PhaseW, Board::Motor::PhaseOutputConfig::Low);
+	Board::Motor::configure(Board::Motor::Phase::PhaseU, Board::Motor::PhaseConfig::Pwm);
+	Board::Motor::configure(Board::Motor::Phase::PhaseV, Board::Motor::PhaseConfig::Low);
+	Board::Motor::configure(Board::Motor::Phase::PhaseW, Board::Motor::PhaseConfig::Low);
 
 	Board::Motor::setCompareValue(Board::Motor::MaxPwm / 2);
 

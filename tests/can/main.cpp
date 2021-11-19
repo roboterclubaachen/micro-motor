@@ -68,10 +68,11 @@ displayMessage(const modm::can::Message& message)
 int
 main()
 {
-	using namespace Board::CanBus;
-
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
+	Board::Ui::initializeLeds();
+
+	using namespace Board::CanBus;
 
 	Board::Ui::LedRed::set();
 	Board::Ui::LedGreen::set();

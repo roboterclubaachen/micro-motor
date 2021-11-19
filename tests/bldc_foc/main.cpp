@@ -178,9 +178,9 @@ MODM_ISR(TIM1_UP_TIM16)
 	using AdcU = Board::MotorCurrent::AdcU;
 	using AdcV = Board::MotorCurrent::AdcV;
 
-	AdcU::acknowledgeInterruptFlag(AdcU::InterruptFlag::EndOfRegularConversion |
+	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
 		AdcU::InterruptFlag::EndOfSampling | AdcU::InterruptFlag::Overrun);
-	AdcV::acknowledgeInterruptFlag(AdcV::InterruptFlag::EndOfRegularConversion |
+	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
 		AdcV::InterruptFlag::EndOfSampling | AdcV::InterruptFlag::Overrun);
 
 	const float currentU = adcU; // convertCurrentToA(adcU);
@@ -201,6 +201,7 @@ main()
 {
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
+	Board::Ui::initializeLeds();
 
 	MODM_LOG_ERROR << "Micro-Motor Gatedriver Test" << modm::endl;
 

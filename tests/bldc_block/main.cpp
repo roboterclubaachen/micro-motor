@@ -44,6 +44,7 @@ main()
 {
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
+	Board::Ui::initializeLeds();
 
 	MODM_LOG_ERROR << "Micro-Motor BLDC Motor block commutation Test" << modm::endl;
 

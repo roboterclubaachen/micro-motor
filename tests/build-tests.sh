@@ -9,13 +9,13 @@ TESTS="blink"
 TESTS+=" bldc_turn_open_loop"
 TESTS+=" bldc_block"
 TESTS+=" bldc_foc"
-#TESTS+=" can"
-#TESTS+=" gatedriver"
+TESTS+=" can"
+TESTS+=" gatedriver"
 
 for test in $TESTS
 do
     pushd $test
     lbuild build
-    scons
+    scons -j8
     popd
 done

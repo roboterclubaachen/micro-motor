@@ -1,40 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <library>
   <repositories>
-    <repository>
-      <path>../../../modm/repo.lb</path>
-    </repository>
-    <cache>.lbuild_cache</cache>
+    <repository><path>../../repo.lb</path></repository>
   </repositories>
 
+  <extends>micro-motor:board</extends>
+
   <options>
-    <option name=":build:build.path">build</option>
-    <option name=":build:openocd.cfg">../openocd.cfg</option>
-	<option name=":target">stm32g474cet6</option>
+    <option name=":build:build.path">../../build</option>
+    <option name="modm:build:info.git">Info+Status</option>
+    <option name="modm:build:info.build">True</option>
   </options>
 
   <modules>
-    <module>modm:debug</module>
-
-    <module>modm:architecture:clock</module>
-    <module>modm:platform:clock</module>
-    <module>modm:platform:core</module>
-    <module>modm:platform:gpio</module>
-
-    <module>modm:processing:protothread</module>
-    <module>modm:processing:resumable</module>
-    <module>modm:processing:timer</module>
-
-    <module>modm:platform:uart:1</module>
-    <module>modm:platform:adc:1</module>
-    <module>modm:platform:timer:**</module>
-    <module>modm:platform:uart.spi:3</module>
-    <module>modm:platform:comp:1</module>
-    <module>modm:platform:comp:2</module>
-    <module>modm:platform:comp:3</module>
-
-    <module>modm:driver:drv832x_spi</module>
-
-    <module>modm:build:scons</module>
+    <module>librobots2:motor</module>
   </modules>
 </library>

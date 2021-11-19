@@ -146,14 +146,10 @@ namespace Ui {
 	 * Should be used mutually exclusive to `initializeDac`
 	 *
 	 * Initializes the LEDs as standard outputs
-	 *
-	 * Calls `initializeDebugUart` internally
 	 */
 	inline void
 	initializeLeds()
 	{
-		initializeDebugUart();
-
 		LedRed::setOutput(false);
 		LedGreen::setOutput(false);
 	}
@@ -162,14 +158,10 @@ namespace Ui {
 	 * Should be used mutually exclusive to `initializeLeds`
 	 *
 	 * Initializes the LEDs using the DAC
-	 *
-	 * Calls `initializeDebugUart` internally
 	 */
 	inline void
 	initializeDac()
 	{
-		initializeDebugUart();
-
 		Dac1::connect<LedRed::Out1, LedGreen::Out2>();
 		Dac1::initialize<Board::SystemClock>();
 		Dac1::setMode(Dac1::Channel::Channel1, Dac1::Mode::ExternalWithBuffer);
@@ -193,8 +185,6 @@ struct Motor {
 	using HallV			= GpioC14;
 	using HallW			= GpioC15;
 	using HallPort		= SoftwareGpioPort<HallU, HallV, HallW>;
-
-//	constexpr uint8_t HallInterruptPriority	= 4; // Please don't use pin change interrupts on hall pins! Danger!
 
 	using Phase = librobots2::motor::Phase;
 	using PhaseConfig = librobots2::motor::PhaseConfig;
@@ -548,8 +538,8 @@ initializeMcu()
 inline void
 initializeAllPeripherals()
 {
-	Ui::initializeLeds();
-	//Motor::initialize();
+	Ui::initializeDebugUart();
+	Motor::initialize();
 	MotorCurrent::initialize();
 	MotorBridge::initialize();
 	Encoder::initialize();

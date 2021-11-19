@@ -24,6 +24,7 @@ int
 main()
 {
 	Board::initializeMcu();
+	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
 
 	Board::Ui::LedRed::set();

@@ -75,6 +75,7 @@ main()
 {
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
+	Board::Ui::initializeLeds();
 
 	Board::Ui::LedRed::reset();
 	Board::Ui::LedGreen::set();
