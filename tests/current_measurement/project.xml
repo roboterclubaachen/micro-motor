@@ -7,7 +7,6 @@
   <extends>micro-motor:board</extends>
 
   <options>
-    <option name=":build:build.path">../../build</option>
     <option name="modm:build:info.git">Info+Status</option>
     <option name="modm:build:info.build">True</option>
   </options>
