@@ -18,11 +18,13 @@
  */
 
 #include <modm/platform.hpp>
-#include <modm-canopen/canopen_device.hpp>
 #include <modm/debug/logger.hpp>
 #include <modm/driver/motor/drv832x_spi.hpp>
 
 #include <micro-motor/hardware.hpp>
+#include <librobots2/motor/dc_motor.hpp>
+
+#include "motor_can.hpp"
 
 modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
 modm::log::Logger modm::log::debug(loggerDevice);
@@ -30,74 +32,96 @@ modm::log::Logger modm::log::info(loggerDevice);
 modm::log::Logger modm::log::warning(loggerDevice);
 modm::log::Logger modm::log::error(loggerDevice);
 
+modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs> gateDriver;
 
-using modm_canopen::Address;
-using modm_canopen::CanopenDevice;
-using modm_canopen::SdoErrorCode;
-using modm_canopen::generated::DefaultObjects;
+using DcMotor = librobots2::motor::DcMotor<Board::Motor>;
 
-uint32_t value2002 = 42;
-
-struct CanOpenHandlers
+namespace
 {
-	template<typename ObjectDictionary>
-	constexpr void registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map)
-	{
-		map.template setReadHandler<Address{0x2001, 0}>(
-			+[](){ return uint8_t(10); });
 
-		map.template setReadHandler<Address{0x2002, 0}>(
-			+[](){ return value2002; });
-
-		map.template setWriteHandler<Address{0x2002, 0}>(
-			+[](uint32_t value)
-			{
-				MODM_LOG_INFO << "setting 0x2002,0 to " << value << modm::endl;
-				value2002 = value;
-				return SdoErrorCode::NoError;
-			});
-	}
-};
-
-int
-main()
+void initialize()
 {
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
 
-	Board::Ui::LedRed::set();
-	Board::Ui::LedGreen::reset();
+	Board::Ui::LedRed::reset();
+	Board::Ui::LedGreen::set();
 
-	using Can = Board::CanBus::Can;
+	Board::MotorBridge::GateDriverEnable::set();
+	RF_CALL_BLOCKING(gateDriver.initialize());
+	RF_CALL_BLOCKING(gateDriver.commit());
 
-	const modm::can::Message m{};
-	Can::sendMessage(m);
+	Board::Motor::setCompareValue(0);
+	Board::Motor::MotorTimer::start();
+	Board::Motor::configure(Board::Motor::PhaseConfig::Low);
+}
 
-	Can::setStandardFilter(0, Can::FilterConfig::Fifo0, modm::can::StandardIdentifier{}, modm::can::StandardMask{});
+void syncReceived(uint8_t boardId)
+{
+	Board::Ui::LedGreen::toggle();
+	motorCan::DataFromMotor data{};
+	data.encoderCounterRawM1 = Board::Encoder::getEncoderRaw();
+	// TODO: current measurement
+	data.currentM1 = Board::MotorCurrent::AdcV::getValue() - 0x7ff;
+	motorCan::sendResponse<Board::CanBus::Can>(data, boardId);
+}
 
-	using Device = CanopenDevice<DefaultObjects, CanOpenHandlers>;
-	const uint8_t nodeId = 5;
-	Device::initialize(nodeId);
+void processCommand(const motorCan::DataToMotor& command, DcMotor& motor)
+{
+	motor.setSetpoint(command.pwmM1);
+	Board::MotorCurrent::setCurrentLimit(command.currentLimitM1);
+}
 
-	auto sendMessage = [](const modm::can::Message& message) {
-		Can::sendMessage(message);
-		Board::Ui::LedRed::toggle();
+uint32_t readHardwareId()
+{
+	return *((volatile uint32_t *) UID_BASE);
+}
+
+uint8_t readBoardId()
+{
+	static constexpr std::array boards = {
+		// hardware id, board id
+		std::pair{0x0032003au, 1u}
 	};
 
-	Device::setValueChanged(Address{0x2002, 0});
+	const auto hardwareId = readHardwareId();
+	auto it = std::find_if(std::begin(boards), std::end(boards), [hardwareId](auto board) {
+		return board.first == hardwareId;
+	});
+	if (it == std::end(boards)) {
+		MODM_LOG_ERROR << "Board not found" << modm::endl;
+		while(1) asm volatile("nop");
+	}
+
+	return it->second;
+}
+
+}
+
+int main()
+{
+	initialize();
+
+	MODM_LOG_INFO << "Micro-Motor DC-Motor hack" << modm::endl;
+	MODM_LOG_INFO.printf("Hardware ID: 0x%08lx\n", readHardwareId());
+
+	const uint8_t boardId = readBoardId();
+	MODM_LOG_INFO.printf("Board ID: %d\n", boardId);
+
+	motorCan::setupCanFilters<Board::CanBus::Can>(boardId);
+	DcMotor motor;
 
 	while (1)
 	{
-		if (Can::isMessageAvailable())
-		{
-			modm::can::Message message{};
-			Can::getMessage(message);
-			Device::processMessage(message, sendMessage);
+		using namespace motorCan;
 
-			Board::Ui::LedGreen::toggle();
-		}
-		Device::update(sendMessage);
+		std::visit(overloaded {
+			[](std::monostate) {}, // No message
+			[&](const Sync&) { syncReceived(boardId); },
+			[&](const DataToMotor& command) { processCommand(command, motor); }
+		},
+		motorCan::getCanMessage<Board::CanBus::Can>(boardId));
 	}
 
 	return 0;
