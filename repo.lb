@@ -18,7 +18,7 @@
 def init(repo):
     repo.name = "micro-motor"
     repo.description = FileReader("README.md")
-    repo.add_configuration(name="board", path=localpath("src/micro-motor.xml"))
+    repo.add_configuration(Configuration("board", "Micro Motor Board", localpath("src/micro-motor.xml")))
 
 def prepare(repo, options):
     repo.find_modules_recursive("src/", modulefile="*.lb")
