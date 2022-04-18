@@ -22,6 +22,8 @@
 
 #include <micro-motor/hardware.hpp>
 
+using namespace std::chrono_literals;
+
 // Create an IODeviceWrapper around the Uart Peripheral we want to use
 modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
 
@@ -91,7 +93,7 @@ main()
 	msg1.data[0] = 0x11;
 	Can::sendMessage(msg1);
 
-	modm::PeriodicTimer pTimer(100);
+	modm::PeriodicTimer pTimer(100ms);
 
 	while (1)
 	{

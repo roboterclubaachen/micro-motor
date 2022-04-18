@@ -29,15 +29,17 @@
 
 #include "svm.hpp"
 
+using namespace std::chrono_literals;
+
 modm::IODeviceWrapper< Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull > loggerDevice;
 modm::log::Logger modm::log::debug(loggerDevice);
 modm::log::Logger modm::log::info(loggerDevice);
 modm::log::Logger modm::log::warning(loggerDevice);
 modm::log::Logger modm::log::error(loggerDevice);
 
-modm::PeriodicTimer aliveTimer{100};
-modm::PeriodicTimer gateDriverStatusTimer{1000};
-modm::PeriodicTimer debugTimer{1000};
+modm::PeriodicTimer aliveTimer{100ms};
+modm::PeriodicTimer gateDriverStatusTimer{1000ms};
+modm::PeriodicTimer debugTimer{1000ms};
 
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs> gateDriver;
 
