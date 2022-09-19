@@ -42,7 +42,13 @@ namespace
 void initialize()
 {
 	Board::initializeMcu();
-	Board::initializeAllPeripherals();
+	Board::Ui::initializeDebugUart();
+	Board::Motor::initialize();
+	Board::MotorCurrent::initialize(CompBase::Hysteresis::Hysteresis10mV);
+	Board::MotorBridge::initialize();
+	Board::Encoder::initialize();
+	Board::Sensor::initialize();
+	Board::CanBus::initialize();
 	Board::Ui::initializeLeds();
 
 	Board::Ui::LedRed::reset();

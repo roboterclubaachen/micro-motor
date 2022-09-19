@@ -413,7 +413,7 @@ namespace MotorCurrent {
 	}
 
 	inline void
-	initialize()
+	initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	{
 		SenseU::setAnalogInput();
 		SenseV::setAnalogInput();
@@ -431,6 +431,10 @@ namespace MotorCurrent {
 		// Connect DAC3_OUT1 to COMP1_INM,
 		// DAC3_OUT2 to COMP2_INM,
 		// and DAC3_OUT1 to COMP3_INM
+
+		CompU::setHysteresis(hysteresis);
+		CompV::setHysteresis(hysteresis);
+		CompW::setHysteresis(hysteresis);
 
 		// Connect COMP{1,2,3}_OUT to TIM1_BKIN
 		TIM1->AF1 |= (TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
