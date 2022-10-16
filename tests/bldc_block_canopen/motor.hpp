@@ -36,7 +36,12 @@ private:
 
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
 
-	uint_fast8_t readHall() { return Hall::read(commutationOffset_); }
+	uint_fast8_t readHall()
+	{
+		const auto& HallStates = librobots2::motor::block_commutation::SequenceLut;
+		return HallStates[Hall::read(commutationOffset_) & 0b111];
+	}
+
 	void updateVelocity();
 	void updatePosition();
 
