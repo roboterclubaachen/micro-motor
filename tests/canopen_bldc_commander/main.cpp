@@ -13,6 +13,7 @@
 #include <modm-canopen/cia402/operating_mode.hpp>
 
 #include <micro-motor/test/csv_writer.hpp>
+#include <micro-motor/canopen/canopen_objects.hpp>
 
 using modm_canopen::Address;
 using modm_canopen::CanopenMaster;
@@ -42,15 +43,16 @@ struct Test
 	constexpr void
 	registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map)
 	{
-		map.template setReadHandler<Address{0x2001, 0}>(+[]() { return uint8_t(10); });
+		map.template setReadHandler<Objects::Test1>(+[]() { return uint8_t(10); });
 
-		map.template setReadHandler<Address{0x2002, 0}>(+[]() { return commandedVoltage; });
+		map.template setReadHandler<Objects::VoltageCommand>(+[]() { return commandedVoltage; });
 
-		map.template setWriteHandler<Address{0x2002, 0}>(
+		map.template setWriteHandler<Objects::VoltageCommand>(
 			+[](int16_t) { return SdoErrorCode::UnsupportedAccess; });
-		map.template setReadHandler<Address{0x2003, 0}>(+[]() { return (int16_t)0; });
 
-		map.template setWriteHandler<Address{0x2003, 0}>(+[](int16_t value) {
+		map.template setReadHandler<Objects::OutputVoltage>(+[]() { return (int16_t)0; });
+
+		map.template setWriteHandler<Objects::OutputVoltage>(+[](int16_t value) {
 			if (outputVoltage != value)
 			{
 				MODM_LOG_INFO << "Received Output Voltage of " << value << modm::endl;
@@ -59,26 +61,27 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Address{0x6041, 0}>(+[]() { return (uint16_t)0; });
+		map.template setReadHandler<Objects::StatusWord>(+[]() { return (uint16_t)0; });
 
-		map.template setWriteHandler<Address{0x6041, 0}>(+[](uint16_t value) {
+		map.template setWriteHandler<Objects::StatusWord>(+[](uint16_t value) {
 			state_.set(value);
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Address{0x6040, 0}>(+[]() { return control_.value(); });
+		map.template setReadHandler<Objects::ControlWord>(+[]() { return control_.value(); });
 
-		map.template setWriteHandler<Address{0x6040, 0}>(
+		map.template setWriteHandler<Objects::ControlWord>(
 			+[](uint16_t) { return SdoErrorCode::UnsupportedAccess; });
 
-		map.template setReadHandler<Address{0x6060, 0}>(+[]() { return (int8_t)currMode; });
+		map.template setReadHandler<Objects::ModeOfOperation>(+[]() { return (int8_t)currMode; });
 
-		map.template setWriteHandler<Address{0x6060, 0}>(
+		map.template setWriteHandler<Objects::ModeOfOperation>(
 			+[](int8_t) { return SdoErrorCode::UnsupportedAccess; });
 
-		map.template setReadHandler<Address{0x6061, 0}>(+[]() { return (int8_t)receivedMode; });
+		map.template setReadHandler<Objects::ModeOfOperationDisplay>(
+			+[]() { return (int8_t)receivedMode; });
 
-		map.template setWriteHandler<Address{0x6061, 0}>(+[](int8_t value) {
+		map.template setWriteHandler<Objects::ModeOfOperationDisplay>(+[](int8_t value) {
 			if ((int8_t)receivedMode != value)
 			{
 				MODM_LOG_INFO << "Received Mode " << value << modm::endl;
@@ -87,9 +90,9 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Address{0x6064, 0}>(+[]() { return (int32_t)0; });
+		map.template setReadHandler<Objects::PositionActualValue>(+[]() { return (int32_t)0; });
 
-		map.template setWriteHandler<Address{0x6064, 0}>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::PositionActualValue>(+[](int32_t value) {
 			if (positionValue != value)
 			{
 				// MODM_LOG_INFO << "Received Output Position of " << value << modm::endl;
@@ -98,16 +101,16 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Address{0x2004, 0}>(+[]() { return (int32_t)0; });
+		map.template setReadHandler<Objects::VelocityError>(+[]() { return (int32_t)0; });
 
-		map.template setWriteHandler<Address{0x2004, 0}>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::VelocityError>(+[](int32_t value) {
 			if (errorValue != value) { errorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Address{0x606C, 0}>(+[]() { return (int32_t)0; });
+		map.template setReadHandler<Objects::VelocityActualValue>(+[]() { return (int32_t)0; });
 
-		map.template setWriteHandler<Address{0x606C, 0}>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::VelocityActualValue>(+[](int32_t value) {
 			if (velocityValue != value)
 			{
 				// MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
@@ -176,12 +179,12 @@ main()
 
 	Device::ReceivePdo_t statusRpdoMotor{};
 	statusRpdoMotor.setInactive();
-	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Address{0x6041, 0}, 16}) ==
+	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::StatusWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Address{0x2003, 0}, 16}) ==
+	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputVoltage, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Address{0x6061, 0}, 8}) ==
-		   SdoErrorCode::NoError);
+	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
+																  8}) == SdoErrorCode::NoError);
 	statusRpdoMotor.setMappingCount(3);
 	assert(statusRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Device::setRPDO(motorId, 0, statusRpdoMotor);
@@ -189,10 +192,10 @@ main()
 
 	Device::ReceivePdo_t infoRpdoMotor{};
 	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Address{0x606C, 0}, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Address{0x6064, 0}, 32}) ==
-		   SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
+																32}) == SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
+																32}) == SdoErrorCode::NoError);
 	infoRpdoMotor.setMappingCount(2);
 	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Device::setRPDO(motorId, 1, infoRpdoMotor);
@@ -200,7 +203,7 @@ main()
 
 	Device::ReceivePdo_t errorRpdoMotor{};
 	errorRpdoMotor.setInactive();
-	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Address{0x2004, 0}, 32}) ==
+	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
 		   SdoErrorCode::NoError);
 	errorRpdoMotor.setMappingCount(1);
 	assert(errorRpdoMotor.setActive() == SdoErrorCode::NoError);
@@ -209,17 +212,17 @@ main()
 
 	Device::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
-	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Address{0x6040, 0}, 16}) ==
+	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Address{0x2002, 0}, 16}) ==
+	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::VoltageCommand, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Address{0x6060, 0}, 8}) ==
+	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
 		   SdoErrorCode::NoError);
 	commandTpdoMotor.setMappingCount(3);
 	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
 	Device::setTPDO(motorId, 0, commandTpdoMotor);
 	Device::configureRemoteRPDO(motorId, 0, commandTpdoMotor, sendMessage);
-	SdoClient::requestWrite(motorId, Address{0x60FF, 0}, (uint32_t)10, sendMessage);
+	SdoClient::requestWrite(motorId, Objects::TargetVelocity, (uint32_t)10, sendMessage);
 
 	MODM_LOG_INFO << "Waiting on configuration of remote device..." << modm::endl;
 	while (SdoClient::waiting())
