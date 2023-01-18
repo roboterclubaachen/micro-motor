@@ -47,6 +47,8 @@ private:
 	bool halted_{false};
 
 	modm::PeriodicTimer controlTimer_{10ms};
+	Pid::Parameter velocityPidParameters_;
+	Pid::Parameter positionPidParameters_;
 	Pid velocityPid_;
 	Pid positionPid_;
 	uint_fast8_t commutationOffset_;
@@ -75,16 +77,7 @@ private:
 
 public:
 	Motor(uint_fast8_t commutationOffset, const Pid::Parameter &velocityParameters,
-		  const Pid::Parameter &positionParameters)
-		: commutationOffset_{commutationOffset}
-#ifndef __unix__
-		  ,
-		  motor_{commutationOffset}
-#endif
-	{
-		velocityPid_.setParameter(velocityParameters);
-		positionPid_.setParameter(positionParameters);
-	}
+		  const Pid::Parameter &positionParameters);
 	void
 	initializeHall()
 	{
@@ -220,6 +213,32 @@ public:
 	scalingFactors()
 	{
 		return scalingFactors_;
+	}
+
+	inline Pid::Parameter
+	getVelocityPidParams()
+	{
+		return velocityPidParameters_;
+	}
+
+	inline void
+	setVelocityPidParams(const Pid::Parameter &params)
+	{
+		velocityPidParameters_ = params;
+		velocityPid_.setParameter(velocityPidParameters_);
+	}
+
+	inline Pid::Parameter
+	getPositionPidParams()
+	{
+		return positionPidParameters_;
+	}
+
+	inline void
+	setPositionPidParams(const Pid::Parameter &params)
+	{
+		positionPidParameters_ = params;
+		positionPid_.setParameter(positionPidParameters_);
 	}
 };
 

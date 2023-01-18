@@ -1256,10 +1256,11 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=3
+SupportedObjects=4
 1=0x2002
 2=0x2003
 3=0x2004
+4=0x2005
 
 [2001]
 ParameterName=Enable motor
@@ -1291,4 +1292,37 @@ ObjectType=0x7
 DataType=0x0004
 AccessType=ro
 DefaultValue=0
+PDOMapping=1
+
+[2005]
+ParameterName=Velocity Pid
+ObjectType=0x8
+SubNumber=4
+
+[2005sub1]
+ParameterName= Velocity Pid kP 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2005sub2]
+ParameterName= Velocity Pid kI 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2005sub3]
+ParameterName= Velocity Pid kD 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2005sub4]
+ParameterName= Velocity Pid Max Error Sum
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
 PDOMapping=1

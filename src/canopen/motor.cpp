@@ -16,6 +16,20 @@ hallDiff(int_fast8_t oldState, int_fast8_t newState)
 }
 }  // namespace
 
+Motor::Motor(uint_fast8_t commutationOffset, const Pid::Parameter &velocityParameters,
+			 const Pid::Parameter &positionParameters)
+	: velocityPidParameters_(velocityParameters),
+	  positionPidParameters_(positionParameters),
+	  commutationOffset_{commutationOffset}
+#ifndef __unix__
+	  ,
+	  motor_{commutationOffset}
+#endif
+{
+	setVelocityPidParams(velocityParameters);
+	setPositionPidParams(positionParameters);
+}
+
 void
 Motor::updateVelocity()
 {
@@ -51,7 +65,7 @@ Motor::update()
 		updateVelocity();
 		if (mode_ == OperatingMode::Velocity)
 		{
-			 velocityError_ = (commandedVelocity_ - actualVelocity_);
+			velocityError_ = (commandedVelocity_ - actualVelocity_);
 			velocityPid_.update(velocityError_);
 			outputVoltage_ = velocityPid_.getValue();
 
@@ -62,7 +76,7 @@ Motor::update()
 
 			const auto pos_error = commandedPosition_ - actualPosition_;
 			positionPid_.update(pos_error);
-			 velocityError_ = positionPid_.getValue() - actualVelocity_;
+			velocityError_ = positionPid_.getValue() - actualVelocity_;
 			velocityPid_.update(velocityError_);
 			outputVoltage_ = velocityPid_.getValue();
 		}

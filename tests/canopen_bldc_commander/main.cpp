@@ -223,6 +223,7 @@ main()
 	Device::setTPDO(motorId, 0, commandTpdoMotor);
 	Device::configureRemoteRPDO(motorId, 0, commandTpdoMotor, sendMessage);
 	SdoClient::requestWrite(motorId, Objects::TargetVelocity, (uint32_t)10, sendMessage);
+	SdoClient::requestWrite(motorId, Objects::VelocityPID_kP, 1000.0f, sendMessage);
 
 	MODM_LOG_INFO << "Waiting on configuration of remote device..." << modm::endl;
 	while (SdoClient::waiting())
@@ -258,8 +259,8 @@ main()
 				MODM_LOG_DEBUG << "Next Command..." << modm::endl;
 				control_.apply(modm_canopen::cia402::StateCommands[(uint8_t)c.name].cmd);
 				currMode = c.mode;
-				Device::setValueChanged(Address{0x6040, 0});
-				Device::setValueChanged(Address{0x6060, 0});
+				Device::setValueChanged(Objects::ControlWord);
+				Device::setValueChanged(Objects::ModeOfOperation);
 			}
 		}
 		if (debugTimer.execute())

@@ -18,6 +18,12 @@ struct Objects
 	static constexpr modm_canopen::Address OutputVoltage{0x2003, 0};   // Custom
 	static constexpr modm_canopen::Address VelocityError{0x2004, 0};   // Custom
 
+	static constexpr modm_canopen::Address VelocityPID_kP{0x2005, 1};           // Custom
+	static constexpr modm_canopen::Address VelocityPID_kI{0x2005, 2};           // Custom
+	static constexpr modm_canopen::Address VelocityPID_kD{0x2005, 3};           // Custom
+	static constexpr modm_canopen::Address VelocityPID_MaxErrorSum{0x2005, 4};  // Custom
+	static constexpr modm_canopen::Address VelocityPID_MaxOutput{0x2005, 5};    // Custom
+
 	static constexpr modm_canopen::Address VelocityActualValue{0x606C, 0};  // User units
 	static constexpr modm_canopen::Address TargetVelocity{0x60FF, 0};       // User units
 
