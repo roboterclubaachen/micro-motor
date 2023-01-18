@@ -113,7 +113,7 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=20
+SupportedObjects=31
 1=0x1400
 2=0x1401
 3=0x1402
@@ -134,6 +134,46 @@ SupportedObjects=20
 18=0x6064
 19=0x606C
 20=0x60FF
+21=0x6040
+22=0x6041
+23=0x607A
+24=0x607E
+25=0x6067
+26=0x6062
+27=0x6093
+28=0x6094
+29=0x6097
+30=0x6061
+31=0x1200
+
+[1200]
+ParameterName=Server SDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1200sub0]
+ParameterName=Number of entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=2
+HighLimit=2
+
+[1200sub1]
+ParameterName=SDO receive COB-ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1200sub2]
+ParameterName=SDO transmit COB-ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
 
 [1400]
 ParameterName=RPDO1 Communication Parameter
@@ -1062,11 +1102,44 @@ AccessType=rw
 DefaultValue=0x00000000
 PDOMapping=0
 
+[6040]
+ParameterName=Control Word
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
+[6041]
+ParameterName=Status Word
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
 [6060]
 ParameterName=Mode of Operation
 ObjectType=0x7
 DataType=0x0002
 AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
+[6061]
+ParameterName=Mode of Operation Display
+ObjectType=0x7
+DataType=0x0002
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+
+[6062]
+ParameterName=Position demand value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
 DefaultValue=0
 PDOMapping=1
 
@@ -1078,11 +1151,36 @@ AccessType=ro
 DefaultValue=0
 PDOMapping=1
 
+[6067]
+ParameterName=Position window
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=4294967295
+PDOMapping=1
+
 [606C]
 ParameterName=Velocity actual value
 ObjectType=0x7
 DataType=0x0004
 AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+
+[607A]
+ParameterName=Target position
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
+[607E]
+ParameterName=Polarity
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
 DefaultValue=0
 PDOMapping=1
 
@@ -1094,11 +1192,74 @@ AccessType=rww
 DefaultValue=0
 PDOMapping=1
 
+[6093]
+ParameterName=Position Factor
+ObjectType=0x9
+SubNumber=2
+
+[6093sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
+[6093sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
+[6094]
+ParameterName=Velocity Factor
+ObjectType=0x9
+SubNumber=2
+
+[6094sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
+[6094sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
+[6097]
+ParameterName=Acceleration Factor
+ObjectType=0x9
+SubNumber=2
+
+[6097sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
+[6097sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+
 [ManufacturerObjects]
 SupportedObjects=3
-1=0x2001
-2=0x2002
-3=0x2003
+1=0x2002
+2=0x2003
+3=0x2004
 
 [2001]
 ParameterName=Enable motor
@@ -1120,6 +1281,14 @@ PDOMapping=1
 ParameterName=Output voltage
 ObjectType=0x7
 DataType=0x0003
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[2004]
+ParameterName=Velocity Error
+ObjectType=0x7
+DataType=0x0004
 AccessType=ro
 DefaultValue=0
 PDOMapping=1

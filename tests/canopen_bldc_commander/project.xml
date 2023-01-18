@@ -1,0 +1,30 @@
+<library>
+  <repositories>
+    <repository>
+      <path>../../../modm/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../../modm-canopen/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../repo.lb</path>
+    </repository>
+  </repositories>
+
+  <options>
+    <option name="modm:target">hosted-linux</option>
+    <option name="modm:build:build.path">build</option>
+    <option name="modm-canopen:device:eds_file">test.eds</option>
+  </options>
+
+  <modules>
+    <module>modm:debug</module>
+    <module>modm:build:scons</module>
+    <module>modm-canopen:device</module>
+    <module>modm-canopen:device:cia402</module>
+    <module>modm-canopen:device:test</module>
+    <module>modm:platform:socketcan</module>
+    <module>micro-motor:test</module>
+  </modules>
+</library>
+
