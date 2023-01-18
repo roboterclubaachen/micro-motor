@@ -117,3 +117,6 @@ Temporary Items
 *.creator.user
 *.files
 *.includes
+
+#CSVs
+*.csv
