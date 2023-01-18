@@ -23,10 +23,10 @@
 #include <modm/processing/timer.hpp>
 #include <modm/platform/can/socketcan.hpp>
 
-#include <canopen/canopen.hpp>
-#include <canopen/motor.hpp>
+#include <micro-motor/canopen/canopen.hpp>
+#include <micro-motor/canopen/motor.hpp>
 
-#include <test/csv_writer.hpp>
+#include <micro-motor/test/csv_writer.hpp>
 
 using namespace std::literals;
 

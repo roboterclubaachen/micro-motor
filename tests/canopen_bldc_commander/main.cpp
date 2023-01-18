@@ -12,7 +12,7 @@
 #include <modm/platform/can/socketcan.hpp>
 #include <modm-canopen/cia402/operating_mode.hpp>
 
-#include <test/csv_writer.hpp>
+#include <micro-motor/test/csv_writer.hpp>
 
 using modm_canopen::Address;
 using modm_canopen::CanopenMaster;

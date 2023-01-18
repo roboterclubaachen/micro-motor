@@ -8,7 +8,7 @@
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 #include <micro-motor/hardware.hpp>
 #else
-#include <test/sim_motor.hpp>
+#include <micro-motor/test/sim_motor.hpp>
 #endif
 #include <modm/math/filter/pid.hpp>
 #include <modm/processing/timer.hpp>
@@ -113,7 +113,9 @@ public:
 	{
 		mode_ = mode;
 	}
-	int32_t velocityError() const{
+	int32_t
+	velocityError() const
+	{
 		return velocityError_;
 	}
 	int32_t
@@ -226,7 +228,7 @@ const Pid::Parameter velocityControllerParameters{
 	1.0f,                                       // kp
 	0.0f,                                       // ki
 	0.0f,                                       // kd
-	100.0f,                                       // max error sum
+	100.0f,                                     // max error sum
 	(float)std::numeric_limits<int16_t>::max()  // max output
 };
 

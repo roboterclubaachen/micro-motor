@@ -33,6 +33,6 @@ def prepare(module, options):
     return True
 
 def build(env):
-    env.outbasepath = "micro-motor/src/canopen"
+    env.outbasepath = "micro-motor/src/micro-motor/canopen"
     env.copy(".")
     env.collect("modm:build:path.include", "micro-motor/src")

@@ -25,8 +25,8 @@
 #include <modm/platform.hpp>
 #include <modm/processing/timer.hpp>
 
-#include <canopen/canopen.hpp>
-#include <canopen/motor.hpp>
+#include <micro-motor/canopen/canopen.hpp>
+#include <micro-motor/canopen/motor.hpp>
 
 inline modm::IODeviceWrapper<Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull> loggerDevice;
 inline modm::log::Logger modm::log::debug(loggerDevice);

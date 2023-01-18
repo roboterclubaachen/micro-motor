@@ -24,6 +24,7 @@
     <module>modm-canopen:device:cia402</module>
     <module>modm-canopen:device:test</module>
     <module>modm:platform:socketcan</module>
+    <module>micro-motor:canopen</module>
     <module>micro-motor:test</module>
   </modules>
 </library>

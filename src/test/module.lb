@@ -24,6 +24,6 @@ def prepare(module, options):
     return True
 
 def build(env):
-    env.outbasepath = "micro-motor/src/test"
+    env.outbasepath = "micro-motor/src/micro-motor/test"
     env.copy(".")
     env.collect("modm:build:path.include", "micro-motor/src/test")
