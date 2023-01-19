@@ -11,6 +11,8 @@
 #include <modm-canopen/cia402/state_machine.hpp>
 #include <modm-canopen/cia402/factors.hpp>
 
+#include "rolling_average.hpp"
+
 using namespace std::literals;
 
 using OperatingMode = modm_canopen::cia402::OperatingMode;
@@ -53,7 +55,7 @@ private:
 	// General State
 	int32_t actualPosition_{};
 	int32_t lastPosition_{};
-	int32_t actualVelocity_{};
+	RollingAverage<int32_t, 8> actualVelocity_{};
 	int16_t outputPWM_{};
 	bool enableMotor_{true};
 
@@ -133,7 +135,7 @@ public:
 	int32_t
 	velocity() const
 	{
-		return actualVelocity_;
+		return actualVelocity_.average();
 	}
 	int32_t
 	position() const
