@@ -12,7 +12,7 @@
 #include <modm/platform/can/socketcan.hpp>
 #include <modm-canopen/cia402/operating_mode.hpp>
 
-#include <micro-motor/test/csv_writer.hpp>
+#include "csv_writer.hpp"
 #include <micro-motor/canopen/canopen_objects.hpp>
 
 using modm_canopen::Address;
@@ -23,8 +23,8 @@ using modm_canopen::generated::DefaultObjects;
 
 using namespace std::literals;
 
-int16_t commandedVoltage = 6000;
-int16_t outputVoltage = 0;
+int16_t commandedPWM = 6000;
+int16_t outputPWM = 0;
 int32_t velocityValue = 0;
 int32_t positionValue = 0;
 int32_t errorValue = 0;
@@ -45,18 +45,18 @@ struct Test
 	{
 		map.template setReadHandler<Objects::Test1>(+[]() { return uint8_t(10); });
 
-		map.template setReadHandler<Objects::VoltageCommand>(+[]() { return commandedVoltage; });
+		map.template setReadHandler<Objects::PWMCommand>(+[]() { return commandedPWM; });
 
-		map.template setWriteHandler<Objects::VoltageCommand>(
+		map.template setWriteHandler<Objects::PWMCommand>(
 			+[](int16_t) { return SdoErrorCode::UnsupportedAccess; });
 
-		map.template setReadHandler<Objects::OutputVoltage>(+[]() { return (int16_t)0; });
+		map.template setReadHandler<Objects::OutputPWM>(+[]() { return (int16_t)0; });
 
-		map.template setWriteHandler<Objects::OutputVoltage>(+[](int16_t value) {
-			if (outputVoltage != value)
+		map.template setWriteHandler<Objects::OutputPWM>(+[](int16_t value) {
+			if (outputPWM != value)
 			{
-				MODM_LOG_INFO << "Received Output Voltage of " << value << modm::endl;
-				outputVoltage = value;
+				MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
+				outputPWM = value;
 			}
 			return SdoErrorCode::NoError;
 		});
@@ -181,7 +181,7 @@ main()
 	statusRpdoMotor.setInactive();
 	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::StatusWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputVoltage, 16}) ==
+	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputPWM, 16}) ==
 		   SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
 																  8}) == SdoErrorCode::NoError);
@@ -214,7 +214,7 @@ main()
 	commandTpdoMotor.setInactive();
 	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::VoltageCommand, 16}) ==
+	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PWMCommand, 16}) ==
 		   SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
 		   SdoErrorCode::NoError);
@@ -265,11 +265,10 @@ main()
 		}
 		if (debugTimer.execute())
 		{
-			writer.addRow(
-				{std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
-				 std::to_string(positionValue % 6), std::to_string(velocityValue),
-				 std::to_string((float)outputVoltage / std::numeric_limits<int16_t>::max()),
-				 std::to_string(errorValue)});
+			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
+						   std::to_string(positionValue % 6), std::to_string(velocityValue),
+						   std::to_string((float)outputPWM / std::numeric_limits<int16_t>::max()),
+						   std::to_string(errorValue)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

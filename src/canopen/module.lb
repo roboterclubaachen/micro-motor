@@ -21,8 +21,7 @@ def init(module):
 def prepare(module, options):
     if not str(options["modm:target"].identifier) == "hosted-linux":
         module.depends(":common")
-    else:
-        module.depends(":test")
+
 
     module.depends(   
     "modm:build", 

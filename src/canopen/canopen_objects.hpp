@@ -13,10 +13,10 @@ struct Objects
 	static constexpr modm_canopen::Address TargetPosition{0x607A, 0};       // User units
 	static constexpr modm_canopen::Address PositionWindow{0x6067, 0};       // User units
 
-	static constexpr modm_canopen::Address Test1{0x2001, 0};           // Custom
-	static constexpr modm_canopen::Address VoltageCommand{0x2002, 0};  // Custom
-	static constexpr modm_canopen::Address OutputVoltage{0x2003, 0};   // Custom
-	static constexpr modm_canopen::Address VelocityError{0x2004, 0};   // Custom
+	static constexpr modm_canopen::Address Test1{0x2001, 0};          // Custom
+	static constexpr modm_canopen::Address PWMCommand{0x2002, 0};     // Custom
+	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};      // Custom
+	static constexpr modm_canopen::Address VelocityError{0x2004, 0};  // Custom
 
 	static constexpr modm_canopen::Address VelocityPID_kP{0x2005, 1};           // Custom
 	static constexpr modm_canopen::Address VelocityPID_kI{0x2005, 2};           // Custom

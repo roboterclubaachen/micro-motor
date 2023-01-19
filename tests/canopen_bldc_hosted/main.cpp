@@ -24,9 +24,7 @@
 #include <modm/platform/can/socketcan.hpp>
 
 #include <micro-motor/canopen/canopen.hpp>
-#include <micro-motor/canopen/motor.hpp>
-
-#include <micro-motor/test/csv_writer.hpp>
+#include "motor.hpp"
 
 using namespace std::literals;
 
@@ -37,13 +35,6 @@ constexpr char canDevice[] = "vcan0";
 int
 main()
 {
-	auto start = modm::Clock::now();
-	CSVWriter writer{{"Time", "Position", "Velocity", "Acceleration"}};
-	if (!writer.create("vel.csv"))
-	{
-		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
-		return 1;
-	}
 
 	constexpr uint8_t nodeId = 1;
 	const bool success = can.open(canDevice);
@@ -74,17 +65,11 @@ main()
 
 		if (debugTimer.execute())
 		{
-			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
-						   std::to_string(Motor0.dummy().position()),
-						   std::to_string(Motor0.dummy().velocity()),
-						   std::to_string(Motor0.dummy().acceleration())});
-			writer.flush();
 			MODM_LOG_DEBUG << "dummy A: " << Motor0.dummy().acceleration() << modm::endl;
 			MODM_LOG_DEBUG << "dummy V: " << Motor0.dummy().velocity() << modm::endl;
 			MODM_LOG_DEBUG << "dummy P: " << Motor0.dummy().position() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << Motor0.position() << "\n" << modm::endl;
+			MODM_LOG_DEBUG << "position: " << MotorControl0.position() << "\n" << modm::endl;
 		}
 	}
-	writer.close();
 	return 0;
 }

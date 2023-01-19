@@ -26,7 +26,7 @@
 #include <modm/processing/timer.hpp>
 
 #include <micro-motor/canopen/canopen.hpp>
-#include <micro-motor/canopen/motor.hpp>
+#include "motor.hpp"
 
 inline modm::IODeviceWrapper<Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull> loggerDevice;
 inline modm::log::Logger modm::log::debug(loggerDevice);
@@ -68,7 +68,7 @@ main()
 		if (debugTimer.execute())
 		{
 			MODM_LOG_DEBUG << "hall: " << Board::Motor::HallPort::read() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << Motor0.position() << "\n" << modm::endl;
+			MODM_LOG_DEBUG << "position: " << MotorControl0.position() << "\n" << modm::endl;
 		}
 
 		using Can = Board::CanBus::Can;

@@ -11,6 +11,7 @@
     </repository>
   </repositories>
 
+
   <options>
     <option name="modm:target">hosted-linux</option>
     <option name="modm:build:build.path">build</option>
@@ -25,7 +26,6 @@
     <module>modm-canopen:device:test</module>
     <module>modm:platform:socketcan</module>
     <module>micro-motor:canopen</module>
-    <module>micro-motor:test</module>
   </modules>
 </library>
 

@@ -4,12 +4,6 @@
 #include <cstdint>
 #include <limits>
 
-#ifndef __unix__
-#include <librobots2/motor/bldc_motor_block_commutation.hpp>
-#include <micro-motor/hardware.hpp>
-#else
-#include <micro-motor/test/sim_motor.hpp>
-#endif
 #include <modm/math/filter/pid.hpp>
 #include <modm/processing/timer.hpp>
 
@@ -25,76 +19,52 @@ using ControlWord = modm_canopen::cia402::CommandWord;
 using Factors = modm_canopen::cia402::Factors;
 using Pid = modm::Pid<float>;
 
-class Motor
+class MotorControl
 {
 private:
+	modm::PeriodicTimer controlTimer_{10ms};
+
 	OperatingMode mode_{OperatingMode::Voltage};
 	StateMachine status_{modm_canopen::cia402::State::SwitchOnDisabled};
 	ControlWord control_{0};
 	Factors scalingFactors_{};
 
-	int32_t receivedVelocity_{};
-	bool receivedPositionRelative_{true};
-	int32_t receivedPosition_{};
-	int32_t commandedVelocity_{};
-	int32_t commandedPosition_{};
-	uint32_t positionWindow_{};
-	int32_t actualVelocity_{};
-	int32_t actualPosition_{};
-	int16_t commandedVoltage_{};
-	int16_t outputVoltage_{};
-	int32_t velocityError_{};
+	// Safety
 	bool halted_{false};
 
-	modm::PeriodicTimer controlTimer_{10ms};
-	Pid::Parameter velocityPidParameters_;
+	// Position Mode
 	Pid::Parameter positionPidParameters_;
-	Pid velocityPid_;
 	Pid positionPid_;
-	uint_fast8_t commutationOffset_;
-	uint_fast8_t lastHallState_{};
-	int32_t lastPosition_{};
+	bool receivedPositionRelative_{true};
+	int32_t receivedPosition_{};
+	int32_t commandedPosition_{};
+	uint32_t positionWindow_{};
 
-#ifndef __unix__
-	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
-	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
-	uint_fast8_t
-	readHall()
-	{
-		const auto &HallStates = librobots2::motor::block_commutation::SequenceLut;
-		return HallStates[Hall::read(commutationOffset_) & 0b111];
-	}
-#else
-	MotorSimulation dummy_{};
-#endif
+	// Velocity Mode
+	Pid::Parameter velocityPidParameters_;
+	Pid velocityPid_;
+	int32_t receivedVelocity_{};
+	int32_t commandedVelocity_{};
+	int32_t velocityError_{};
+
+	// Voltage Mode
+	int16_t commandedPWM_{};
+
+	// General State
+	int32_t actualPosition_{};
+	int32_t lastPosition_{};
+	int32_t actualVelocity_{};
+	int16_t outputPWM_{};
+	bool enableMotor_{true};
 
 	void
 	updateVelocity();
 	void
-	updatePosition();
-	void
 	updateStatus();
 
 public:
-	Motor(uint_fast8_t commutationOffset, const Pid::Parameter &velocityParameters,
-		  const Pid::Parameter &positionParameters);
-	void
-	initializeHall()
-	{
-#ifndef __unix__
-		lastHallState_ = readHall();
-#else
-		lastHallState_ = dummy_.hall();
-#endif
-	}
-
-#ifdef __unix__
-	inline MotorSimulation &
-	dummy()
-	{
-		return dummy_;
-	};
-#endif
+	MotorControl(const Pid::Parameter &velocityParameters,
+				 const Pid::Parameter &positionParameters);
 
 	OperatingMode
 	mode()
@@ -123,14 +93,14 @@ public:
 	}
 
 	int16_t
-	commandedVoltage() const
+	commandedPWM() const
 	{
-		return commandedVoltage_;
+		return commandedPWM_;
 	}
 	void
-	setCommandedVoltage(int16_t voltage)
+	setCommandedPWM(int16_t pwm)
 	{
-		commandedVoltage_ = voltage;
+		commandedPWM_ = pwm;
 	}
 
 	int32_t
@@ -171,9 +141,14 @@ public:
 		return actualPosition_;
 	}
 	int16_t
-	outputVoltage() const
+	outputPWM() const
 	{
-		return outputVoltage_;
+		return outputPWM_;
+	}
+	bool
+	enableMotor() const
+	{
+		return enableMotor_;
 	}
 
 	bool
@@ -194,6 +169,13 @@ public:
 	halt();
 	void
 	unhalt();
+
+	inline void
+	setActualPosition(int32_t position)
+	{
+		actualPosition_ = position;
+	}
+
 	bool
 	update();
 
@@ -244,7 +226,7 @@ public:
 
 const Pid::Parameter velocityControllerParameters{
 	// TODO
-	1.0f,                                       // kp
+	0.0001f,                                    // kp
 	0.0f,                                       // ki
 	0.0f,                                       // kd
 	100.0f,                                     // max error sum
@@ -260,6 +242,4 @@ const Pid::Parameter positionControllerParameters{
 	(float)std::numeric_limits<int32_t>::max()  // max output
 };
 
-constexpr uint8_t motor0CommutationOffset{1};
-inline Motor Motor0{motor0CommutationOffset, velocityControllerParameters,
-					positionControllerParameters};
+inline MotorControl MotorControl0{velocityControllerParameters, positionControllerParameters};

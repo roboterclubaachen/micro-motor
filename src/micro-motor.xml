@@ -13,14 +13,13 @@
   </repositories>
 
   <options>
-    <option name="modm:target">hosted-linux</option>
-    <option name="modm-canopen:device:eds_file">../src/micro-motor.eds</option>
+    <option name="modm:target">stm32g474cet6</option>
+    <option name="modm-canopen:device:eds_file">micro-motor.eds</option>
   </options>
 
   <modules>
     <module>modm:build:scons</module>
-    <module>modm:platform:socketcan</module>
     <module>micro-motor:canopen</module>
-    <module>micro-motor:test</module>
+    <module>micro-motor:common</module>
   </modules>
 </library>

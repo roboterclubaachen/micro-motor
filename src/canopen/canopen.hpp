@@ -33,7 +33,7 @@ void
 CanOpen::setControllerUpdated()
 {
 	Device::setValueChanged(Objects::StatusWord);
-	Device::setValueChanged(Objects::OutputVoltage);
+	Device::setValueChanged(Objects::OutputPWM);
 	Device::setValueChanged(Objects::ModeOfOperation);
 	Device::setValueChanged(Objects::VelocityActualValue);
 	Device::setValueChanged(Objects::PositionActualValue);

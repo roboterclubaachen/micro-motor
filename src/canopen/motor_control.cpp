@@ -1,64 +1,29 @@
-#include "motor.hpp"
+#include "motor_control.hpp"
 #include <modm/debug/logger.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
-namespace
-{
-int_fast8_t
-hallDiff(int_fast8_t oldState, int_fast8_t newState)
-{
-	auto diff = newState - oldState;
-	if (diff < -2)
-		diff += 6;
-	else if (diff > 3)
-		diff -= 6;
-	return diff;
-}
-}  // namespace
-
-Motor::Motor(uint_fast8_t commutationOffset, const Pid::Parameter &velocityParameters,
-			 const Pid::Parameter &positionParameters)
-	: velocityPidParameters_(velocityParameters),
-	  positionPidParameters_(positionParameters),
-	  commutationOffset_{commutationOffset}
-#ifndef __unix__
-	  ,
-	  motor_{commutationOffset}
-#endif
+MotorControl::MotorControl(const Pid::Parameter &velocityParameters,
+						   const Pid::Parameter &positionParameters)
 {
 	setVelocityPidParams(velocityParameters);
 	setPositionPidParams(positionParameters);
 }
 
 void
-Motor::updateVelocity()
+MotorControl::updateVelocity()
 {
 	actualVelocity_ = actualPosition_ - lastPosition_;
 	lastPosition_ = actualPosition_;
 }
 
-void
-Motor::updatePosition()
-{
-#ifndef __unix__
-	const auto hallState = readHall();
-#else
-	const auto hallState = dummy_.hall();
-#endif
-	actualPosition_ += hallDiff(lastHallState_, hallState);
-	lastHallState_ = hallState;
-}
-
 bool
-Motor::update()
+MotorControl::update()
 {
-
-	updatePosition();
+	bool updated = false;
 	auto state = status_.state();
 
-	if (mode_ == OperatingMode::Voltage) { outputVoltage_ = commandedVoltage_; }
+	if (mode_ == OperatingMode::Voltage) { outputPWM_ = commandedPWM_; }
 
-	bool updated = false;
 	if (controlTimer_.execute())
 	{
 
@@ -67,7 +32,7 @@ Motor::update()
 		{
 			velocityError_ = (commandedVelocity_ - actualVelocity_);
 			velocityPid_.update(velocityError_);
-			outputVoltage_ = velocityPid_.getValue();
+			outputPWM_ = velocityPid_.getValue();
 
 		} else if (mode_ == OperatingMode::Position)
 		{
@@ -78,7 +43,7 @@ Motor::update()
 			positionPid_.update(pos_error);
 			velocityError_ = positionPid_.getValue() - actualVelocity_;
 			velocityPid_.update(velocityError_);
-			outputVoltage_ = velocityPid_.getValue();
+			outputPWM_ = velocityPid_.getValue();
 		}
 
 		updated = true;
@@ -87,24 +52,18 @@ Motor::update()
 	if (state != modm_canopen::cia402::State::OperationEnabled ||
 		mode_ == OperatingMode::Disabled || halted_)
 	{
-#ifndef __unix__
-		motor_.disable();
-#endif
-		outputVoltage_ = 0;
+		enableMotor_ = false;
+		outputPWM_ = 0;
+	} else
+	{
+		enableMotor_ = true;
 	}
-#ifndef __unix__
-	motor_.setSetpoint(outputVoltage_);
-	motor_.update();
-#else
-	dummy_.setInputVoltageInt(outputVoltage_);
-	dummy_.update(1.0f);
-#endif
 	updateStatus();
 	return updated;
 }
 
 void
-Motor::updateStatus()
+MotorControl::updateStatus()
 {
 	bool targetReached = true;
 	if (mode_ == OperatingMode::Velocity)
@@ -119,16 +78,16 @@ Motor::updateStatus()
 	}
 	status_.setBit<StatusBits::TargetReached>(targetReached);
 	// TODO check if the voltage is present if we apply it or if we can apply it
-	status_.setBit<StatusBits::VoltagePresent>(outputVoltage_ != 0);
+	status_.setBit<StatusBits::VoltagePresent>(outputPWM_ != 0);
 }
 
 void
-Motor::halt()
+MotorControl::halt()
 {
 	halted_ = true;
 }
 void
-Motor::unhalt()
+MotorControl::unhalt()
 {
 	halted_ = false;
 }
