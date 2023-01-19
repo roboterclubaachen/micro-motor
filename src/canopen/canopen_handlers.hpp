@@ -45,7 +45,7 @@ struct CanOpenHandlers
 		});
 
 		map.template setReadHandler<Objects::VelocityError>(+[]() {
-			return MotorControl0.scalingFactors().velocity.toUser(MotorControl0.velocity());
+			return MotorControl0.scalingFactors().velocity.toUser(MotorControl0.velocityError());
 		});
 
 		map.template setReadHandler<Objects::TargetVelocity>(+[]() {

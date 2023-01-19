@@ -1,19 +1,21 @@
-#include <iostream>
-#include <modm-canopen/canopen_master.hpp>
-#include <modm-canopen/sdo_client.hpp>
+#include <modm/platform/can/socketcan.hpp>
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
+
+#include <modm-canopen/cia402/operating_mode.hpp>
+#include <modm-canopen/cia402/state_machine.hpp>
+
+#include <micro-motor/canopen/canopen_objects.hpp>
+
+#include <modm-canopen/canopen_master.hpp>
+#include <modm-canopen/sdo_client.hpp>
 
 #include <thread>
 #include <cassert>
 #include <array>
-
-#include <modm-canopen/cia402/state_machine.hpp>
-#include <modm/platform/can/socketcan.hpp>
-#include <modm-canopen/cia402/operating_mode.hpp>
+#include <iostream>
 
 #include "csv_writer.hpp"
-#include <micro-motor/canopen/canopen_objects.hpp>
 
 using modm_canopen::Address;
 using modm_canopen::CanopenMaster;
@@ -23,6 +25,13 @@ using modm_canopen::generated::DefaultObjects;
 
 using namespace std::literals;
 
+struct CommandSendInfo
+{
+	modm_canopen::cia402::StateCommandNames name;
+	OperatingMode mode;
+	size_t time;
+};
+
 int16_t commandedPWM = 6000;
 int16_t outputPWM = 0;
 int32_t velocityValue = 0;
@@ -31,11 +40,23 @@ int32_t errorValue = 0;
 OperatingMode currMode = OperatingMode::Voltage;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
-constexpr char canDevice[] = "vcan0";
+constexpr uint8_t motorId = 1;  // Keep consistent with firmware
 
-modm::PeriodicTimer debugTimer{100ms};
+modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
+#define HOSTED
+#ifdef HOSTED
+constexpr char canDevice[] = "vcan0";
+constexpr float vPID_kP = 10.0f;
+constexpr float vPID_kI = 20.0f;
+constexpr float vPID_kD = 0.0f;
+#else
+constexpr char canDevice[] = "can0";
+constexpr float vPID_kP = 1.0f;
+constexpr float vPID_KI = 0.0f;
+constexpr float vPID_kD = 0.0f;
+#endif
 
 struct Test
 {
@@ -121,12 +142,71 @@ struct Test
 	}
 };
 
-struct CommandSendInfo
+using Device = CanopenMaster<DefaultObjects, Test>;
+using SdoClient = modm_canopen::SdoClient<Device>;
+
+template<typename MessageCallback>
+void
+setPDOs(MessageCallback&& sendMessage)
 {
-	modm_canopen::cia402::StateCommandNames name;
-	OperatingMode mode;
-	size_t time;
-};
+	Device::ReceivePdo_t statusRpdoMotor{};
+	statusRpdoMotor.setInactive();
+	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::StatusWord, 16}) ==
+		   SdoErrorCode::NoError);
+	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputPWM, 16}) ==
+		   SdoErrorCode::NoError);
+	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
+																  8}) == SdoErrorCode::NoError);
+	statusRpdoMotor.setMappingCount(3);
+	assert(statusRpdoMotor.setActive() == SdoErrorCode::NoError);
+	Device::setRPDO(motorId, 0, statusRpdoMotor);
+	Device::configureRemoteTPDO(motorId, 0, statusRpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+
+	Device::ReceivePdo_t infoRpdoMotor{};
+	infoRpdoMotor.setInactive();
+	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
+																32}) == SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
+																32}) == SdoErrorCode::NoError);
+	infoRpdoMotor.setMappingCount(2);
+	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
+	Device::setRPDO(motorId, 1, infoRpdoMotor);
+	Device::configureRemoteTPDO(motorId, 1, infoRpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+
+	Device::ReceivePdo_t errorRpdoMotor{};
+	errorRpdoMotor.setInactive();
+	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
+		   SdoErrorCode::NoError);
+	errorRpdoMotor.setMappingCount(1);
+	assert(errorRpdoMotor.setActive() == SdoErrorCode::NoError);
+	Device::setRPDO(motorId, 2, errorRpdoMotor);
+	Device::configureRemoteTPDO(motorId, 2, errorRpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+
+	Device::TransmitPdo_t commandTpdoMotor{};
+	commandTpdoMotor.setInactive();
+	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
+		   SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PWMCommand, 16}) ==
+		   SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
+		   SdoErrorCode::NoError);
+	commandTpdoMotor.setMappingCount(3);
+	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
+	Device::setTPDO(motorId, 0, commandTpdoMotor);
+	Device::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::TargetVelocity, (uint32_t)10,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::VelocityPID_kP, vPID_kP,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::VelocityPID_kI, vPID_kI,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::VelocityPID_kD, vPID_kD,
+							std::forward<MessageCallback>(sendMessage));
+}
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -155,9 +235,6 @@ main()
 	}
 
 	uint64_t counter = 0;
-	using Device = CanopenMaster<DefaultObjects, Test>;
-	using SdoClient = modm_canopen::SdoClient<Device>;
-	const uint8_t motorId = 1;  // Keep consistent with firmware
 
 	modm::platform::SocketCan can;
 	bool success = can.open(canDevice);
@@ -177,53 +254,7 @@ main()
 		if (err != modm_canopen::SdoErrorCode::NoError) { success = false; }
 	};
 
-	Device::ReceivePdo_t statusRpdoMotor{};
-	statusRpdoMotor.setInactive();
-	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::StatusWord, 16}) ==
-		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputPWM, 16}) ==
-		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
-																  8}) == SdoErrorCode::NoError);
-	statusRpdoMotor.setMappingCount(3);
-	assert(statusRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Device::setRPDO(motorId, 0, statusRpdoMotor);
-	Device::configureRemoteTPDO(motorId, 0, statusRpdoMotor, sendMessage);
-
-	Device::ReceivePdo_t infoRpdoMotor{};
-	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
-																32}) == SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
-																32}) == SdoErrorCode::NoError);
-	infoRpdoMotor.setMappingCount(2);
-	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Device::setRPDO(motorId, 1, infoRpdoMotor);
-	Device::configureRemoteTPDO(motorId, 1, infoRpdoMotor, sendMessage);
-
-	Device::ReceivePdo_t errorRpdoMotor{};
-	errorRpdoMotor.setInactive();
-	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
-		   SdoErrorCode::NoError);
-	errorRpdoMotor.setMappingCount(1);
-	assert(errorRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Device::setRPDO(motorId, 2, errorRpdoMotor);
-	Device::configureRemoteTPDO(motorId, 2, errorRpdoMotor, sendMessage);
-
-	Device::TransmitPdo_t commandTpdoMotor{};
-	commandTpdoMotor.setInactive();
-	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
-		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PWMCommand, 16}) ==
-		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
-		   SdoErrorCode::NoError);
-	commandTpdoMotor.setMappingCount(3);
-	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
-	Device::setTPDO(motorId, 0, commandTpdoMotor);
-	Device::configureRemoteRPDO(motorId, 0, commandTpdoMotor, sendMessage);
-	SdoClient::requestWrite(motorId, Objects::TargetVelocity, (uint32_t)10, sendMessage);
-	SdoClient::requestWrite(motorId, Objects::VelocityPID_kP, 1000.0f, sendMessage);
+	setPDOs(sendMessage);
 
 	MODM_LOG_INFO << "Waiting on configuration of remote device..." << modm::endl;
 	while (SdoClient::waiting())

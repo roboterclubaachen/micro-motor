@@ -20,7 +20,7 @@ private:
 	double electricResistance_mOhm{1000.0};
 
 	// motorSpeedConstant_ unit: 1/(V*s)
-	double motorSpeedConstant_1_Vs{0.1};
+	double motorSpeedConstant_1_Vs{0.01};
 
 	// motorTorqueConstant_ unit: A/(N*m)
 	double motorTorqueConstant_A_Nm{0.2};

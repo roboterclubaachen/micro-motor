@@ -226,7 +226,7 @@ public:
 
 const Pid::Parameter velocityControllerParameters{
 	// TODO
-	0.0001f,                                    // kp
+	1.0f,                                       // kp
 	0.0f,                                       // ki
 	0.0f,                                       // kd
 	100.0f,                                     // max error sum

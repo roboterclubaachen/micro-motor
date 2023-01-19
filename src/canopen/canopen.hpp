@@ -37,6 +37,7 @@ CanOpen::setControllerUpdated()
 	Device::setValueChanged(Objects::ModeOfOperation);
 	Device::setValueChanged(Objects::VelocityActualValue);
 	Device::setValueChanged(Objects::PositionActualValue);
+	Device::setValueChanged(Objects::VelocityError);
 }
 
 void
