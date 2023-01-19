@@ -111,20 +111,23 @@ public:
 	{
 		return commandedPosition_;
 	}
+
 		int32_t
 	positionError() const
 	{
 		return positionError_;
 	}
+
 	int32_t
 	receivedPosition() const
 	{
 		return receivedPosition_;
 	}
+
 	void
-	setReceivedPosition(int32_t position)
+	setCommandedPosition(int32_t position)
 	{
-		receivedPosition_ = position;
+		commandedPosition_ = position;
 	}
 
 	uint32_t

@@ -71,7 +71,7 @@ struct CanOpenHandlers
 		});
 
 		map.template setWriteHandler<Objects::TargetPosition>(+[](int32_t value) {
-			MotorControl0.setReceivedPosition(
+			MotorControl0.setCommandedPosition(
 				MotorControl0.scalingFactors().position.toInternal(value));
 			return SdoErrorCode::NoError;
 		});
