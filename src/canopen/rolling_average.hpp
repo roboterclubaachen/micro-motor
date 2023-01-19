@@ -1,13 +1,13 @@
 #pragma once
 #include <cstdint>
 #include <array>
-template<typename T, size_t Size>
+template<typename T, int32_t Size>
 class RollingAverage
 {
 private:
 	std::array<T, Size> values_{};
-	size_t valueCount_ = 0;
-	size_t nextIndex_ = 0;
+	int32_t valueCount_ = 0;
+	int32_t nextIndex_ = 0;
 
 public:
 	inline void
@@ -21,7 +21,7 @@ public:
 	average() const
 	{
 		T temp{};
-		for (size_t i = 0; i < valueCount_; i++) { temp += values_[i]; }
+		for (int32_t i = 0; i < valueCount_; i++) { temp += values_[i]; }
 		return temp / valueCount_;
 	}
 };
