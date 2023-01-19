@@ -12,7 +12,7 @@ MotorControl::MotorControl(const Pid::Parameter &velocityParameters,
 void
 MotorControl::updateVelocity()
 {
-	actualVelocity_.addValue(actualPosition_ - lastPosition_);
+	actualVelocity_.update(actualPosition_ - lastPosition_);
 	lastPosition_ = actualPosition_;
 }
 
@@ -30,7 +30,7 @@ MotorControl::update()
 		updateVelocity();
 		if (mode_ == OperatingMode::Velocity)
 		{
-			velocityError_ = (commandedVelocity_ - actualVelocity_.average());
+			velocityError_ = (commandedVelocity_ - actualVelocity_.getValue());
 			velocityPid_.update(velocityError_);
 			outputPWM_ = velocityPid_.getValue();
 
@@ -41,7 +41,7 @@ MotorControl::update()
 
 			positionError_ = commandedPosition_ - actualPosition_;
 			positionPid_.update(positionError_);
-			velocityError_ = positionPid_.getValue() - actualVelocity_.average();
+			velocityError_ = positionPid_.getValue() - actualVelocity_.getValue();
 			velocityPid_.update(velocityError_);
 			outputPWM_ = velocityPid_.getValue();
 		}
@@ -68,8 +68,8 @@ MotorControl::updateStatus()
 	bool targetReached = true;
 	if (mode_ == OperatingMode::Velocity)
 	{
-		targetReached = (actualVelocity_.average() == commandedVelocity_);
-		status_.setBit<StatusBits::SpeedZero>(actualVelocity_.average() == 0);
+		targetReached = (actualVelocity_.getValue() == commandedVelocity_);
+		status_.setBit<StatusBits::SpeedZero>(actualVelocity_.getValue() == 0);
 	} else if (mode_ == OperatingMode::Position)
 	{
 		auto pos_error = commandedPosition_ - actualPosition_;

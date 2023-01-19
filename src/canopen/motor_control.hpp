@@ -5,13 +5,13 @@
 #include <limits>
 
 #include <modm/math/filter/pid.hpp>
+#include <modm/math/filter/moving_average.hpp>
+#include <modm/math/filter/s_curve_controller.hpp>
 #include <modm/processing/timer.hpp>
 
 #include <modm-canopen/cia402/operating_mode.hpp>
 #include <modm-canopen/cia402/state_machine.hpp>
 #include <modm-canopen/cia402/factors.hpp>
-
-#include "rolling_average.hpp"
 
 using namespace std::literals;
 
@@ -56,7 +56,7 @@ private:
 	// General State
 	int32_t actualPosition_{};
 	int32_t lastPosition_{};
-	RollingAverage<int32_t, 16> actualVelocity_{};
+	modm::filter::MovingAverage<int32_t, 16> actualVelocity_{};
 	int16_t outputPWM_{};
 	bool enableMotor_{true};
 
@@ -141,7 +141,7 @@ public:
 	int32_t
 	velocity() const
 	{
-		return actualVelocity_.average();
+		return actualVelocity_.getValue();
 	}
 	int32_t
 	position() const
