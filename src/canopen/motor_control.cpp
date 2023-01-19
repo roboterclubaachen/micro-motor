@@ -39,8 +39,8 @@ MotorControl::update()
 			// TODO Is this the way you do
 			// this i have no idea
 
-			const auto pos_error = commandedPosition_ - actualPosition_;
-			positionPid_.update(pos_error);
+			positionError_ = commandedPosition_ - actualPosition_;
+			positionPid_.update(positionError_);
 			velocityError_ = positionPid_.getValue() - actualVelocity_.average();
 			velocityPid_.update(velocityError_);
 			outputPWM_ = velocityPid_.getValue();

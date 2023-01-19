@@ -16,13 +16,19 @@ struct Objects
 	static constexpr modm_canopen::Address Test1{0x2001, 0};          // Custom
 	static constexpr modm_canopen::Address PWMCommand{0x2002, 0};     // Custom
 	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};      // Custom
-	static constexpr modm_canopen::Address VelocityError{0x2004, 0};  // Custom
+
+	static constexpr modm_canopen::Address VelocityError{0x2004, 1};  // Custom
+	static constexpr modm_canopen::Address PositionError{0x2004, 2};  // Custom
 
 	static constexpr modm_canopen::Address VelocityPID_kP{0x2005, 1};           // Custom
 	static constexpr modm_canopen::Address VelocityPID_kI{0x2005, 2};           // Custom
 	static constexpr modm_canopen::Address VelocityPID_kD{0x2005, 3};           // Custom
 	static constexpr modm_canopen::Address VelocityPID_MaxErrorSum{0x2005, 4};  // Custom
-	static constexpr modm_canopen::Address VelocityPID_MaxOutput{0x2005, 5};    // Custom
+
+	static constexpr modm_canopen::Address PositionPID_kP{0x2006, 1};           // Custom
+	static constexpr modm_canopen::Address PositionPID_kI{0x2006, 2};           // Custom
+	static constexpr modm_canopen::Address PositionPID_kD{0x2006, 3};           // Custom
+	static constexpr modm_canopen::Address PositionPID_MaxErrorSum{0x2006, 4};  // Custom
 
 	static constexpr modm_canopen::Address VelocityActualValue{0x606C, 0};  // User units
 	static constexpr modm_canopen::Address TargetVelocity{0x60FF, 0};       // User units

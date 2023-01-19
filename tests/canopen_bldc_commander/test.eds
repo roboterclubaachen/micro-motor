@@ -1128,9 +1128,22 @@ DefaultValue=0
 PDOMapping=1
 
 [2004]
+ParameterName=Pid Error Values
+ObjectType=0x8
+SubNumber=2
+
+[2004sub1]
 ParameterName=Velocity Error
 ObjectType=0x7
 DataType=0x0004
-AccessType=rww
+AccessType=wo
+DefaultValue=0
+PDOMapping=1
+
+[2004sub2]
+ParameterName=Position Error
+ObjectType=0x7
+DataType=0x0004
+AccessType=wo
 DefaultValue=0
 PDOMapping=1

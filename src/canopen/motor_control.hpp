@@ -41,6 +41,7 @@ private:
 	int32_t receivedPosition_{};
 	int32_t commandedPosition_{};
 	uint32_t positionWindow_{};
+	int32_t positionError_{};
 
 	// Velocity Mode
 	Pid::Parameter velocityPidParameters_;
@@ -109,6 +110,11 @@ public:
 	commandedPosition() const
 	{
 		return commandedPosition_;
+	}
+		int32_t
+	positionError() const
+	{
+		return positionError_;
 	}
 	int32_t
 	receivedPosition() const

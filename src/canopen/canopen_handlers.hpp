@@ -48,6 +48,10 @@ struct CanOpenHandlers
 			return MotorControl0.scalingFactors().velocity.toUser(MotorControl0.velocityError());
 		});
 
+		map.template setReadHandler<Objects::PositionError>(+[]() {
+			return MotorControl0.scalingFactors().position.toUser(MotorControl0.positionError());
+		});
+
 		map.template setReadHandler<Objects::TargetVelocity>(+[]() {
 			return MotorControl0.scalingFactors().velocity.toUser(
 				MotorControl0.commandedVelocity());
@@ -188,6 +192,38 @@ struct CanOpenHandlers
 			auto params = MotorControl0.getVelocityPidParams();
 			params.setMaxErrorSum(value);
 			MotorControl0.setVelocityPidParams(params);
+			return SdoErrorCode::NoError;
+		});
+
+				map.template setWriteHandler<Objects::PositionPID_kP>(+[](float value) {
+			MODM_LOG_DEBUG << "Received kP ==" << value << modm::endl;
+			auto params = MotorControl0.getPositionPidParams();
+			params.setKp(value);
+			MotorControl0.setPositionPidParams(params);
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::PositionPID_kI>(+[](float value) {
+			MODM_LOG_DEBUG << "Received kI ==" << value << modm::endl;
+			auto params = MotorControl0.getPositionPidParams();
+			params.setKi(value);
+			MotorControl0.setPositionPidParams(params);
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::PositionPID_kD>(+[](float value) {
+			MODM_LOG_DEBUG << "Received kD ==" << value << modm::endl;
+			auto params = MotorControl0.getPositionPidParams();
+			params.setKd(value);
+			MotorControl0.setPositionPidParams(params);
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::PositionPID_MaxErrorSum>(+[](float value) {
+			MODM_LOG_DEBUG << "Received Max Error Sum ==" << value << modm::endl;
+			auto params = MotorControl0.getPositionPidParams();
+			params.setMaxErrorSum(value);
+			MotorControl0.setPositionPidParams(params);
 			return SdoErrorCode::NoError;
 		});
 	}
