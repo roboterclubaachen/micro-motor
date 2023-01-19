@@ -55,7 +55,7 @@ private:
 	// General State
 	int32_t actualPosition_{};
 	int32_t lastPosition_{};
-	RollingAverage<int32_t, 8> actualVelocity_{};
+	RollingAverage<int32_t, 16> actualVelocity_{};
 	int16_t outputPWM_{};
 	bool enableMotor_{true};
 
@@ -148,7 +148,7 @@ public:
 		return outputPWM_;
 	}
 	bool
-	enableMotor() const
+	shouldEnableMotor() const
 	{
 		return enableMotor_;
 	}

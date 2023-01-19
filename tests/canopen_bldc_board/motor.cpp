@@ -36,7 +36,7 @@ Motor::update()
 	updatePosition();
 	MotorControl0.setActualPosition(actualPosition_);
 	bool updated = MotorControl0.update();
-	if (!MotorControl0.enableMotor()) { motor_.disable(); }
+	if (!MotorControl0.shouldEnableMotor()) { motor_.disable(); }
 	motor_.setSetpoint(MotorControl0.outputPWM());
 	motor_.update();
 

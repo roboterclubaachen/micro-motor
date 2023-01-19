@@ -30,6 +30,7 @@ struct CommandSendInfo
 	modm_canopen::cia402::StateCommandNames name;
 	OperatingMode mode;
 	size_t time;
+	void (*custom)(){nullptr};
 };
 
 int16_t commandedPWM = 6000;
@@ -40,6 +41,7 @@ int32_t errorValue = 0;
 OperatingMode currMode = OperatingMode::Voltage;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
+modm::platform::SocketCan can;
 constexpr uint8_t motorId = 1;  // Keep consistent with firmware
 
 modm::PeriodicTimer debugTimer{10ms};
@@ -48,14 +50,17 @@ modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnD
 #define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
-constexpr float vPID_kP = 10.0f;
-constexpr float vPID_kI = 20.0f;
-constexpr float vPID_kD = 0.0f;
+constexpr float vPID_kP = 150.0f;
+constexpr float vPID_kI = 22.0f;
+constexpr float vPID_kD = 200.5f;
+int32_t targetSpeed = 10;
 #else
+// TODO tune
 constexpr char canDevice[] = "can0";
 constexpr float vPID_kP = 1.0f;
 constexpr float vPID_KI = 0.0f;
 constexpr float vPID_kD = 0.0f;
+int32_t targetSpeed = 10;
 #endif
 
 struct Test
@@ -76,7 +81,7 @@ struct Test
 		map.template setWriteHandler<Objects::OutputPWM>(+[](int16_t value) {
 			if (outputPWM != value)
 			{
-				MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
+				// MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
 				outputPWM = value;
 			}
 			return SdoErrorCode::NoError;
@@ -145,6 +150,8 @@ struct Test
 using Device = CanopenMaster<DefaultObjects, Test>;
 using SdoClient = modm_canopen::SdoClient<Device>;
 
+auto sendMessage = [](const modm::can::Message& msg) { return can.sendMessage(msg); };
+
 template<typename MessageCallback>
 void
 setPDOs(MessageCallback&& sendMessage)
@@ -198,7 +205,7 @@ setPDOs(MessageCallback&& sendMessage)
 	Device::setTPDO(motorId, 0, commandTpdoMotor);
 	Device::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::TargetVelocity, (uint32_t)10,
+	SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::VelocityPID_kP, vPID_kP,
 							std::forward<MessageCallback>(sendMessage));
@@ -208,19 +215,33 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
+size_t maxTime = 9000;
+
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
 					.mode{OperatingMode::Voltage},
-					.time{10}},
+					.time{10},
+					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::SwitchOn},
 					.mode{OperatingMode::Voltage},
-					.time{20}},
+					.time{20},
+					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Velocity},
-					.time{30}},
+					.time{30},
+					.custom{nullptr}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Velocity},
+					.time{4000},
+					.custom{[]() {
+						targetSpeed = 13;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{4000}},
+					.time{8000},
+					.custom{nullptr}},
 };
 
 int
@@ -236,7 +257,6 @@ main()
 
 	uint64_t counter = 0;
 
-	modm::platform::SocketCan can;
 	bool success = can.open(canDevice);
 
 	if (!success)
@@ -246,7 +266,6 @@ main()
 	}
 	MODM_LOG_INFO << "Opened device " << canDevice << modm::endl;
 
-	auto sendMessage = [&can](const modm::can::Message& msg) { return can.sendMessage(msg); };
 	auto handleResponse = [&success](const modm_canopen::Address address,
 									 const modm_canopen::SdoErrorCode err) {
 		MODM_LOG_INFO << "Got response for 0x" << modm::hex << address.index << modm::ascii << "."
@@ -276,6 +295,18 @@ main()
 	MODM_LOG_INFO << "Configuration done." << modm::endl;
 	while (true)
 	{
+		while (SdoClient::waiting())
+		{
+			if (can.isMessageAvailable())
+			{
+				modm::can::Message message{};
+				can.getMessage(message);
+				Device::processMessage(message, handleResponse);
+			}
+			Device::update(sendMessage);
+			std::this_thread::sleep_for(std::chrono::milliseconds{1});
+		}
+
 		if (can.isMessageAvailable())
 		{
 			modm::can::Message message{};
@@ -290,6 +321,7 @@ main()
 				MODM_LOG_DEBUG << "Next Command..." << modm::endl;
 				control_.apply(modm_canopen::cia402::StateCommands[(uint8_t)c.name].cmd);
 				currMode = c.mode;
+				if (c.custom != nullptr) c.custom();
 				Device::setValueChanged(Objects::ControlWord);
 				Device::setValueChanged(Objects::ModeOfOperation);
 			}
@@ -304,5 +336,7 @@ main()
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});
 		counter++;
+		if (counter == maxTime) { break; }
 	}
+	return 0;
 }
