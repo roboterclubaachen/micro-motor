@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2022, Michael Jossen
+# Copyright (c) 2022-2023, Michael Jossen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@ def init(module):
     module.name = ":canopen"
 
 def prepare(module, options):
-    if not str(options["modm:target"].identifier) == "hosted-linux":
-        module.depends(":common")
-
-
     module.depends(   
     "modm:build", 
     "modm-canopen:device",
