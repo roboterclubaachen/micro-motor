@@ -5,12 +5,17 @@
 #include <modm/debug/logger.hpp>
 
 #include "canopen_handlers.hpp"
+#include "motor_factor_handlers.hpp"
+#include "motor_velocity_handlers.hpp"
+#include "motor_position_handlers.hpp"
+#include "motor_pwm_handlers.hpp"
 
 class CanOpen
 {
 public:
-	using Device =
-		modm_canopen::CanopenDevice<modm_canopen::generated::DefaultObjects, CanOpenHandlers>;
+	using Device = modm_canopen::CanopenDevice<modm_canopen::generated::DefaultObjects,
+											   CanOpenHandlers, FactorHandlers, VelocityHandlers,
+											   PositionHandlers, PWMHandlers>;
 
 	static inline void
 	initialize(uint8_t nodeId);

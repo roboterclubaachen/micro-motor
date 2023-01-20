@@ -48,7 +48,7 @@ constexpr uint8_t motorId = 1;  // Keep consistent with firmware
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
-//#define HOSTED
+#define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr float vPID_kP = 150.0f;
@@ -56,9 +56,9 @@ constexpr float vPID_kI = 22.0f;
 constexpr float vPID_kD = 200.5f;
 int32_t targetSpeed = 10;
 
-constexpr float pPID_kP = 1.0f;
-constexpr float pPID_kI = 0.0f;
-constexpr float pPID_kD = 0.0f;
+constexpr float pPID_kP = 0.05f;
+constexpr float pPID_kI = 0.05f;
+constexpr float pPID_kD = 0.05f;
 int32_t targetPosition = 0;
 #else
 // TODO tune
@@ -138,24 +138,22 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-
 		map.template setWriteHandler<Objects::VelocityError>(+[](int32_t value) {
 			if (velErrorValue != value) { velErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-				map.template setWriteHandler<Objects::PositionError>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::PositionError>(+[](int32_t value) {
 			if (posErrorValue != value) { posErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
-
 
 		map.template setReadHandler<Objects::VelocityActualValue>(+[]() { return (int32_t)0; });
 
 		map.template setWriteHandler<Objects::VelocityActualValue>(+[](int32_t value) {
 			if (velocityValue != value)
 			{
-				//MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
+				// MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
 				velocityValue = value;
 			}
 			return SdoErrorCode::NoError;
@@ -235,7 +233,6 @@ setPDOs(MessageCallback&& sendMessage)
 	SdoClient::requestWrite(motorId, Objects::VelocityPID_kD, vPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 
-
 	SdoClient::requestWrite(motorId, Objects::PositionPID_kP, pPID_kP,
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::PositionPID_kI, pPID_kI,
@@ -244,7 +241,7 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 5400;
+size_t maxTime = 14000;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -260,12 +257,28 @@ constexpr std::array sendCommands{
 					.time{30},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
+					.mode{OperatingMode::Velocity},
 					.time{1030},
+					.custom{[]() {
+						targetSpeed = -targetSpeed;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Position},
+					.time{2030},
 					.custom{nullptr}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Position},
+					.time{7030},
+					.custom{[]() {
+						targetPosition = 500;
+						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
+												sendMessage);
+					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{5030},
+					.time{13030},
 					.custom{nullptr}},
 };
 
@@ -273,7 +286,7 @@ int
 main()
 {
 	auto start = modm::Clock::now();
-	CSVWriter writer{{"Time", "Position", "Velocity", "PWM", "VelError","PosError"}};
+	CSVWriter writer{{"Time", "Position", "Velocity", "PWM", "VelError", "PosError"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -356,7 +369,7 @@ main()
 			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
 						   std::to_string(positionValue), std::to_string(velocityValue),
 						   std::to_string((float)outputPWM / std::numeric_limits<int16_t>::max()),
-						   std::to_string(velErrorValue),std::to_string(posErrorValue)});
+						   std::to_string(velErrorValue), std::to_string(posErrorValue)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

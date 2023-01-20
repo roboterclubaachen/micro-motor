@@ -19,4 +19,5 @@ ax3.set_xlabel('Time/s')
 
 ax1.legend()
 ax2.legend()
+ax3.legend()
 plt.show()
