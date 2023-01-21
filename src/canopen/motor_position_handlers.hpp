@@ -14,6 +14,9 @@ struct PositionHandlers
 			return MotorControl0.scalingFactors().position.toUser(MotorControl0.position());
 		});
 
+		map.template setReadHandler<Objects::PositionInternalValue>(
+			+[]() { return MotorControl0.position(); });
+
 		map.template setReadHandler<Objects::PositionError>(+[]() {
 			return MotorControl0.scalingFactors().position.toUser(MotorControl0.positionError());
 		});
@@ -31,11 +34,13 @@ struct PositionHandlers
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Objects::PositionWindow>(
-			+[]() { return MotorControl0.positionWindow(); });
+		map.template setReadHandler<Objects::PositionWindow>(+[]() {
+			return MotorControl0.scalingFactors().position.toUser(MotorControl0.positionWindow());
+		});
 
 		map.template setWriteHandler<Objects::PositionWindow>(+[](uint32_t value) {
-			MotorControl0.setPositionWindow(value);
+			MotorControl0.setPositionWindow(
+				MotorControl0.scalingFactors().position.toInternal(value));
 			return SdoErrorCode::NoError;
 		});
 

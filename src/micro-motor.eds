@@ -113,7 +113,7 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=31
+SupportedObjects=32
 1=0x1400
 2=0x1401
 3=0x1402
@@ -145,6 +145,7 @@ SupportedObjects=31
 29=0x6097
 30=0x6061
 31=0x1200
+32=0x6063
 
 [1200]
 ParameterName=Server SDO Parameter
@@ -1137,6 +1138,14 @@ PDOMapping=1
 
 [6062]
 ParameterName=Position demand value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[6063]
+ParameterName=Position actual internal value
 ObjectType=0x7
 DataType=0x0004
 AccessType=ro

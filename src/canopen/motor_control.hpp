@@ -37,8 +37,10 @@ private:
 	bool receivedPositionRelative_{true};
 	int32_t receivedPosition_{};
 	int32_t commandedPosition_{};
-	uint32_t positionWindow_{};
+	uint32_t positionWindow_{5};
 	int32_t positionError_{};
+	uint32_t positionWindowTime_{10};
+	uint32_t inPositionWindow_{0};
 
 	// Velocity Mode
 	Pid::Parameter velocityPidParameters_;
@@ -56,6 +58,7 @@ private:
 	modm::filter::MovingAverage<int32_t, 16> actualVelocity_{};
 	int16_t outputPWM_{};
 	bool enableMotor_{true};
+	bool targetReached_{false};
 
 	void
 	updateVelocity();

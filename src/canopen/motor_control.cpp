@@ -1,5 +1,6 @@
 #include "motor_control.hpp"
 #include <modm/debug/logger.hpp>
+#include <cmath>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
 MotorControl::MotorControl(const Pid::Parameter &velocityParameters,
@@ -21,27 +22,46 @@ MotorControl::update()
 {
 	const auto state = status_.state();
 	updateVelocity();
-
-	if (mode_ == OperatingMode::Voltage) { outputPWM_ = commandedPWM_; }
-
-	if (mode_ == OperatingMode::Velocity)
+	switch (mode_)
 	{
-		velocityError_ = (commandedVelocity_ - actualVelocity_.getValue());
-		velocityPid_.update(velocityError_);
-		outputPWM_ = velocityPid_.getValue();
+		case OperatingMode::Voltage:
+			outputPWM_ = commandedPWM_;
+			targetReached_ = true;
+			break;
+		case OperatingMode::Velocity:
+			velocityError_ = (commandedVelocity_ - actualVelocity_.getValue());
+			velocityPid_.update(velocityError_);
+			outputPWM_ = velocityPid_.getValue();
+			targetReached_ = (velocityError_ == 0);
+			break;
+		case OperatingMode::Position:
+			positionError_ = commandedPosition_ - actualPosition_;
+			positionPid_.update(positionError_);
+			velocityError_ = positionPid_.getValue() - actualVelocity_.getValue();
+			velocityPid_.update(velocityError_);
+			outputPWM_ = velocityPid_.getValue();
 
-	} else if (mode_ == OperatingMode::Position)
-	{
-		// TODO Is this the way you do
-		// this i have no idea
-
-		positionError_ = commandedPosition_ - actualPosition_;
-		positionPid_.update(positionError_);
-		velocityError_ = positionPid_.getValue() - actualVelocity_.getValue();
-		velocityPid_.update(velocityError_);
-		outputPWM_ = velocityPid_.getValue();
+			if ((uint32_t)std::abs(positionError_) <= positionWindow_)
+			{
+				if (inPositionWindow_ < positionWindowTime_) inPositionWindow_++;
+			} else
+			{
+				inPositionWindow_ = 0;
+			}
+			if (inPositionWindow_ >= positionWindowTime_)
+			{
+				targetReached_ = true;
+				// TODO maybe disable motor here?
+				// outputPWM_ = 0;
+			} else
+			{
+				targetReached_ = false;
+			}
+			break;
+		case OperatingMode::Disabled:
+			targetReached_ = false;
+			break;
 	}
-
 	if (state != modm_canopen::cia402::State::OperationEnabled ||
 		mode_ == OperatingMode::Disabled || halted_)
 	{
@@ -57,18 +77,7 @@ MotorControl::update()
 void
 MotorControl::updateStatus()
 {
-	bool targetReached = true;
-	if (mode_ == OperatingMode::Velocity)
-	{
-		targetReached = (actualVelocity_.getValue() == commandedVelocity_);
-		status_.setBit<StatusBits::SpeedZero>(actualVelocity_.getValue() == 0);
-	} else if (mode_ == OperatingMode::Position)
-	{
-		auto pos_error = commandedPosition_ - actualPosition_;
-		targetReached = ((pos_error > 0 && (uint32_t)pos_error < positionWindow_) ||
-						 (pos_error <= 0 && (uint32_t)(-pos_error) < positionWindow_));
-	}
-	status_.setBit<StatusBits::TargetReached>(targetReached);
+	status_.setBit<StatusBits::TargetReached>(targetReached_);
 	// TODO check if the voltage is present if we apply it or if we can apply it
 	status_.setBit<StatusBits::VoltagePresent>(outputPWM_ != 0);
 }

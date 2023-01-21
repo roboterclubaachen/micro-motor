@@ -32,7 +32,7 @@ struct CommandSendInfo
 	size_t time;
 	void (*custom)(){nullptr};
 };
-
+bool targetReached = true;
 int16_t commandedPWM = 6000;
 int16_t outputPWM = 0;
 int32_t velocityValue = 0;
@@ -102,6 +102,16 @@ struct Test
 
 		map.template setWriteHandler<Objects::StatusWord>(+[](uint16_t value) {
 			state_.set(value);
+			if (state_.isSet<modm_canopen::cia402::StatusBits::TargetReached>() && !targetReached)
+			{
+				MODM_LOG_INFO << "Target Reached!" << modm::endl;
+				targetReached = true;
+			}
+			if (!state_.isSet<modm_canopen::cia402::StatusBits::TargetReached>() && targetReached)
+			{
+				MODM_LOG_INFO << "Target Lost!" << modm::endl;
+				targetReached = false;
+			}
 			return SdoErrorCode::NoError;
 		});
 
@@ -241,7 +251,7 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 14000;
+size_t maxTime = 15000;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -276,9 +286,16 @@ constexpr std::array sendCommands{
 						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
 												sendMessage);
 					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Position},
+					.time{13030},
+					.custom{[]() {
+						SdoClient::requestWrite(motorId, Objects::PositionWindow, (uint32_t)400,
+												sendMessage);
+					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{13030},
+					.time{14030},
 					.custom{nullptr}},
 };
 
