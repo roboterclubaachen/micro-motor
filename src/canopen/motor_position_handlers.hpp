@@ -17,7 +17,7 @@ struct PositionHandlers
 		map.template setReadHandler<Objects::PositionInternalValue>(
 			+[]() { return MotorControl0.position(); });
 
-		map.template setReadHandler<Objects::PositionError>(+[]() {
+		map.template setReadHandler<Objects::FollowingErrorActualValue>(+[]() {
 			return MotorControl0.scalingFactors().position.toUser(MotorControl0.positionError());
 		});
 

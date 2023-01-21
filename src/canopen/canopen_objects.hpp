@@ -15,13 +15,12 @@ struct Objects
 	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};   // Custom
 
 	// Position Mode
-	static constexpr modm_canopen::Address PositionDemandValue{0x6062, 0};    // User units
-	static constexpr modm_canopen::Address PositionInternalValue{0x6063, 0};  // internal units
-	static constexpr modm_canopen::Address PositionActualValue{0x6064, 0};    // User units
-	static constexpr modm_canopen::Address TargetPosition{0x607A, 0};         // User units
-	static constexpr modm_canopen::Address PositionWindow{0x6067, 0};         // User units
-
-	static constexpr modm_canopen::Address PositionError{0x2004, 2};  // Custom
+	static constexpr modm_canopen::Address PositionDemandValue{0x6062, 0};        // User units
+	static constexpr modm_canopen::Address PositionInternalValue{0x6063, 0};      // internal units
+	static constexpr modm_canopen::Address PositionActualValue{0x6064, 0};        // User units
+	static constexpr modm_canopen::Address TargetPosition{0x607A, 0};             // User units
+	static constexpr modm_canopen::Address PositionWindow{0x6067, 0};             // User units
+	static constexpr modm_canopen::Address FollowingErrorActualValue{0x60F4, 0};  // User units
 
 	static constexpr modm_canopen::Address PositionPID_kP{0x2006, 1};           // Custom
 	static constexpr modm_canopen::Address PositionPID_kI{0x2006, 2};           // Custom

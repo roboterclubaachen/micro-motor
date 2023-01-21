@@ -153,7 +153,7 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::PositionError>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::FollowingErrorActualValue>(+[](int32_t value) {
 			if (posErrorValue != value) { posErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
@@ -210,8 +210,8 @@ setPDOs(MessageCallback&& sendMessage)
 	errorRpdoMotor.setInactive();
 	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
 		   SdoErrorCode::NoError);
-	assert(errorRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionError, 32}) ==
-		   SdoErrorCode::NoError);
+	assert(errorRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::FollowingErrorActualValue,
+																 32}) == SdoErrorCode::NoError);
 	errorRpdoMotor.setMappingCount(2);
 	assert(errorRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Device::setRPDO(motorId, 2, errorRpdoMotor);

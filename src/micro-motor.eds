@@ -113,7 +113,7 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=32
+SupportedObjects=33
 1=0x1400
 2=0x1401
 3=0x1402
@@ -146,6 +146,7 @@ SupportedObjects=32
 30=0x6061
 31=0x1200
 32=0x6063
+33=0x60F4
 
 [1200]
 ParameterName=Server SDO Parameter
@@ -1193,6 +1194,14 @@ AccessType=rww
 DefaultValue=0
 PDOMapping=1
 
+[60F4]
+ParameterName=Following error actual value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
 [60FF]
 ParameterName=Target velocity
 ObjectType=0x7
@@ -1299,18 +1308,10 @@ PDOMapping=1
 [2004]
 ParameterName=Pid Error Values
 ObjectType=0x8
-SubNumber=2
+SubNumber=1
 
 [2004sub1]
 ParameterName=Velocity Error
-ObjectType=0x7
-DataType=0x0004
-AccessType=ro
-DefaultValue=0
-PDOMapping=1
-
-[2004sub2]
-ParameterName=Position Error
 ObjectType=0x7
 DataType=0x0004
 AccessType=ro

@@ -113,13 +113,14 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=6
+SupportedObjects=7
 1=0x6041
 2=0x6040
 3=0x6060
 4=0x6064
 5=0x606C
 6=0x6061
+7=0x60F4
 
 [1400]
 ParameterName=RPDO1 Communication Parameter
@@ -1096,6 +1097,14 @@ AccessType=rww
 DefaultValue=0
 PDOMapping=1
 
+[60F4]
+ParameterName=Following error actual value
+ObjectType=0x7
+DataType=0x0004
+AccessType=wo
+DefaultValue=0
+PDOMapping=1
+
 [ManufacturerObjects]
 SupportedObjects=4
 1=0x2001
@@ -1130,18 +1139,10 @@ PDOMapping=1
 [2004]
 ParameterName=Pid Error Values
 ObjectType=0x8
-SubNumber=2
+SubNumber=1
 
 [2004sub1]
 ParameterName=Velocity Error
-ObjectType=0x7
-DataType=0x0004
-AccessType=wo
-DefaultValue=0
-PDOMapping=1
-
-[2004sub2]
-ParameterName=Position Error
 ObjectType=0x7
 DataType=0x0004
 AccessType=wo
