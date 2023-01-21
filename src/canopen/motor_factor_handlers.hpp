@@ -59,10 +59,10 @@ struct FactorHandlers
 		});
 
 		map.template setReadHandler<Objects::Polarity>(
-			+[]() { return MotorControl0.scalingFactors().polarity; });
+			+[]() { return MotorControl0.scalingFactors().getPolarity(); });
 
 		map.template setWriteHandler<Objects::Polarity>(+[](uint8_t value) {
-			MotorControl0.scalingFactors().polarity = value;
+			MotorControl0.scalingFactors().setPolarity(value);
 			return SdoErrorCode::NoError;
 		});
 	}
