@@ -16,37 +16,30 @@ MotorControl::updateVelocity()
 	lastPosition_ = actualPosition_;
 }
 
-bool
+void
 MotorControl::update()
 {
-	bool updated = false;
-	auto state = status_.state();
+	const auto state = status_.state();
+	updateVelocity();
 
 	if (mode_ == OperatingMode::Voltage) { outputPWM_ = commandedPWM_; }
 
-	if (controlTimer_.execute())
+	if (mode_ == OperatingMode::Velocity)
 	{
+		velocityError_ = (commandedVelocity_ - actualVelocity_.getValue());
+		velocityPid_.update(velocityError_);
+		outputPWM_ = velocityPid_.getValue();
 
-		updateVelocity();
-		if (mode_ == OperatingMode::Velocity)
-		{
-			velocityError_ = (commandedVelocity_ - actualVelocity_.getValue());
-			velocityPid_.update(velocityError_);
-			outputPWM_ = velocityPid_.getValue();
+	} else if (mode_ == OperatingMode::Position)
+	{
+		// TODO Is this the way you do
+		// this i have no idea
 
-		} else if (mode_ == OperatingMode::Position)
-		{
-			// TODO Is this the way you do
-			// this i have no idea
-
-			positionError_ = commandedPosition_ - actualPosition_;
-			positionPid_.update(positionError_);
-			velocityError_ = positionPid_.getValue() - actualVelocity_.getValue();
-			velocityPid_.update(velocityError_);
-			outputPWM_ = velocityPid_.getValue();
-		}
-
-		updated = true;
+		positionError_ = commandedPosition_ - actualPosition_;
+		positionPid_.update(positionError_);
+		velocityError_ = positionPid_.getValue() - actualVelocity_.getValue();
+		velocityPid_.update(velocityError_);
+		outputPWM_ = velocityPid_.getValue();
 	}
 
 	if (state != modm_canopen::cia402::State::OperationEnabled ||
@@ -59,7 +52,6 @@ MotorControl::update()
 		enableMotor_ = true;
 	}
 	updateStatus();
-	return updated;
 }
 
 void

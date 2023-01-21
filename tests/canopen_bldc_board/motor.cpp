@@ -32,13 +32,16 @@ Motor::updatePosition()
 bool
 Motor::update()
 {
-
+	bool updated = false;
 	updatePosition();
-	MotorControl0.setActualPosition(actualPosition_);
-	bool updated = MotorControl0.update();
-	if (!MotorControl0.shouldEnableMotor()) { motor_.disable(); }
-	motor_.setSetpoint(MotorControl0.outputPWM());
+	if (controlTimer_.execute())
+	{
+		MotorControl0.setActualPosition(actualPosition_);
+		MotorControl0.update();
+		if (!MotorControl0.shouldEnableMotor()) { motor_.disable(); }
+		motor_.setSetpoint(MotorControl0.outputPWM());
+		updated = true;
+	}
 	motor_.update();
-
 	return updated;
 }

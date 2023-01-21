@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdint>
 #include <limits>
+#include <modm/processing/timer.hpp>
 
 #include "sim_motor.hpp"
 
@@ -14,6 +15,7 @@ private:
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
 	int32_t actualPosition_{};
+	modm::PeriodicTimer controlTimer_{10ms};
 
 	MotorSimulation dummy_{};
 

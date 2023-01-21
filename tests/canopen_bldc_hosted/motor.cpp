@@ -30,11 +30,14 @@ Motor::updatePosition()
 bool
 Motor::update()
 {
-
 	updatePosition();
-	MotorControl0.setActualPosition(actualPosition_);
-	bool updated = MotorControl0.update();
-	dummy_.setInputVoltageInt(MotorControl0.outputPWM());
-	dummy_.update(0.1f);
-	return updated;
+	if (controlTimer_.execute())
+	{
+		MotorControl0.setActualPosition(actualPosition_);
+		MotorControl0.update();
+		dummy_.setInputVoltageInt(MotorControl0.outputPWM());
+		dummy_.update(0.1f);
+		return true;
+	}
+	return false;
 }

@@ -7,7 +7,6 @@
 #include <modm/math/filter/pid.hpp>
 #include <modm/math/filter/moving_average.hpp>
 #include <modm/math/filter/s_curve_controller.hpp>
-#include <modm/processing/timer.hpp>
 
 #include <modm-canopen/cia402/operating_mode.hpp>
 #include <modm-canopen/cia402/state_machine.hpp>
@@ -24,8 +23,6 @@ using Pid = modm::Pid<float>;
 class MotorControl
 {
 private:
-	modm::PeriodicTimer controlTimer_{10ms};
-
 	OperatingMode mode_{OperatingMode::Voltage};
 	StateMachine status_{modm_canopen::cia402::State::SwitchOnDisabled};
 	ControlWord control_{0};
@@ -112,7 +109,7 @@ public:
 		return commandedPosition_;
 	}
 
-		int32_t
+	int32_t
 	positionError() const
 	{
 		return positionError_;
@@ -187,7 +184,7 @@ public:
 		actualPosition_ = position;
 	}
 
-	bool
+	void
 	update();
 
 	inline ControlWord &

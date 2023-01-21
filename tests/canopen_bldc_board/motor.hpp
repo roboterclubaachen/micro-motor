@@ -7,6 +7,9 @@
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 #include <micro-motor/hardware.hpp>
 #include <micro-motor/canopen/motor_control.hpp>
+#include <modm/processing/timer.hpp>
+
+using namespace std::literals;
 
 class Motor
 {
@@ -14,6 +17,7 @@ private:
 	int32_t actualPosition_{};
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
+	modm::PeriodicTimer controlTimer_{10ms};
 
 	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
