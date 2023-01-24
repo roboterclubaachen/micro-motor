@@ -68,7 +68,10 @@ main()
 			MODM_LOG_DEBUG << "dummy A: " << Motor0.dummy().acceleration() << modm::endl;
 			MODM_LOG_DEBUG << "dummy V: " << Motor0.dummy().velocity() << modm::endl;
 			MODM_LOG_DEBUG << "dummy P: " << Motor0.dummy().position() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << MotorControl0.position() << "\n" << modm::endl;
+			MODM_LOG_DEBUG << "position: " << MotorControl0::state().actualPosition_ << modm::endl;
+			MODM_LOG_DEBUG << "velocity: " << MotorControl0::state().actualVelocity_.getValue()
+						   << "\n"
+						   << modm::endl;
 		}
 	}
 	return 0;

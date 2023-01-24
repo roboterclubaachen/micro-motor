@@ -34,9 +34,9 @@ Motor::update()
 	updatePosition();
 	if (controlTimer_.execute())
 	{
-		MotorControl0.setActualPosition(actualPosition_);
-		MotorControl0.update();
-		dummy_.setInputVoltageInt(MotorControl0.outputPWM());
+		MotorControl0::setActualPosition(actualPosition_);
+		MotorControl0::update();
+		dummy_.setInputVoltageInt(MotorControl0::outputPWM());
 		updated = true;
 	}
 	dummy_.update(0.1f);

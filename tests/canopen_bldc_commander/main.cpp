@@ -68,9 +68,9 @@ constexpr float vPID_kI = 62.0f;
 constexpr float vPID_kD = 200.0f;
 int32_t targetSpeed = 10;
 
-constexpr float pPID_kP = 0.01f;
-constexpr float pPID_kI = 0.0f;
-constexpr float pPID_kD = 0.0f;
+constexpr float pPID_kP = 1.0f;
+constexpr float pPID_kI = 0.01f;
+constexpr float pPID_kD = 0.01f;
 int32_t targetPosition = 0;
 #endif
 
@@ -277,7 +277,11 @@ constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Position},
 					.time{2030},
-					.custom{nullptr}},
+					.custom{[]() {
+						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetSpeed,
+												sendMessage);
+						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
+					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Position},
 					.time{7030},
@@ -285,6 +289,7 @@ constexpr std::array sendCommands{
 						targetPosition = 500;
 						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
 												sendMessage);
+						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Position},

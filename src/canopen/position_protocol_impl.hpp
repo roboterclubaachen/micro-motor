@@ -1,0 +1,99 @@
+#ifndef POSITION_PROTOCOL_HPP
+#error "Do not include this file directly, use position_protocol.hpp instead"
+#endif
+#include <modm/debug/logger.hpp>
+
+template<typename VelocityProtocol>
+bool
+PositionProtocol<VelocityProtocol>::update(MotorState& state)
+{
+	if (state.control_.isSet<CommandBits::NewSetPoint>())
+	{
+		nextPosition_ = receivedPosition_;
+		state.control_.setBit<CommandBits::NewSetPoint>(false);
+	}
+
+	if (positionError_ == 0 || state.control_.isSet<CommandBits::ChangeImmediately>())
+	{
+		if (state.control_.isSet<CommandBits::IsRelative>())
+			commandedPosition_ += nextPosition_;
+		else
+			commandedPosition_ = nextPosition_;
+	}
+
+	positionError_ = commandedPosition_ - state.actualPosition_;
+	positionPid_.update(positionError_);
+	state.outputPWM_ =
+		VelocityProtocol::updatePid(positionPid_.getValue(), state.actualVelocity_.getValue());
+
+	if ((uint32_t)std::abs(positionError_) <= positionWindow_)
+	{
+		if (inPositionWindow_ < positionWindowTime_) inPositionWindow_++;
+	} else
+	{
+		inPositionWindow_ = 0;
+	}
+
+	state.status_.setBit<StatusBits::TargetReached>(inPositionWindow_ >= positionWindowTime_);
+	return true;
+}
+
+template<typename VelocityProtocol>
+template<typename ObjectDictionary, const MotorState& state>
+constexpr void
+PositionProtocol<VelocityProtocol>::registerHandlers(
+	modm_canopen::HandlerMap<ObjectDictionary>& map)
+{
+	using modm_canopen::SdoErrorCode;
+	map.template setReadHandler<PositionObjects::PositionActualValue>(
+		+[]() { return state.scalingFactors_.position.toUser(state.actualPosition_); });
+
+	map.template setReadHandler<PositionObjects::PositionInternalValue>(
+		+[]() { return state.actualPosition_; });
+
+	map.template setReadHandler<PositionObjects::FollowingErrorActualValue>(
+		+[]() { return state.scalingFactors_.position.toUser(positionError_); });
+
+	map.template setReadHandler<PositionObjects::PositionDemandValue>(
+		+[]() { return state.scalingFactors_.position.toUser(commandedPosition_); });
+
+	map.template setReadHandler<PositionObjects::TargetPosition>(
+		+[]() { return state.scalingFactors_.position.toUser(receivedPosition_); });
+
+	map.template setWriteHandler<PositionObjects::TargetPosition>(+[](int32_t value) {
+		receivedPosition_ = state.scalingFactors_.position.toInternal(value);
+		return SdoErrorCode::NoError;
+	});
+
+	map.template setReadHandler<PositionObjects::PositionWindow>(
+		+[]() { return state.scalingFactors_.position.toUser(positionWindow_); });
+
+	map.template setWriteHandler<PositionObjects::PositionWindow>(+[](uint32_t value) {
+		positionWindow_ = state.scalingFactors_.position.toInternal(value);
+		return SdoErrorCode::NoError;
+	});
+
+	map.template setWriteHandler<PositionObjects::PositionPID_kP>(+[](float value) {
+		positionPidParameters_.setKp(value);
+		positionPid_.setParameter(positionPidParameters_);
+		return SdoErrorCode::NoError;
+	});
+
+	map.template setWriteHandler<PositionObjects::PositionPID_kI>(+[](float value) {
+		positionPidParameters_.setKi(value);
+		positionPid_.setParameter(positionPidParameters_);
+		return SdoErrorCode::NoError;
+	});
+
+	map.template setWriteHandler<PositionObjects::PositionPID_kD>(+[](float value) {
+		positionPidParameters_.setKd(value);
+		positionPid_.setParameter(positionPidParameters_);
+		return SdoErrorCode::NoError;
+	});
+
+	map.template setWriteHandler<PositionObjects::PositionPID_MaxErrorSum>(+[](float value) {
+		positionPidParameters_.setMaxErrorSum(value);
+		positionPid_.setParameter(positionPidParameters_);
+		return SdoErrorCode::NoError;
+	});
+}

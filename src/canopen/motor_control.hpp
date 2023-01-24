@@ -1,256 +1,74 @@
-#pragma once
+#ifndef MOTOR_CONTROL_HPP
+#define MOTOR_CONTROL_HPP
+#include <modm-canopen/canopen_device.hpp>
+#include "motor_state.hpp"
 
-#include <chrono>
-#include <cstdint>
-#include <limits>
+#include "pwm_protocol.hpp"
+#include "velocity_protocol.hpp"
+#include "position_protocol.hpp"
 
-#include <modm/math/filter/pid.hpp>
-#include <modm/math/filter/moving_average.hpp>
-#include <modm/math/filter/s_curve_controller.hpp>
+struct CanopenObjects
+{
+	static constexpr modm_canopen::Address ControlWord{0x6040, 0};
+	static constexpr modm_canopen::Address StatusWord{0x6041, 0};
+	static constexpr modm_canopen::Address ModeOfOperation{0x6060, 0};
+	static constexpr modm_canopen::Address ModeOfOperationDisplay{0x6061, 0};
+};
 
-#include <modm-canopen/cia402/operating_mode.hpp>
-#include <modm-canopen/cia402/state_machine.hpp>
-#include <modm-canopen/cia402/factors.hpp>
+struct FactorObjects
+{
+	static constexpr modm_canopen::Address PositionFactorNumerator{0x6093, 1};
+	static constexpr modm_canopen::Address PositionFactorDivisor{0x6093, 2};
+	static constexpr modm_canopen::Address VelocityFactorNumerator{0x6094, 1};
+	static constexpr modm_canopen::Address VelocityFactorDivisor{0x6094, 2};
+	static constexpr modm_canopen::Address AccelerationFactorNumerator{0x6097, 1};
+	static constexpr modm_canopen::Address AccelerationFactorDivisor{0x6097, 2};
+	static constexpr modm_canopen::Address Polarity{0x607E, 0};
+};
 
-using namespace std::literals;
-
-using OperatingMode = modm_canopen::cia402::OperatingMode;
-using StateMachine = modm_canopen::cia402::StateMachine;
-using ControlWord = modm_canopen::cia402::CommandWord;
-using Factors = modm_canopen::cia402::Factors;
-using Pid = modm::Pid<float>;
-
+template<typename... Modes>
 class MotorControl
 {
 private:
-	OperatingMode mode_{OperatingMode::Voltage};
-	StateMachine status_{modm_canopen::cia402::State::SwitchOnDisabled};
-	ControlWord control_{0};
-	Factors scalingFactors_{};
+	static inline MotorState state_{};
 
-	// Safety
-	bool halted_{false};
+	template<typename First, typename Second, typename... Rest>
+	static bool
+	updateMode();
 
-	// Position Mode
-	Pid::Parameter positionPidParameters_;
-	Pid positionPid_;
-	bool receivedPositionRelative_{true};
-	int32_t receivedPosition_{};
-	int32_t commandedPosition_{};
-	uint32_t positionWindow_{5};
-	int32_t positionError_{};
-	uint32_t positionWindowTime_{10};
-	uint32_t inPositionWindow_{0};
-
-	// Velocity Mode
-	Pid::Parameter velocityPidParameters_;
-	Pid velocityPid_;
-	int32_t receivedVelocity_{};
-	int32_t commandedVelocity_{};
-	int32_t velocityError_{};
-
-	// Voltage Mode
-	int16_t commandedPWM_{};
-
-	// General State
-	int32_t actualPosition_{};
-	int32_t lastPosition_{};
-	modm::filter::MovingAverage<int32_t, 16> actualVelocity_{};
-	int16_t outputPWM_{};
-	bool enableMotor_{true};
-	bool targetReached_{false};
-
-	void
-	updateVelocity();
-	void
-	updateStatus();
+	template<typename First>
+	static bool
+	updateMode();
 
 public:
-	MotorControl(const Pid::Parameter &velocityParameters,
-				 const Pid::Parameter &positionParameters);
-
-	OperatingMode
-	mode()
+	static inline const MotorState&
+	state()
 	{
-		return mode_;
-	}
-	void
-	setMode(OperatingMode mode)
-	{
-		mode_ = mode;
-	}
-	int32_t
-	velocityError() const
-	{
-		return velocityError_;
-	}
-	int32_t
-	commandedVelocity() const
-	{
-		return commandedVelocity_;
-	}
-	void
-	setCommandedVelocity(int32_t velocity)
-	{
-		commandedVelocity_ = velocity;
+		return state_;
 	}
 
-	int16_t
-	commandedPWM() const
-	{
-		return commandedPWM_;
-	}
-	void
-	setCommandedPWM(int16_t pwm)
-	{
-		commandedPWM_ = pwm;
-	}
-
-	int32_t
-	commandedPosition() const
-	{
-		return commandedPosition_;
-	}
-
-	int32_t
-	positionError() const
-	{
-		return positionError_;
-	}
-
-	int32_t
-	receivedPosition() const
-	{
-		return receivedPosition_;
-	}
-
-	void
-	setCommandedPosition(int32_t position)
-	{
-		commandedPosition_ = position;
-	}
-
-	uint32_t
-	positionWindow() const
-	{
-		return positionWindow_;
-	}
-	void
-	setPositionWindow(uint32_t window)
-	{
-		positionWindow_ = window;
-	}
-
-	int32_t
-	velocity() const
-	{
-		return actualVelocity_.getValue();
-	}
-	int32_t
-	position() const
-	{
-		return actualPosition_;
-	}
-	int16_t
-	outputPWM() const
-	{
-		return outputPWM_;
-	}
-	bool
-	shouldEnableMotor() const
-	{
-		return enableMotor_;
-	}
-
-	bool
-	updatePositionSetPoint(bool relative)
-	{
-		if (mode_ != OperatingMode::Position) return false;
-		if (relative)
-		{
-			commandedPosition_ += receivedPosition_;
-		} else
-		{
-			commandedPosition_ = receivedPosition_;
-		}
-		return true;
-	}
-
-	void
-	halt();
-	void
-	unhalt();
-
-	inline void
-	setActualPosition(int32_t position)
-	{
-		actualPosition_ = position;
-	}
-
-	void
+	static bool
 	update();
 
-	inline ControlWord &
-	control()
+	static inline void
+	setActualPosition(int32_t position)
 	{
-		return control_;
+		state_.actualPosition_ = position;
 	}
 
-	inline StateMachine &
-	status()
+	static inline int16_t
+	outputPWM()
 	{
-		return status_;
+		return state_.outputPWM_;
 	}
 
-	inline Factors &
-	scalingFactors()
-	{
-		return scalingFactors_;
-	}
-
-	inline Pid::Parameter
-	getVelocityPidParams()
-	{
-		return velocityPidParameters_;
-	}
-
-	inline void
-	setVelocityPidParams(const Pid::Parameter &params)
-	{
-		velocityPidParameters_ = params;
-		velocityPid_.setParameter(velocityPidParameters_);
-	}
-
-	inline Pid::Parameter
-	getPositionPidParams()
-	{
-		return positionPidParameters_;
-	}
-
-	inline void
-	setPositionPidParams(const Pid::Parameter &params)
-	{
-		positionPidParameters_ = params;
-		positionPid_.setParameter(positionPidParameters_);
-	}
+	template<typename ObjectDictionary>
+	constexpr void
+	registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map);
 };
 
-const Pid::Parameter velocityControllerParameters{
-	// TODO
-	1.0f,                                       // kp
-	0.0f,                                       // ki
-	0.0f,                                       // kd
-	100.0f,                                     // max error sum
-	(float)std::numeric_limits<int16_t>::max()  // max output
-};
+using MotorControl0 =
+	MotorControl<PWMProtocol, VelocityProtocol, PositionProtocol<VelocityProtocol>>;
 
-const Pid::Parameter positionControllerParameters{
-	// TODO
-	1.0f,                                       // kp
-	0.0f,                                       // ki
-	0.0f,                                       // kd
-	0.0f,                                       // max error sum
-	(float)std::numeric_limits<int32_t>::max()  // max output
-};
-
-inline MotorControl MotorControl0{velocityControllerParameters, positionControllerParameters};
+#include "motor_control_impl.hpp"
+#endif

@@ -4,18 +4,16 @@
 #include <modm-canopen/canopen_device.hpp>
 #include <modm/debug/logger.hpp>
 
-#include "canopen_handlers.hpp"
-#include "motor_factor_handlers.hpp"
-#include "motor_velocity_handlers.hpp"
-#include "motor_position_handlers.hpp"
-#include "motor_pwm_handlers.hpp"
+#include "motor_control.hpp"
+#include "pwm_protocol.hpp"
+#include "velocity_protocol.hpp"
+#include "position_protocol.hpp"
 
 class CanOpen
 {
 public:
-	using Device = modm_canopen::CanopenDevice<modm_canopen::generated::DefaultObjects,
-											   CanOpenHandlers, FactorHandlers, VelocityHandlers,
-											   PositionHandlers, PWMHandlers>;
+	using Device =
+		modm_canopen::CanopenDevice<modm_canopen::generated::DefaultObjects, MotorControl0>;
 
 	static inline void
 	initialize(uint8_t nodeId);
@@ -37,12 +35,12 @@ CanOpen::initialize(uint8_t nodeId)
 void
 CanOpen::setControllerUpdated()
 {
-	Device::setValueChanged(Objects::StatusWord);
-	Device::setValueChanged(Objects::OutputPWM);
-	Device::setValueChanged(Objects::ModeOfOperation);
-	Device::setValueChanged(Objects::VelocityActualValue);
-	Device::setValueChanged(Objects::PositionActualValue);
-	Device::setValueChanged(Objects::VelocityError);
+	Device::setValueChanged(CanopenObjects::StatusWord);
+	Device::setValueChanged(PWMObjects::OutputPWM);
+	Device::setValueChanged(CanopenObjects::ModeOfOperation);
+	Device::setValueChanged(VelocityObjects::VelocityActualValue);
+	Device::setValueChanged(PositionObjects::PositionActualValue);
+	Device::setValueChanged(VelocityObjects::VelocityError);
 }
 
 void

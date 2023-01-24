@@ -68,7 +68,8 @@ main()
 		if (debugTimer.execute())
 		{
 			MODM_LOG_DEBUG << "hall: " << Board::Motor::HallPort::read() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << MotorControl0.position() << "\n" << modm::endl;
+			MODM_LOG_DEBUG << "position: " << MotorControl0::state().actualPosition_ << "\n"
+						   << modm::endl;
 		}
 
 		using Can = Board::CanBus::Can;
