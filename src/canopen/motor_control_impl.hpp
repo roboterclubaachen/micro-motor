@@ -9,7 +9,7 @@ template<typename First>
 bool
 MotorControl<Modes...>::updateMode()
 {
-	if (First::mode() == state_.mode_) return First::update(state_);
+	if (First::applicable(state_)) return First::update(state_);
 	return false;
 }
 
@@ -18,7 +18,7 @@ template<typename First, typename Second, typename... Rest>
 bool
 MotorControl<Modes...>::updateMode()
 {
-	if (First::mode() == state_.mode_) return First::update(state_);
+	if (First::applicable(state_)) return First::update(state_);
 	return updateMode<Second, Rest...>();
 }
 

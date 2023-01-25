@@ -42,10 +42,11 @@ public:
 	static inline uint32_t inPositionWindow_{0};
 
 public:
-	static constexpr modm_canopen::cia402::OperatingMode
-	mode()
+	static bool
+	applicable(const MotorState& state)
 	{
-		return OperatingMode::Position;
+		return state.mode_ == OperatingMode::Position &&
+			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
 	static inline bool

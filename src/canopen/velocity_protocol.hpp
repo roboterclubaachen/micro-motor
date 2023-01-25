@@ -38,12 +38,12 @@ public:
 	static inline int32_t profileAcceleration_{100};
 
 public:
-	static constexpr modm_canopen::cia402::OperatingMode
-	mode()
+	static bool
+	applicable(const MotorState& state)
 	{
-		return OperatingMode::Velocity;
+		return state.mode_ == OperatingMode::Velocity &&
+			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
-
 	static inline bool
 	update(MotorState& state);
 

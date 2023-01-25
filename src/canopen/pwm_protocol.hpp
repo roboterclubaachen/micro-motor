@@ -5,6 +5,7 @@
 #include <modm-canopen/canopen_device.hpp>
 #include <modm-canopen/object_dictionary.hpp>
 #include <modm-canopen/cia402/operating_mode.hpp>
+#include <modm-canopen/cia402/states.hpp>
 
 #include "motor_state.hpp"
 
@@ -20,10 +21,11 @@ public:
 	static inline int16_t commandedPWM_{0};
 
 public:
-	static constexpr modm_canopen::cia402::OperatingMode
-	mode()
+	static bool
+	applicable(const MotorState& state)
 	{
-		return OperatingMode::Voltage;
+		return state.mode_ == OperatingMode::Voltage &&
+			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
 	static inline bool
