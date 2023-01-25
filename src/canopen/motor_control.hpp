@@ -6,6 +6,7 @@
 #include "pwm_protocol.hpp"
 #include "velocity_protocol.hpp"
 #include "position_protocol.hpp"
+#include "quickstop_protocol.hpp"
 
 struct CanopenObjects
 {
@@ -68,7 +69,8 @@ public:
 };
 
 using MotorControl0 =
-	MotorControl<PWMProtocol, VelocityProtocol, PositionProtocol<VelocityProtocol>>;
+	MotorControl<PWMProtocol, VelocityProtocol, PositionProtocol<VelocityProtocol>,
+				 QuickstopProtocol<VelocityProtocol>>;
 
 #include "motor_control_impl.hpp"
 #endif

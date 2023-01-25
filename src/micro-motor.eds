@@ -113,7 +113,7 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=35
+SupportedObjects=36
 1=0x1400
 2=0x1401
 3=0x1402
@@ -149,6 +149,7 @@ SupportedObjects=35
 33=0x60F4
 34=0x6083
 35=0x606B
+36=0x6085
 
 [1200]
 ParameterName=Server SDO Parameter
@@ -1229,6 +1230,15 @@ DataType=0x0004
 AccessType=rww
 DefaultValue=0
 PDOMapping=1
+
+[6085]
+ParameterName=Quick stop deceleration
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
 
 [6093]
 ParameterName=Position Factor
