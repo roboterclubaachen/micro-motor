@@ -3,12 +3,15 @@
 #endif
 
 template<typename VelocityProtocol>
+template<typename Device>
 bool
 QuickstopProtocol<VelocityProtocol>::update(MotorState& state)
 {
 	if (state.status_.state() == modm_canopen::cia402::State::QuickStopActive)
 	{
 		VelocityProtocol::updatePid(0, state.actualVelocity_.getValue());
+		Device::setValueChanged(VelocityObjects::VelocityDemandValue);
+		Device::setValueChanged(VelocityObjects::VelocityError);
 		state.status_.setBit<modm_canopen::cia402::StatusBits::NotCurrentlyQuickStopping>(false);
 	} else
 	{

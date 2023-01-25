@@ -1304,18 +1304,19 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=5
-1=0x2002
-2=0x2003
-3=0x2004
-4=0x2005
-5=0x2006
+SupportedObjects=6
+1=0x2001
+2=0x2002
+3=0x2003
+4=0x2004
+5=0x2005
+6=0x2006
 
 [2001]
-ParameterName=Enable motor
+ParameterName=Update time
 ObjectType=0x7
-DataType=0x0005
-AccessType=rww
+DataType=0x0007
+AccessType=ro
 DefaultValue=0
 PDOMapping=1
 

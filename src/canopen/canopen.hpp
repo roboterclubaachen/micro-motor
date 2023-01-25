@@ -33,17 +33,6 @@ CanOpen::initialize(uint8_t nodeId)
 }
 
 void
-CanOpen::setControllerUpdated()
-{
-	Device::setValueChanged(CanopenObjects::StatusWord);
-	Device::setValueChanged(PWMObjects::OutputPWM);
-	Device::setValueChanged(CanopenObjects::ModeOfOperation);
-	Device::setValueChanged(VelocityObjects::VelocityActualValue);
-	Device::setValueChanged(PositionObjects::PositionActualValue);
-	Device::setValueChanged(VelocityObjects::VelocityError);
-}
-
-void
 CanOpen::processMessage(const modm::can::Message &message,
 						bool (*sendMessage)(const modm::can::Message &))
 {

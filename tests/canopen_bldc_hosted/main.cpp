@@ -60,7 +60,7 @@ main()
 			CanOpen::processMessage(message, sendMessage);
 		}
 
-		if (Motor0.update()) { CanOpen::setControllerUpdated(); }
+		Motor0.update();
 		CanOpen::update(sendMessage);
 
 		if (debugTimer.execute())

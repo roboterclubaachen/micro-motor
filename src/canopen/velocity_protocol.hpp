@@ -13,7 +13,6 @@ using Pid = modm::Pid<float>;
 struct VelocityObjects
 {
 	static constexpr modm_canopen::Address VelocityDemandValue{0x606B, 0};  // User units
-	static constexpr modm_canopen::Address VelocityActualValue{0x606C, 0};  // User units
 	static constexpr modm_canopen::Address TargetVelocity{0x60FF, 0};       // User units
 	static constexpr modm_canopen::Address ProfileAcceleration{0x6083, 0};  // User units
 
@@ -44,7 +43,9 @@ public:
 		return state.mode_ == OperatingMode::Velocity &&
 			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
-	static inline bool
+
+	template<typename Device>
+	static bool
 	update(MotorState& state);
 
 	static inline int16_t

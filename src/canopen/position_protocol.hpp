@@ -13,8 +13,6 @@ using Pid = modm::Pid<float>;
 struct PositionObjects
 {
 	static constexpr modm_canopen::Address PositionDemandValue{0x6062, 0};        // User units
-	static constexpr modm_canopen::Address PositionInternalValue{0x6063, 0};      // internal units
-	static constexpr modm_canopen::Address PositionActualValue{0x6064, 0};        // User units
 	static constexpr modm_canopen::Address TargetPosition{0x607A, 0};             // User units
 	static constexpr modm_canopen::Address PositionWindow{0x6067, 0};             // User units
 	static constexpr modm_canopen::Address FollowingErrorActualValue{0x60F4, 0};  // User units
@@ -49,7 +47,8 @@ public:
 			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
-	static inline bool
+	template<typename Device>
+	static bool
 	update(MotorState& state);
 
 	template<typename ObjectDictionary, const MotorState& state>

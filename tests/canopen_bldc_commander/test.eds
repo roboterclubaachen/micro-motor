@@ -1113,10 +1113,10 @@ SupportedObjects=4
 4=0x2004
 
 [2001]
-ParameterName=Test 1
+ParameterName=UpdateTime
 ObjectType=0x7
-DataType=0x0005
-AccessType=ro
+DataType=0x0007
+AccessType=wo
 DefaultValue=0
 PDOMapping=1
 

@@ -5,30 +5,40 @@
 #include <modm/debug/logger.hpp>
 
 template<typename... Modes>
-template<typename First>
+template<typename Device, typename First>
 bool
 MotorControl<Modes...>::updateMode()
 {
-	if (First::applicable(state_)) return First::update(state_);
+	if (First::applicable(state_)) return First::template update<Device>(state_);
 	return false;
 }
 
 template<typename... Modes>
-template<typename First, typename Second, typename... Rest>
+template<typename Device, typename First, typename Second, typename... Rest>
 bool
 MotorControl<Modes...>::updateMode()
 {
-	if (First::applicable(state_)) return First::update(state_);
-	return updateMode<Second, Rest...>();
+	if (First::applicable(state_)) return First::template update<Device>(state_);
+	return updateMode<Device, Second, Rest...>();
 }
 
 template<typename... Modes>
+template<typename Device>
 bool
 MotorControl<Modes...>::update()
 {
+	auto now = modm::chrono::micro_clock::now();
+	state_.updateTime_.update((now - state_.lastUpdate_).count());
+	state_.lastUpdate_ = now;
+	Device::setValueChanged(StateObjects::UpdateTime);
+
 	const auto newVelocity_ = state_.actualPosition_ - state_.lastPosition_;
 	state_.lastPosition_ = state_.actualPosition_;
 	state_.actualVelocity_.update(newVelocity_);
+
+	Device::setValueChanged(StateObjects::PositionInternalValue);
+	Device::setValueChanged(StateObjects::PositionActualValue);
+	Device::setValueChanged(StateObjects::VelocityActualValue);
 
 	bool value = false;
 	if (state_.status_.state() != modm_canopen::cia402::State::OperationEnabled ||
@@ -40,9 +50,13 @@ MotorControl<Modes...>::update()
 	} else
 	{
 		state_.enableMotor_ = true;
-		value = updateMode<Modes...>();
+		value = updateMode<Device, Modes...>();
 	}
 	state_.status_.setBit<StatusBits::VoltagePresent>(state_.outputPWM_ != 0);
+	Device::setValueChanged(StateObjects::OutputPWM);
+	Device::setValueChanged(StateObjects::StatusWord);
+	Device::setValueChanged(
+		StateObjects::ModeOfOperationDisplay);  // TODO move to where this actually happens
 	return value;
 }
 
@@ -53,13 +67,16 @@ MotorControl<Modes...>::registerHandlers(modm_canopen::HandlerMap<ObjectDictiona
 {
 	using modm_canopen::SdoErrorCode;
 
-	map.template setReadHandler<CanopenObjects::ModeOfOperation>(
+	map.template setReadHandler<StateObjects::UpdateTime>(
+		+[]() { return uint32_t(state_.updateTime_.getValue()); });
+
+	map.template setReadHandler<StateObjects::ModeOfOperation>(
 		+[]() { return int8_t(state_.mode_); });
 
-	map.template setReadHandler<CanopenObjects::ModeOfOperationDisplay>(
+	map.template setReadHandler<StateObjects::ModeOfOperationDisplay>(
 		+[]() { return int8_t(state_.mode_); });
 
-	map.template setWriteHandler<CanopenObjects::ModeOfOperation>(+[](int8_t value) {
+	map.template setWriteHandler<StateObjects::ModeOfOperation>(+[](int8_t value) {
 		const bool valid = (value == int8_t(OperatingMode::Disabled)) ||
 						   (value == int8_t(OperatingMode::Voltage)) ||
 						   (value == int8_t(OperatingMode::Velocity)) ||
@@ -75,70 +92,82 @@ MotorControl<Modes...>::registerHandlers(modm_canopen::HandlerMap<ObjectDictiona
 		}
 	});
 
-	map.template setReadHandler<CanopenObjects::ControlWord>(
+	map.template setReadHandler<StateObjects::ControlWord>(
 		+[]() { return state_.control_.value(); });
 
-	map.template setWriteHandler<CanopenObjects::ControlWord>(+[](uint16_t value) {
+	map.template setWriteHandler<StateObjects::ControlWord>(+[](uint16_t value) {
 		state_.control_.update(value);
 		state_.status_.update(state_.control_);
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<CanopenObjects::StatusWord>(
+	map.template setReadHandler<StateObjects::StatusWord>(
 		+[]() { return state_.status_.status(); });
 
-	map.template setReadHandler<FactorObjects::PositionFactorNumerator>(
+	map.template setReadHandler<StateObjects::PositionActualValue>(
+		+[]() { return state_.scalingFactors_.position.toUser(state_.actualPosition_); });
+
+	map.template setReadHandler<StateObjects::PositionInternalValue>(
+		+[]() { return state_.actualPosition_; });
+
+	map.template setReadHandler<StateObjects::VelocityActualValue>(+[]() {
+		return state_.scalingFactors_.velocity.toUser(state_.actualVelocity_.getValue());
+	});
+
+	map.template setReadHandler<StateObjects::OutputPWM>(+[]() { return state_.outputPWM_; });
+
+	map.template setReadHandler<StateObjects::PositionFactorNumerator>(
 		+[]() { return state_.scalingFactors_.position.numerator; });
 
-	map.template setWriteHandler<FactorObjects::PositionFactorNumerator>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::PositionFactorNumerator>(+[](uint32_t value) {
 		state_.scalingFactors_.position.numerator = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::PositionFactorDivisor>(
+	map.template setReadHandler<StateObjects::PositionFactorDivisor>(
 		+[]() { return state_.scalingFactors_.position.divisor; });
 
-	map.template setWriteHandler<FactorObjects::PositionFactorDivisor>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::PositionFactorDivisor>(+[](uint32_t value) {
 		state_.scalingFactors_.position.divisor = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::VelocityFactorNumerator>(
+	map.template setReadHandler<StateObjects::VelocityFactorNumerator>(
 		+[]() { return state_.scalingFactors_.velocity.numerator; });
 
-	map.template setWriteHandler<FactorObjects::VelocityFactorNumerator>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::VelocityFactorNumerator>(+[](uint32_t value) {
 		state_.scalingFactors_.velocity.numerator = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::VelocityFactorDivisor>(
+	map.template setReadHandler<StateObjects::VelocityFactorDivisor>(
 		+[]() { return state_.scalingFactors_.velocity.divisor; });
 
-	map.template setWriteHandler<FactorObjects::VelocityFactorDivisor>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::VelocityFactorDivisor>(+[](uint32_t value) {
 		state_.scalingFactors_.velocity.divisor = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::AccelerationFactorNumerator>(
+	map.template setReadHandler<StateObjects::AccelerationFactorNumerator>(
 		+[]() { return state_.scalingFactors_.acceleration.numerator; });
 
-	map.template setWriteHandler<FactorObjects::AccelerationFactorNumerator>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::AccelerationFactorNumerator>(+[](uint32_t value) {
 		state_.scalingFactors_.acceleration.numerator = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::AccelerationFactorDivisor>(
+	map.template setReadHandler<StateObjects::AccelerationFactorDivisor>(
 		+[]() { return state_.scalingFactors_.acceleration.divisor; });
 
-	map.template setWriteHandler<FactorObjects::AccelerationFactorDivisor>(+[](uint32_t value) {
+	map.template setWriteHandler<StateObjects::AccelerationFactorDivisor>(+[](uint32_t value) {
 		state_.scalingFactors_.acceleration.divisor = value;
 		return SdoErrorCode::NoError;
 	});
 
-	map.template setReadHandler<FactorObjects::Polarity>(
+	map.template setReadHandler<StateObjects::Polarity>(
 		+[]() { return state_.scalingFactors_.getPolarity(); });
 
-	map.template setWriteHandler<FactorObjects::Polarity>(+[](uint8_t value) {
+	map.template setWriteHandler<StateObjects::Polarity>(+[](uint8_t value) {
 		state_.scalingFactors_.setPolarity(value);
 		return SdoErrorCode::NoError;
 	});

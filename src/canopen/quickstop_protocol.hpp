@@ -26,7 +26,8 @@ public:
 		return true;
 	}
 
-	static inline bool
+	template<typename Device>
+	static bool
 	update(MotorState& state);
 
 	template<typename ObjectDictionary, const MotorState& state>

@@ -12,7 +12,6 @@
 struct PWMObjects
 {
 	static constexpr modm_canopen::Address PWMCommand{0x2002, 0};  // Custom
-	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};   // Custom
 };
 
 class PWMProtocol
@@ -28,7 +27,8 @@ public:
 			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
-	static inline bool
+	template<typename Device>
+	static bool
 	update(MotorState& state);
 
 	template<typename ObjectDictionary, const MotorState& state>

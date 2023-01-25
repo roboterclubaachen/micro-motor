@@ -32,6 +32,7 @@ struct CommandSendInfo
 	size_t time;
 	void (*custom)(){nullptr};
 };
+uint32_t updateTime = 0;
 bool targetReached = true;
 int16_t commandedPWM = 6000;
 int16_t outputPWM = 0;
@@ -80,7 +81,10 @@ struct Test
 	constexpr void
 	registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map)
 	{
-		map.template setReadHandler<Objects::Test1>(+[]() { return uint8_t(10); });
+		map.template setWriteHandler<Objects::Test1>(+[](uint32_t value) {
+			updateTime = value;
+			return SdoErrorCode::NoError;
+		});
 
 		map.template setReadHandler<Objects::PWMCommand>(+[]() { return commandedPWM; });
 
@@ -218,6 +222,16 @@ setPDOs(MessageCallback&& sendMessage)
 	Device::configureRemoteTPDO(motorId, 2, errorRpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
+	Device::ReceivePdo_t testRpdoMotor{};
+	testRpdoMotor.setInactive();
+	assert(testRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::Test1, 32}) ==
+		   SdoErrorCode::NoError);
+	testRpdoMotor.setMappingCount(1);
+	assert(testRpdoMotor.setActive() == SdoErrorCode::NoError);
+	Device::setRPDO(motorId, 3, testRpdoMotor);
+	Device::configureRemoteTPDO(motorId, 3, testRpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+
 	Device::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
 	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
@@ -308,7 +322,7 @@ int
 main()
 {
 	auto start = modm::Clock::now();
-	CSVWriter writer{{"Time", "Position", "Velocity", "PWM", "VelError", "PosError"}};
+	CSVWriter writer{{"Time", "Position", "Velocity", "PWM", "VelError", "PosError", "Time"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -391,7 +405,8 @@ main()
 			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
 						   std::to_string(positionValue), std::to_string(velocityValue),
 						   std::to_string((float)outputPWM / std::numeric_limits<int16_t>::max()),
-						   std::to_string(velErrorValue), std::to_string(posErrorValue)});
+						   std::to_string(velErrorValue), std::to_string(posErrorValue),
+						   std::to_string(updateTime)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

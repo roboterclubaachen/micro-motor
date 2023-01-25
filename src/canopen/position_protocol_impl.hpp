@@ -4,6 +4,7 @@
 #include <modm/debug/logger.hpp>
 
 template<typename VelocityProtocol>
+template<typename Device>
 bool
 PositionProtocol<VelocityProtocol>::update(MotorState& state)
 {
@@ -19,12 +20,18 @@ PositionProtocol<VelocityProtocol>::update(MotorState& state)
 			commandedPosition_ += nextPosition_;
 		else
 			commandedPosition_ = nextPosition_;
+		Device::setValueChanged(PositionObjects::PositionDemandValue);
 	}
 
 	positionError_ = commandedPosition_ - state.actualPosition_;
+	Device::setValueChanged(PositionObjects::FollowingErrorActualValue);
+
 	positionPid_.update(positionError_);
 	state.outputPWM_ =
 		VelocityProtocol::updatePid(positionPid_.getValue(), state.actualVelocity_.getValue());
+
+	Device::setValueChanged(VelocityObjects::VelocityError);
+	Device::setValueChanged(VelocityObjects::VelocityDemandValue);
 
 	if ((uint32_t)std::abs(positionError_) <= positionWindow_)
 	{
@@ -45,11 +52,6 @@ PositionProtocol<VelocityProtocol>::registerHandlers(
 	modm_canopen::HandlerMap<ObjectDictionary>& map)
 {
 	using modm_canopen::SdoErrorCode;
-	map.template setReadHandler<PositionObjects::PositionActualValue>(
-		+[]() { return state.scalingFactors_.position.toUser(state.actualPosition_); });
-
-	map.template setReadHandler<PositionObjects::PositionInternalValue>(
-		+[]() { return state.actualPosition_; });
 
 	map.template setReadHandler<PositionObjects::FollowingErrorActualValue>(
 		+[]() { return state.scalingFactors_.position.toUser(positionError_); });

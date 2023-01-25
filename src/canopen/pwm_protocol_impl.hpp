@@ -2,6 +2,7 @@
 #error "Do not include this file directly, use pwm_protocol.hpp instead"
 #endif
 
+template<typename Device>
 bool
 PWMProtocol::update(MotorState& state)
 {
@@ -22,6 +23,4 @@ PWMProtocol::registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map)
 		commandedPWM_ = value;
 		return SdoErrorCode::NoError;
 	});
-
-	map.template setReadHandler<PWMObjects::OutputPWM>(+[]() { return state.outputPWM_; });
 }

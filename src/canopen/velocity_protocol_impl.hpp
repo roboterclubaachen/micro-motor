@@ -8,6 +8,7 @@ using CommandBits = modm_canopen::cia402::CommandBits;
 using StatusBits = modm_canopen::cia402::StatusBits;
 using OperatingMode = modm_canopen::cia402::OperatingMode;
 
+template<typename Device>
 bool
 VelocityProtocol::update(MotorState& state)
 {
@@ -18,6 +19,8 @@ VelocityProtocol::update(MotorState& state)
 		commandedVelocity_ = receivedVelocity_;
 	}
 
+	Device::setValueChanged(VelocityObjects::VelocityDemandValue);
+
 	// TODO implement profile acceleration
 	if (!state.control_.isSet<CommandBits::Halt>())
 	{
@@ -26,6 +29,8 @@ VelocityProtocol::update(MotorState& state)
 	{
 		velocityError_ = -state.actualVelocity_.getValue();
 	}
+
+	Device::setValueChanged(VelocityObjects::VelocityError);
 
 	velocityPid_.update(velocityError_);
 	state.outputPWM_ = velocityPid_.getValue();
@@ -54,9 +59,6 @@ VelocityProtocol::registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& m
 	using modm_canopen::SdoErrorCode;
 	map.template setReadHandler<VelocityObjects::VelocityDemandValue>(
 		+[]() { return state.scalingFactors_.velocity.toUser(commandedVelocity_); });
-
-	map.template setReadHandler<VelocityObjects::VelocityActualValue>(
-		+[]() { return state.scalingFactors_.velocity.toUser(state.actualVelocity_.getValue()); });
 
 	map.template setReadHandler<VelocityObjects::VelocityError>(
 		+[]() { return state.scalingFactors_.velocity.toUser(velocityError_); });

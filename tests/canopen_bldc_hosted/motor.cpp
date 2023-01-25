@@ -1,6 +1,7 @@
 #include "motor.hpp"
 #include <modm/debug/logger.hpp>
 #include <micro-motor/canopen/motor_control.hpp>
+#include <micro-motor/canopen/canopen.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
 namespace
@@ -35,7 +36,7 @@ Motor::update()
 	if (controlTimer_.execute())
 	{
 		MotorControl0::setActualPosition(actualPosition_);
-		MotorControl0::update();
+		MotorControl0::update<CanOpen::Device>();
 		dummy_.setInputVoltageInt(MotorControl0::outputPWM());
 		updated = true;
 	}
