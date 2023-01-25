@@ -17,7 +17,7 @@ template<typename VelocityProtocol>
 class QuickstopProtocol
 {
 public:
-	static inline int32_t quickStopDeceleration_{100};
+	static inline int32_t quickStopDeceleration_{10000};
 
 public:
 	static bool

@@ -34,7 +34,7 @@ public:
 	static inline int32_t commandedVelocity_{};
 	static inline int32_t velocityError_{};
 
-	static inline int32_t profileAcceleration_{100};
+	static inline int32_t profileAcceleration_{5000};
 
 public:
 	static bool
@@ -49,7 +49,10 @@ public:
 	update(MotorState& state);
 
 	static inline int16_t
-	updatePid(int32_t commandedVelocity, int32_t actualVelocity);
+	doPositionUpdate(int32_t commandedVelocity, const MotorState& state);
+
+	static inline int16_t
+	doQuickStopUpdate(int32_t commandedDeceleration, const MotorState& state);
 
 	template<typename ObjectDictionary, const MotorState& state>
 	static constexpr void

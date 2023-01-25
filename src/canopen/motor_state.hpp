@@ -17,7 +17,7 @@ struct StateObjects
 	static constexpr modm_canopen::Address ModeOfOperation{0x6060, 0};
 	static constexpr modm_canopen::Address ModeOfOperationDisplay{0x6061, 0};
 
-	static constexpr modm_canopen::Address UpdateTime{0x2001, 0};
+	static constexpr modm_canopen::Address UpdateTime{0x2001, 0};  // Micro seconds
 
 	static constexpr modm_canopen::Address PositionInternalValue{0x6063, 0};  // internal units
 	static constexpr modm_canopen::Address PositionActualValue{0x6064, 0};    // User units

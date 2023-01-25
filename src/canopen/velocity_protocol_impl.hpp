@@ -3,6 +3,7 @@
 #endif
 
 #include <modm/debug/logger.hpp>
+#include <algorithm>
 
 using CommandBits = modm_canopen::cia402::CommandBits;
 using StatusBits = modm_canopen::cia402::StatusBits;
@@ -32,8 +33,9 @@ VelocityProtocol::update(MotorState& state)
 
 	Device::setValueChanged(VelocityObjects::VelocityError);
 
-	velocityPid_.update(velocityError_);
-	state.outputPWM_ = velocityPid_.getValue();
+	velocityPid_.update(velocityError_, state.outputPWM_ > profileAcceleration_);
+	state.outputPWM_ =
+		std::clamp((int32_t)velocityPid_.getValue(), -profileAcceleration_, profileAcceleration_);
 
 	state.status_.setBit<StatusBits::TargetReached>(velocityError_ == 0);
 	state.status_.setBit<StatusBits::SpeedZero>(
@@ -44,12 +46,23 @@ VelocityProtocol::update(MotorState& state)
 }
 
 int16_t
-VelocityProtocol::updatePid(int32_t commandedVelocity, int32_t actualVelocity)
+VelocityProtocol::doPositionUpdate(int32_t commandedVelocity, const MotorState& state)
 {
 	commandedVelocity_ = commandedVelocity;
-	velocityError_ = commandedVelocity_ - actualVelocity;
-	velocityPid_.update(velocityError_);
-	return velocityPid_.getValue();
+	velocityError_ = commandedVelocity_ - state.actualVelocity_.getValue();
+	velocityPid_.update(velocityError_, state.outputPWM_ > profileAcceleration_);
+	return (int16_t)std::clamp((int32_t)velocityPid_.getValue(), -profileAcceleration_,
+							   profileAcceleration_);
+}
+
+int16_t
+VelocityProtocol::doQuickStopUpdate(int32_t commandedDeceleration, const MotorState& state)
+{
+	commandedVelocity_ = 0;
+	velocityError_ = commandedVelocity_ - state.actualVelocity_.getValue();
+	velocityPid_.update(velocityError_, state.outputPWM_ > commandedDeceleration);
+	return (int16_t)std::clamp((int32_t)velocityPid_.getValue(), -commandedDeceleration,
+							   commandedDeceleration);
 }
 
 template<typename ObjectDictionary, const MotorState& state>

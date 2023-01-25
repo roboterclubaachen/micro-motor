@@ -9,7 +9,7 @@ QuickstopProtocol<VelocityProtocol>::update(MotorState& state)
 {
 	if (state.status_.state() == modm_canopen::cia402::State::QuickStopActive)
 	{
-		VelocityProtocol::updatePid(0, state.actualVelocity_.getValue());
+		VelocityProtocol::doQuickStopUpdate(quickStopDeceleration_, state);
 		Device::setValueChanged(VelocityObjects::VelocityDemandValue);
 		Device::setValueChanged(VelocityObjects::VelocityError);
 		state.status_.setBit<modm_canopen::cia402::StatusBits::NotCurrentlyQuickStopping>(false);
