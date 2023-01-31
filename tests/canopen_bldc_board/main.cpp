@@ -80,7 +80,7 @@ main()
 			CanOpen::processMessage(message, Board::CanBus::Can::sendMessage);
 		}
 
-		if (Motor0.update()) { CanOpen::setControllerUpdated(); }
+		Motor0.update();
 		CanOpen::update(Board::CanBus::Can::sendMessage);
 	}
 
