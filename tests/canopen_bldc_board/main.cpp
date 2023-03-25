@@ -65,13 +65,6 @@ main()
 
 	while (1)
 	{
-		if (debugTimer.execute())
-		{
-			MODM_LOG_DEBUG << "hall: " << Board::Motor::HallPort::read() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << MotorControl0::state().actualPosition_ << "\n"
-						   << modm::endl;
-		}
-
 		using Can = Board::CanBus::Can;
 		while (Can::isMessageAvailable())
 		{
