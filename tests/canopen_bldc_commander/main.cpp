@@ -50,7 +50,7 @@ constexpr uint8_t motorId = 1;  // Keep consistent with firmware
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
-#define HOSTED
+
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr float vPID_kP = 150.0f;
@@ -327,10 +327,11 @@ main()
 
 	auto& motorNode_ = Master::addDevice<MotorNode>(motorId);
 
-	auto handleResponse = [&success](const modm_canopen::Address address,
+	auto handleResponse = [&success](const uint8_t id, const modm_canopen::Address address,
 									 const modm_canopen::SdoErrorCode err) {
-		MODM_LOG_INFO << "Got response for 0x" << modm::hex << address.index << modm::ascii << "."
-					  << address.subindex << ": " << modm::hex << (uint32_t)err << modm::endl;
+		MODM_LOG_INFO << "Got response for node " << id << " 0x" << modm::hex << address.index
+					  << modm::ascii << "." << address.subindex << ": " << modm::hex
+					  << (uint32_t)err << modm::endl;
 		if (err != modm_canopen::SdoErrorCode::NoError) { success = false; }
 	};
 
