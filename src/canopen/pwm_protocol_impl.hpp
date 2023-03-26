@@ -4,7 +4,7 @@
 
 template<typename Device, typename MessageCallback>
 bool
-PWMProtocol::update(MotorState& state, MessageCallback&& cb)
+PWMProtocol::update(MotorState& state, MessageCallback&&)
 {
 	state.outputPWM_ = commandedPWM_;
 	state.status_.setBit<modm_canopen::cia402::StatusBits::TargetReached>(true);

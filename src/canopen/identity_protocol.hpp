@@ -26,7 +26,7 @@ class IdentityProtocol
 {
 public:
 	static bool
-	applicable(const MotorState& state)
+	applicable(const MotorState&)
 	{
 		return false;
 	}
@@ -34,7 +34,9 @@ public:
 	template<typename Device, typename MessageCallback>
 	static bool
 	update(MotorState&, MessageCallback&&)
-	{}
+	{
+		return true;
+	}
 
 	template<typename ObjectDictionary, const MotorState& state>
 	static constexpr void

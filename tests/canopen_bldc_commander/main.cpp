@@ -50,7 +50,7 @@ constexpr uint8_t motorId = 1;  // Keep consistent with firmware
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
-
+#define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr float vPID_kP = 150.0f;

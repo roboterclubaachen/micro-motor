@@ -26,7 +26,7 @@ public:
 
 public:
 	static bool
-	applicable(const MotorState& state)
+	applicable(const MotorState&)
 	{
 		return true;
 	}

@@ -11,7 +11,7 @@ using OperatingMode = modm_canopen::cia402::OperatingMode;
 
 template<typename Device, typename MessageCallback>
 bool
-VelocityProtocol::update(MotorState& state, MessageCallback&& cb)
+VelocityProtocol::update(MotorState& state, MessageCallback&&)
 {
 
 	if (state.mode_ == OperatingMode::Velocity ||

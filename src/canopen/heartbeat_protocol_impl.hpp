@@ -15,7 +15,7 @@ HeartbeatProtocol::makeHeartbeatMSG(uint8_t canId) -> modm::can::Message
 
 template<typename Device, typename MessageCallback>
 bool
-HeartbeatProtocol::update(MotorState& state, MessageCallback&& cb)
+HeartbeatProtocol::update(MotorState&, MessageCallback&& cb)
 {
 	if (heartBeatTimer_.execute()) { cb(makeHeartbeatMSG(Device::nodeId())); }
 	return true;

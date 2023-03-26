@@ -6,7 +6,7 @@
 template<typename VelocityProtocol>
 template<typename Device, typename MessageCallback>
 bool
-PositionProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&& cb)
+PositionProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&&)
 {
 	if (state.control_.isSet<CommandBits::NewSetPoint>())
 	{
