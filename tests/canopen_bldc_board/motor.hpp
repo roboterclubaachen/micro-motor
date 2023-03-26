@@ -8,6 +8,7 @@
 #include <micro-motor/hardware.hpp>
 #include <micro-motor/canopen/motor_control.hpp>
 #include <modm/processing/timer.hpp>
+#include <micro-motor/canopen/canopen.hpp>
 
 using namespace std::literals;
 
@@ -24,7 +25,7 @@ private:
 	uint_fast8_t
 	readHall()
 	{
-		const auto &HallStates = librobots2::motor::block_commutation::SequenceLut;
+		const auto& HallStates = librobots2::motor::block_commutation::SequenceLut;
 		return HallStates[Hall::read(commutationOffset_) & 0b111];
 	}
 
@@ -39,9 +40,28 @@ public:
 		lastHallState_ = readHall();
 	}
 
+	template<typename MessageCallback>
 	bool
-	update();
+	update(MessageCallback&& cb);
 };
+
+template<typename MessageCallback>
+bool
+Motor::update(MessageCallback&& cb)
+{
+	bool updated = false;
+	updatePosition();
+	if (controlTimer_.execute())
+	{
+		MotorControl0::setActualPosition(actualPosition_);
+		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
+		if (!MotorControl0::state().enableMotor_) { motor_.disable(); }
+		motor_.setSetpoint(MotorControl0::outputPWM());
+		updated = true;
+	}
+	motor_.update();
+	return updated;
+}
 
 constexpr uint8_t motor0CommutationOffset{1};
 inline Motor Motor0{motor0CommutationOffset};

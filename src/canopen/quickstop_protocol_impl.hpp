@@ -3,9 +3,9 @@
 #endif
 
 template<typename VelocityProtocol>
-template<typename Device>
+template<typename Device, typename MessageCallback>
 bool
-QuickstopProtocol<VelocityProtocol>::update(MotorState& state)
+QuickstopProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&& cb)
 {
 	if (state.status_.state() == modm_canopen::cia402::State::QuickStopActive)
 	{

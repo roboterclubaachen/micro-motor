@@ -2,9 +2,9 @@
 #error "Do not include this file directly, use pwm_protocol.hpp instead"
 #endif
 
-template<typename Device>
+template<typename Device, typename MessageCallback>
 bool
-PWMProtocol::update(MotorState& state)
+PWMProtocol::update(MotorState& state, MessageCallback&& cb)
 {
 	state.outputPWM_ = commandedPWM_;
 	state.status_.setBit<modm_canopen::cia402::StatusBits::TargetReached>(true);

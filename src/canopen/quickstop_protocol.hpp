@@ -21,14 +21,14 @@ public:
 
 public:
 	static bool
-	applicable(const MotorState&)
+	applicable(const MotorState& state)
 	{
-		return true;
+		return state.enableMotor_;
 	}
 
-	template<typename Device>
+	template<typename Device, typename MessageCallback>
 	static bool
-	update(MotorState& state);
+	update(MotorState& state, MessageCallback&& cb);
 
 	template<typename ObjectDictionary, const MotorState& state>
 	static constexpr void

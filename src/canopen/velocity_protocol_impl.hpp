@@ -9,9 +9,9 @@ using CommandBits = modm_canopen::cia402::CommandBits;
 using StatusBits = modm_canopen::cia402::StatusBits;
 using OperatingMode = modm_canopen::cia402::OperatingMode;
 
-template<typename Device>
+template<typename Device, typename MessageCallback>
 bool
-VelocityProtocol::update(MotorState& state)
+VelocityProtocol::update(MotorState& state, MessageCallback&& cb)
 {
 
 	if (state.mode_ == OperatingMode::Velocity ||

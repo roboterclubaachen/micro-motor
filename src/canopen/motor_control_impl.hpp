@@ -5,27 +5,32 @@
 #include <modm/debug/logger.hpp>
 
 template<typename... Modes>
-template<typename Device, typename First>
+template<typename Device, typename MessageCallback, typename First>
 bool
-MotorControl<Modes...>::updateMode()
+MotorControl<Modes...>::updateMode(MessageCallback&& cb)
 {
-	if (First::applicable(state_)) return First::template update<Device>(state_);
+	if (First::applicable(state_))
+		return First::template update<Device, MessageCallback>(state_,
+															   std::forward<MessageCallback>(cb));
 	return false;
 }
 
 template<typename... Modes>
-template<typename Device, typename First, typename Second, typename... Rest>
+template<typename Device, typename MessageCallback, typename First, typename Second,
+		 typename... Rest>
 bool
-MotorControl<Modes...>::updateMode()
+MotorControl<Modes...>::updateMode(MessageCallback&& cb)
 {
-	if (First::applicable(state_)) return First::template update<Device>(state_);
-	return updateMode<Device, Second, Rest...>();
+	if (First::applicable(state_))
+		return First::template update<Device, MessageCallback>(state_,
+															   std::forward<MessageCallback>(cb));
+	return updateMode<Device, MessageCallback, Second, Rest...>(std::forward<MessageCallback>(cb));
 }
 
 template<typename... Modes>
-template<typename Device>
+template<typename Device, typename MessageCallback>
 bool
-MotorControl<Modes...>::update()
+MotorControl<Modes...>::update(MessageCallback&& cb)
 {
 	auto now = modm::chrono::micro_clock::now();
 	state_.updateTime_.update((now - state_.lastUpdate_).count());
@@ -50,8 +55,9 @@ MotorControl<Modes...>::update()
 	} else
 	{
 		state_.enableMotor_ = true;
-		value = updateMode<Device, Modes...>();
 	}
+	auto temp = updateMode<Device, MessageCallback, Modes...>(std::forward<MessageCallback>(cb));
+	value = value || temp;
 	state_.status_.setBit<StatusBits::VoltagePresent>(state_.outputPWM_ != 0);
 	Device::setValueChanged(StateObjects::OutputPWM);
 	Device::setValueChanged(StateObjects::StatusWord);

@@ -4,9 +4,9 @@
 #include <modm/debug/logger.hpp>
 
 template<typename VelocityProtocol>
-template<typename Device>
+template<typename Device, typename MessageCallback>
 bool
-PositionProtocol<VelocityProtocol>::update(MotorState& state)
+PositionProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&& cb)
 {
 	if (state.control_.isSet<CommandBits::NewSetPoint>())
 	{

@@ -23,13 +23,13 @@ public:
 	static bool
 	applicable(const MotorState& state)
 	{
-		return state.mode_ == OperatingMode::Voltage &&
+		return state.enableMotor_ && state.mode_ == OperatingMode::Voltage &&
 			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
-	template<typename Device>
+	template<typename Device, typename MessageCallback>
 	static bool
-	update(MotorState& state);
+	update(MotorState& state, MessageCallback&& cb);
 
 	template<typename ObjectDictionary, const MotorState& state>
 	static constexpr void

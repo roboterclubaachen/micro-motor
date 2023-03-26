@@ -6,7 +6,9 @@
 #include "pwm_protocol.hpp"
 #include "velocity_protocol.hpp"
 #include "position_protocol.hpp"
+#include "heartbeat_protocol.hpp"
 #include "quickstop_protocol.hpp"
+#include "identity_protocol.hpp"
 
 template<typename... Modes>
 class MotorControl
@@ -14,13 +16,14 @@ class MotorControl
 private:
 	static inline MotorState state_{};
 
-	template<typename Device, typename First, typename Second, typename... Rest>
+	template<typename Device, typename MessageCallback, typename First, typename Second,
+			 typename... Rest>
 	static bool
-	updateMode();
+	updateMode(MessageCallback&& cb);
 
-	template<typename Device, typename First>
+	template<typename Device, typename MessageCallback, typename First>
 	static bool
-	updateMode();
+	updateMode(MessageCallback&& cb);
 
 public:
 	static inline const MotorState&
@@ -29,9 +32,9 @@ public:
 		return state_;
 	}
 
-	template<typename Device>
+	template<typename Device, typename MessageCallback>
 	static bool
-	update();
+	update(MessageCallback&& cb);
 
 	static inline void
 	setActualPosition(int32_t position)
@@ -51,8 +54,8 @@ public:
 };
 
 using MotorControl0 =
-	MotorControl<PWMProtocol, VelocityProtocol, PositionProtocol<VelocityProtocol>,
-				 QuickstopProtocol<VelocityProtocol>>;
+	MotorControl<IdentityProtocol, HeartbeatProtocol, PWMProtocol, VelocityProtocol,
+				 PositionProtocol<VelocityProtocol>, QuickstopProtocol<VelocityProtocol>>;
 
 #include "motor_control_impl.hpp"
 #endif

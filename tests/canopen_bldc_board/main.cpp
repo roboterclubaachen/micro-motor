@@ -73,7 +73,7 @@ main()
 			CanOpen::processMessage(message, Board::CanBus::Can::sendMessage);
 		}
 
-		Motor0.update();
+		Motor0.update(Board::CanBus::Can::sendMessage);
 		CanOpen::update(Board::CanBus::Can::sendMessage);
 	}
 

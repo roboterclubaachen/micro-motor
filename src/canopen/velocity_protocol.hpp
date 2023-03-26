@@ -40,13 +40,13 @@ public:
 	static bool
 	applicable(const MotorState& state)
 	{
-		return state.mode_ == OperatingMode::Velocity &&
+		return state.enableMotor_ && state.mode_ == OperatingMode::Velocity &&
 			   state.status_.state() == modm_canopen::cia402::State::OperationEnabled;
 	}
 
-	template<typename Device>
+	template<typename Device, typename MessageCallback>
 	static bool
-	update(MotorState& state);
+	update(MotorState& state, MessageCallback&& cb);
 
 	static inline int16_t
 	doPositionUpdate(int32_t commandedVelocity, const MotorState& state);

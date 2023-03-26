@@ -1,6 +1,5 @@
 #include "motor.hpp"
 #include <modm/debug/logger.hpp>
-#include <micro-motor/canopen/canopen.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
 namespace
@@ -28,21 +27,4 @@ Motor::updatePosition()
 	const auto hallState = readHall();
 	actualPosition_ += hallDiff(lastHallState_, hallState);
 	lastHallState_ = hallState;
-}
-
-bool
-Motor::update()
-{
-	bool updated = false;
-	updatePosition();
-	if (controlTimer_.execute())
-	{
-		MotorControl0::setActualPosition(actualPosition_);
-		MotorControl0::update<CanOpen::Device>();
-		if (!MotorControl0::state().enableMotor_) { motor_.disable(); }
-		motor_.setSetpoint(MotorControl0::outputPWM());
-		updated = true;
-	}
-	motor_.update();
-	return updated;
 }

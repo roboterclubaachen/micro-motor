@@ -46,10 +46,11 @@ Dummy0007=0
 Lines=0
 
 [MandatoryObjects]
-SupportedObjects=0
-; 1=0x1000
-; 2=0x1001
-; 3=0x1018
+SupportedObjects=4
+1=0x1000
+2=0x1001
+3=0x1017
+4=0x1018
 
 [1000]
 ParameterName=Device type
@@ -67,6 +68,12 @@ DataType=0x0005
 AccessType=ro
 PDOMapping=0
 
+[1017]
+ParameterName=Heartbeat Producer Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+PDOMapping=0
 
 [1018]
 ParameterName=Identity Object

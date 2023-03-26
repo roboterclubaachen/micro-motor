@@ -6,6 +6,8 @@
 #include <modm/processing/timer.hpp>
 
 #include "sim_motor.hpp"
+#include <micro-motor/canopen/canopen.hpp>
+#include <micro-motor/canopen/motor_control.hpp>
 
 using namespace std::literals;
 
@@ -36,9 +38,27 @@ public:
 		return dummy_;
 	};
 
+	template<typename MessageCallback>
 	bool
-	update();
+	update(MessageCallback&& cb);
 };
+
+template<typename MessageCallback>
+bool
+Motor::update(MessageCallback&& cb)
+{
+	bool updated = false;
+	updatePosition();
+	if (controlTimer_.execute())
+	{
+		MotorControl0::setActualPosition(actualPosition_);
+		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
+		dummy_.setInputVoltageInt(MotorControl0::outputPWM());
+		updated = true;
+	}
+	dummy_.update(0.1f);
+	return updated;
+}
 
 constexpr uint8_t motor0CommutationOffset{1};
 inline Motor Motor0{motor0CommutationOffset};

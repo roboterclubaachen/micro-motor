@@ -60,7 +60,7 @@ main()
 			CanOpen::processMessage(message, sendMessage);
 		}
 
-		Motor0.update();
+		Motor0.update(sendMessage);
 		CanOpen::update(sendMessage);
 
 		if (debugTimer.execute())
