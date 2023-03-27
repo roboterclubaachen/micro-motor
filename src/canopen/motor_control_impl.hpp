@@ -12,7 +12,7 @@ MotorControl<Modes...>::updateMode(MessageCallback&& cb)
 	if (First::applicable(state_))
 		return First::template update<Device, MessageCallback>(state_,
 															   std::forward<MessageCallback>(cb));
-	return false;
+	return true;
 }
 
 template<typename... Modes>
@@ -21,10 +21,13 @@ template<typename Device, typename MessageCallback, typename First, typename Sec
 bool
 MotorControl<Modes...>::updateMode(MessageCallback&& cb)
 {
+	auto out = false;
 	if (First::applicable(state_))
-		return First::template update<Device, MessageCallback>(state_,
-															   std::forward<MessageCallback>(cb));
-	return updateMode<Device, MessageCallback, Second, Rest...>(std::forward<MessageCallback>(cb));
+		out = First::template update<Device, MessageCallback>(state_,
+															  std::forward<MessageCallback>(cb));
+	return updateMode<Device, MessageCallback, Second, Rest...>(
+			   std::forward<MessageCallback>(cb)) &&
+		   out;
 }
 
 template<typename... Modes>
