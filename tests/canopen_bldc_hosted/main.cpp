@@ -28,7 +28,7 @@
 
 using namespace std::literals;
 
-modm::PeriodicTimer debugTimer{100ms};
+modm::PeriodicTimer debugTimer{1000ms};
 
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";

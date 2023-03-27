@@ -32,6 +32,7 @@ public:
 	static inline Pid positionPid_;
 	static inline bool receivedPositionRelative_{true};
 	static inline int32_t receivedPosition_{};
+	static inline bool nextPositionIsNew_{false};
 	static inline int32_t nextPosition_{};
 	static inline int32_t commandedPosition_{};
 	static inline uint32_t positionWindow_{5};

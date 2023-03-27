@@ -93,7 +93,14 @@ MotorControl<Modes...>::registerHandlers(modm_canopen::HandlerMap<ObjectDictiona
 
 		if (valid)
 		{
-			state_.mode_ = (static_cast<OperatingMode>(value));
+			auto newMode = (static_cast<OperatingMode>(value));
+			if (state_.mode_ != newMode)
+			{
+				state_.mode_ = newMode;
+				MODM_LOG_INFO << "Set operating mode to "
+							  << modm_canopen::cia402::operatingModeToString(state_.mode_)
+							  << modm::endl;
+			}
 			return SdoErrorCode::NoError;
 		} else
 		{

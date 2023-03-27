@@ -11,15 +11,23 @@ PositionProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&&)
 	if (state.control_.isSet<CommandBits::NewSetPoint>())
 	{
 		nextPosition_ = receivedPosition_;
+		nextPositionIsNew_ = true;
 		state.control_.setBit<CommandBits::NewSetPoint>(false);
 	}
 
-	if (positionError_ == 0 || state.control_.isSet<CommandBits::ChangeImmediately>())
+	if ((positionError_ == 0 && nextPositionIsNew_) ||
+		state.control_.isSet<CommandBits::ChangeImmediately>())
 	{
+		nextPositionIsNew_ = false;
 		if (state.control_.isSet<CommandBits::IsRelative>())
+		{
 			commandedPosition_ += nextPosition_;
-		else
+			MODM_LOG_INFO << "Updated Target Position relative!" << modm::endl;
+		} else if (commandedPosition_ != nextPosition_)
+		{
 			commandedPosition_ = nextPosition_;
+			MODM_LOG_INFO << "Updated Target Position absolute!" << modm::endl;
+		}
 		Device::setValueChanged(PositionObjects::PositionDemandValue);
 	}
 
@@ -63,6 +71,7 @@ PositionProtocol<VelocityProtocol>::registerHandlers(
 
 	map.template setWriteHandler<PositionObjects::TargetPosition>(+[](int32_t value) {
 		receivedPosition_ = state.scalingFactors_.position.toInternal(value);
+		MODM_LOG_INFO << "Set Target Position to " << receivedPosition_ << modm::endl;
 		return SdoErrorCode::NoError;
 	});
 
