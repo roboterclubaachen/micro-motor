@@ -1,6 +1,7 @@
 #ifndef PWM_PROTOCOL_HPP
 #error "Do not include this file directly, use pwm_protocol.hpp instead"
 #endif
+#include <modm/debug/logger.hpp>
 
 template<typename Device, typename MessageCallback>
 bool
