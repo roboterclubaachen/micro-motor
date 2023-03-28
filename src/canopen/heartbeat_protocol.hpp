@@ -21,8 +21,8 @@ struct HeartbeatObjects
 class HeartbeatProtocol
 {
 public:
-	static inline auto timeBetweenHeatbeats{100ms};
-	static inline modm::PeriodicTimer heartBeatTimer_{timeBetweenHeatbeats};
+	static inline auto timeBetweenHeatbeats{200ms};
+	static inline modm::PeriodicTimer heartBeatTimer_{timeBetweenHeatbeats / 2};
 
 public:
 	static bool

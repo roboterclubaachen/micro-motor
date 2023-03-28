@@ -31,7 +31,7 @@ HeartbeatProtocol::registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& 
 
 	map.template setWriteHandler<HeartbeatObjects::TimeBetweenHeartbeats>(+[](uint16_t value) {
 		timeBetweenHeatbeats = std::chrono::milliseconds((int64_t)value);
-		heartBeatTimer_ = modm::PeriodicTimer{timeBetweenHeatbeats};
+		heartBeatTimer_ = modm::PeriodicTimer{timeBetweenHeatbeats / 2};
 		return SdoErrorCode::NoError;
 	});
 }
