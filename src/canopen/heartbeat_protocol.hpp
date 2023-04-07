@@ -40,8 +40,8 @@ public:
 	registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map);
 
 private:
-	static inline auto
-	makeHeartbeatMSG(uint8_t canId) -> modm::can::Message;
+	static inline void
+	makeHeartbeatMSG(uint8_t canId, modm::can::Message& msg);
 };
 
 #include "heartbeat_protocol_impl.hpp"

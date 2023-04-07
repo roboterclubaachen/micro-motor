@@ -4,20 +4,24 @@
 
 #include <modm/debug/logger.hpp>
 
-auto
-HeartbeatProtocol::makeHeartbeatMSG(uint8_t canId) -> modm::can::Message
+void
+HeartbeatProtocol::makeHeartbeatMSG(uint8_t canId, modm::can::Message& message)
 {
-	modm::can::Message message{0x700 + (uint32_t)canId, 1};
+	message = modm::can::Message{0x700 + (uint32_t)canId, 1};
 	message.setExtended(false);
 	message.data[0] = 0x05;  // Always report operational, as we otherwise would not be able to send
-	return message;
 }
 
 template<typename Device, typename MessageCallback>
 bool
 HeartbeatProtocol::update(MotorState&, MessageCallback&& cb)
 {
-	if (heartBeatTimer_.execute()) { cb(makeHeartbeatMSG(Device::nodeId())); }
+	if (heartBeatTimer_.execute())
+	{
+		modm::can::Message message;
+		makeHeartbeatMSG(Device::nodeId(), message);
+		cb(message);
+	}
 	return true;
 }
 
