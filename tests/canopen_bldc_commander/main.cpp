@@ -80,19 +80,19 @@ struct Test
 {
 	template<typename ObjectDictionary>
 	constexpr void
-	registerHandlers(modm_canopen::HandlerMapRT<ObjectDictionary>& map)
+	registerHandlers(uint8_t, modm_canopen::HandlerMapRT<ObjectDictionary>& map)
 	{
-		map.template setWriteHandler<Objects::Test1>(+[](uint32_t value) {
+		map.template setWriteHandler<Objects::Test1, uint32_t>(+[](uint32_t value) {
 			updateTime = value;
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Objects::PWMCommand>(+[]() { return commandedPWM; });
+		map.template setReadHandler<Objects::PWMCommand, int16_t>(+[]() { return commandedPWM; });
 
-		map.template setWriteHandler<Objects::PWMCommand>(
+		map.template setWriteHandler<Objects::PWMCommand, int16_t>(
 			+[](int16_t) { return SdoErrorCode::UnsupportedAccess; });
 
-		map.template setWriteHandler<Objects::OutputPWM>(+[](int16_t value) {
+		map.template setWriteHandler<Objects::OutputPWM, int16_t>(+[](int16_t value) {
 			if (outputPWM != value)
 			{
 				// MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
@@ -101,7 +101,7 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::StatusWord>(+[](uint16_t value) {
+		map.template setWriteHandler<Objects::StatusWord, uint16_t>(+[](uint16_t value) {
 			state_.set(value);
 			if (state_.isSet<modm_canopen::cia402::StatusBits::TargetReached>() && !targetReached)
 			{
@@ -116,11 +116,13 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Objects::ControlWord>(+[]() { return control_.value(); });
+		map.template setReadHandler<Objects::ControlWord, uint16_t>(
+			+[]() { return control_.value(); });
 
-		map.template setReadHandler<Objects::ModeOfOperation>(+[]() { return (int8_t)currMode; });
+		map.template setReadHandler<Objects::ModeOfOperation, int8_t>(
+			+[]() { return (int8_t)currMode; });
 
-		map.template setWriteHandler<Objects::ModeOfOperationDisplay>(+[](int8_t value) {
+		map.template setWriteHandler<Objects::ModeOfOperationDisplay, int8_t>(+[](int8_t value) {
 			if ((int8_t)receivedMode != value)
 			{
 				MODM_LOG_INFO << "Received Mode " << value << modm::endl;
@@ -129,7 +131,7 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::PositionActualValue>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::PositionActualValue, int32_t>(+[](int32_t value) {
 			if (positionValue != value)
 			{
 				// MODM_LOG_INFO << "Received Output Position of " << value << modm::endl;
@@ -138,17 +140,18 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::VelocityError>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::VelocityError, int32_t>(+[](int32_t value) {
 			if (velErrorValue != value) { velErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::FollowingErrorActualValue>(+[](int32_t value) {
-			if (posErrorValue != value) { posErrorValue = value; }
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<Objects::FollowingErrorActualValue, int32_t>(
+			+[](int32_t value) {
+				if (posErrorValue != value) { posErrorValue = value; }
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::VelocityActualValue>(+[](int32_t value) {
+		map.template setWriteHandler<Objects::VelocityActualValue, int32_t>(+[](int32_t value) {
 			if (velocityValue != value)
 			{
 				// MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
