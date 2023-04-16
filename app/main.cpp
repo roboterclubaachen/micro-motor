@@ -41,6 +41,31 @@ modm::PeriodicTimer debugTimer{100ms};
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs>
 	gateDriver;
 
+namespace
+{
+
+uint8_t
+readBoardId()
+{
+	static constexpr std::array boards = {
+		// hardware id, board id
+		std::pair{0x0032003au, 1u}
+	};
+
+	const auto hardwareId = Board::readHardwareId();
+	auto it = std::find_if(std::begin(boards), std::end(boards), [hardwareId](auto board) {
+		return board.first == hardwareId;
+	});
+	if (it == std::end(boards)) {
+		MODM_LOG_ERROR << "Board not found" << modm::endl;
+		while(1) asm volatile("nop");
+	}
+
+	return it->second;
+}
+
+}
+
 int
 main()
 {
@@ -49,7 +74,10 @@ main()
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
 
-	MODM_LOG_ERROR << "BLDC Motor test with canopen interface" << modm::endl;
+	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace" << modm::endl;
+
+	const uint8_t boardId = readBoardId();
+	MODM_LOG_INFO.printf("Board ID: %d\n", boardId);
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
@@ -60,7 +88,7 @@ main()
 
 	Motor0.initializeHall();
 
-	constexpr uint8_t nodeId = 1;
+	const uint8_t nodeId = 2*boardId;
 	CanOpen::initialize(nodeId);
 
 	while (1)
