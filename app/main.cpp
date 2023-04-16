@@ -97,8 +97,10 @@ main()
 	Motor0.initializeHall();
 
 	const uint8_t nodeId = 2*boardId;
+	MODM_LOG_INFO.printf("Node ID: %d\n", nodeId);
 	CanOpen::initialize(nodeId);
 
+	MODM_LOG_INFO << "Starting App Main Loop..." << modm::endl;
 	while (1)
 	{
 		using Can = Board::CanBus::Can;
