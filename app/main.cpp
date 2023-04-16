@@ -49,7 +49,15 @@ readBoardId()
 {
 	static constexpr std::array boards = {
 		// hardware id, board id
-		std::pair{0x0032003au, 1u}
+		std::pair{0x00320025u, 1u},
+		std::pair{0x0031002cu, 2u},
+		std::pair{0x00340045u, 3u},
+		std::pair{0x00340047u, 4u},
+		std::pair{0x002c0048u, 5u},
+		std::pair{0x002b0041u, 6u},
+		std::pair{0x002b0045u, 7u},
+		std::pair{0x002e002cu, 8u},
+		std::pair{0x002e002du, 9u}
 	};
 
 	const auto hardwareId = Board::readHardwareId();
