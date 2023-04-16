@@ -551,6 +551,12 @@ initializeAllPeripherals()
 	CanBus::initialize();
 }
 
+inline uint32_t
+readHardwareId()
+{
+	return *((volatile uint32_t *) UID_BASE);
+}
+
 }
 
 #endif
