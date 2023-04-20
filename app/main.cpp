@@ -49,30 +49,25 @@ readBoardId()
 {
 	static constexpr std::array boards = {
 		// hardware id, board id
-		std::pair{0x00320025u, 1u},
-		std::pair{0x0031002cu, 2u},
-		std::pair{0x00340045u, 3u},
-		std::pair{0x00340047u, 4u},
-		std::pair{0x002c0048u, 5u},
-		std::pair{0x002b0041u, 6u},
-		std::pair{0x002b0045u, 7u},
-		std::pair{0x002e002cu, 8u},
-		std::pair{0x002e002du, 9u}
-	};
+		std::pair{0x00320025u, 1u}, std::pair{0x0031002cu, 2u}, std::pair{0x00340045u, 3u},
+		std::pair{0x00340047u, 4u}, std::pair{0x002c0048u, 5u}, std::pair{0x002b0041u, 6u},
+		std::pair{0x002b0045u, 7u}, std::pair{0x002e002cu, 8u}, std::pair{0x002e002du, 9u}};
 
 	const auto hardwareId = Board::readHardwareId();
-	auto it = std::find_if(std::begin(boards), std::end(boards), [hardwareId](auto board) {
-		return board.first == hardwareId;
-	});
-	if (it == std::end(boards)) {
+	auto it = std::find_if(std::begin(boards), std::end(boards),
+						   [hardwareId](auto board) { return board.first == hardwareId; });
+	if (it == std::end(boards))
+	{
 		MODM_LOG_ERROR << "Board not found" << modm::endl;
-		while(1) asm volatile("nop");
+		while (1) asm volatile("nop");
 	}
 
 	return it->second;
 }
 
-}
+}  // namespace
+
+constexpr auto noMessageTimeout = 200ms;
 
 int
 main()
@@ -82,7 +77,8 @@ main()
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
 
-	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace" << modm::endl;
+	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
+				   << modm::endl;
 
 	const uint8_t boardId = readBoardId();
 	MODM_LOG_INFO.printf("Board ID: %d\n", boardId);
@@ -96,23 +92,39 @@ main()
 
 	Motor0.initializeHall();
 
-	const uint8_t nodeId = 2*boardId;
+	Board::CanBus::Can::setStandardFilter(0, Board::CanBus::Can::FilterConfig::Fifo0,
+										  modm::can::StandardIdentifier(0),
+										  modm::can::StandardMask(0));
+
+	Board::CanBus::Can::setExtendedFilter(0, Board::CanBus::Can::FilterConfig::Fifo0,
+										  modm::can::ExtendedIdentifier(0),
+										  modm::can::ExtendedMask(0));
+
+	const uint8_t nodeId = 2 * boardId;
 	MODM_LOG_INFO.printf("Node ID: %d\n", nodeId);
 	CanOpen::initialize(nodeId);
-
+	auto lastMessage = modm::Clock::now();
 	MODM_LOG_INFO << "Starting App Main Loop..." << modm::endl;
 	while (1)
 	{
+		auto now = modm::Clock::now();
 		using Can = Board::CanBus::Can;
 		while (Can::isMessageAvailable())
 		{
 			modm::can::Message message;
 			Can::getMessage(message);
 			CanOpen::processMessage(message, Board::CanBus::Can::sendMessage);
+			lastMessage = now;
+			// MODM_LOG_INFO << modm::hex << message.getIdentifier() << modm::endl;
 		}
 
 		Motor0.update(Board::CanBus::Can::sendMessage);
 		CanOpen::update(Board::CanBus::Can::sendMessage);
+		if ((now - lastMessage) >= noMessageTimeout)
+		{
+			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
+			break;
+		}
 	}
 
 	return 0;
