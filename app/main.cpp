@@ -125,6 +125,24 @@ main()
 			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
 			break;
 		}
+		auto& state = MotorControl0::state();
+		if (debugTimer.execute())
+		{
+			MODM_LOG_DEBUG
+				<< "MotorState:\n"
+				<< "Enabled : " << state.enableMotor_ << "\n"
+				<< "Position: " << state.actualPosition_ << "\n"
+				<< "Velocity: " << state.actualVelocity_.getValue() << "\n"
+				<< "Control : " << modm::bin << state.control_.value() << modm::ascii << "\n"
+				<< "Mode: " << state.mode_ << "\n"
+				<< "PWM: " << state.outputPWM_ << "\n"
+				<< "Status: " << modm::bin << state.status_.status() << modm::ascii << "\n"
+				<< "Target Reached: "
+				<< (state.status_.isSet<modm_canopen::cia402::StatusBits::TargetReached>()
+						? "true"
+						: "false")
+				<< modm::endl;
+		}
 	}
 
 	return 0;
