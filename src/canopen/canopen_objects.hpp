@@ -10,7 +10,7 @@ struct Objects
 	static constexpr modm_canopen::Address ModeOfOperationDisplay{0x6061, 0};
 
 	// PWM Mode
-	static constexpr modm_canopen::Address Test1{0x2001, 0};       // Custom
+	static constexpr modm_canopen::Address UpdateTime{0x2001, 0};  // Custom
 	static constexpr modm_canopen::Address PWMCommand{0x2002, 0};  // Custom
 	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};   // Custom
 	static constexpr modm_canopen::Address Reset{0x2007, 0};       // Set 1/0
