@@ -22,8 +22,10 @@
 #include <modm/platform.hpp>
 #include <modm/processing/timer.hpp>
 #include <modm/platform/can/socketcan.hpp>
-
 #include <micro-motor/canopen/canopen.hpp>
+
+#include <cstdlib>
+
 #include "motor.hpp"
 
 using namespace std::literals;
@@ -33,10 +35,13 @@ modm::PeriodicTimer debugTimer{1000ms};
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
 int
-main()
+main(int argc, char** argv)
 {
 
-	constexpr uint8_t nodeId = 1;
+	uint8_t nodeId = 10;
+	if (argc == 2) { nodeId = std::atoi(argv[1]); }
+	MODM_LOG_INFO << "NodeId: " << nodeId << modm::endl;
+
 	const bool success = can.open(canDevice);
 
 	if (!success)
@@ -63,7 +68,7 @@ main()
 		Motor0.update(sendMessage);
 		CanOpen::update(sendMessage);
 
-		if (debugTimer.execute())
+		/*if (debugTimer.execute())
 		{
 			MODM_LOG_DEBUG << "dummy A: " << Motor0.dummy().acceleration() << modm::endl;
 			MODM_LOG_DEBUG << "dummy V: " << Motor0.dummy().velocity() << modm::endl;
@@ -72,7 +77,7 @@ main()
 			MODM_LOG_DEBUG << "velocity: " << MotorControl0::state().actualVelocity_.getValue()
 						   << "\n"
 						   << modm::endl;
-		}
+		}*/
 	}
 	return 0;
 }
