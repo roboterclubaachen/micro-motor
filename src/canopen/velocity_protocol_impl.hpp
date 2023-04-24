@@ -34,8 +34,14 @@ VelocityProtocol::update(MotorState& state, MessageCallback&&)
 	Device::setValueChanged(VelocityObjects::VelocityError);
 
 	velocityPid_.update(velocityError_, state.outputPWM_ > profileAcceleration_);
-	state.outputPWM_ =
-		std::clamp((int32_t)velocityPid_.getValue(), -profileAcceleration_, profileAcceleration_);
+	if (commandedVelocity_ == 0 && state.actualVelocity_.getValue() == 0)
+	{
+		state.outputPWM_ = 0;
+	} else
+	{
+		state.outputPWM_ = std::clamp((int32_t)velocityPid_.getValue(), -profileAcceleration_,
+									  profileAcceleration_);
+	}
 
 	state.status_.setBit<StatusBits::TargetReached>(velocityError_ == 0);
 	state.status_.setBit<StatusBits::SpeedZero>(
