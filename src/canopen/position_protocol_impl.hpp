@@ -2,6 +2,7 @@
 #error "Do not include this file directly, use position_protocol.hpp instead"
 #endif
 #include <modm/debug/logger.hpp>
+#include "motor_state.hpp"
 
 template<typename VelocityProtocol>
 template<typename Device, typename MessageCallback>
@@ -13,6 +14,7 @@ PositionProtocol<VelocityProtocol>::update(MotorState& state, MessageCallback&&)
 		nextPosition_ = receivedPosition_;
 		nextPositionIsNew_ = true;
 		state.control_.setBit<CommandBits::NewSetPoint>(false);
+		Device::setValueChanged(StateObjects::ControlWord);
 	}
 
 	if ((positionError_ == 0 && nextPositionIsNew_) ||
