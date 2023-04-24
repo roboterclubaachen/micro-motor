@@ -1311,13 +1311,14 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=6
+SupportedObjects=7
 1=0x2001
 2=0x2002
 3=0x2003
 4=0x2004
 5=0x2005
 6=0x2006
+7=0x2007
 
 [2001]
 ParameterName=Update time
@@ -1420,4 +1421,12 @@ ParameterName= Position Pid Max Error Sum
 ObjectType=0x7
 DataType=0x0008
 AccessType=wo
+PDOMapping=1
+
+[2007]
+ParameterName=Reset
+ObjectType=0x7
+DataType=0x0002
+AccessType=wo
+DefaultValue=0
 PDOMapping=1

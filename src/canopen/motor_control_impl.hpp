@@ -76,6 +76,11 @@ MotorControl<Modes...>::registerHandlers(modm_canopen::HandlerMap<ObjectDictiona
 {
 	using modm_canopen::SdoErrorCode;
 
+	map.template setWriteHandler<StateObjects::Reset>(+[](int8_t value) {
+		state_.resetMotor_ = (value != 0);
+		return SdoErrorCode::NoError;
+	});
+
 	map.template setReadHandler<StateObjects::UpdateTime>(
 		+[]() { return uint32_t(state_.updateTime_.getValue()); });
 

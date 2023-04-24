@@ -59,6 +59,7 @@ readBoardId()
 						   [hardwareId](auto board) { return board.first == hardwareId; });
 	if (it == std::end(boards))
 	{
+		MODM_LOG_INFO << "Hardware ID: " << modm::hex << hardwareId << modm::endl;
 		MODM_LOG_ERROR << "Board not found" << modm::endl;
 		while (1) asm volatile("nop");
 	}
@@ -126,6 +127,12 @@ main()
 			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
 			break;
 		}
+		if (MotorControl0::state().resetMotor_)
+		{
+			MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
+			break;
+		}
+
 		auto& state = MotorControl0::state();
 		if (debugTimer.execute())
 		{

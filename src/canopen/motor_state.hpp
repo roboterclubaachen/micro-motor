@@ -25,6 +25,7 @@ struct StateObjects
 	static constexpr modm_canopen::Address VelocityActualValue{0x606C, 0};  // User units
 
 	static constexpr modm_canopen::Address OutputPWM{0x2003, 0};  // Custom
+	static constexpr modm_canopen::Address Reset{0x2007, 0};      // Set 1/0
 
 	static constexpr modm_canopen::Address PositionFactorNumerator{0x6093, 1};
 	static constexpr modm_canopen::Address PositionFactorDivisor{0x6093, 2};
@@ -51,6 +52,7 @@ struct MotorState
 	modm::filter::MovingAverage<int32_t, 16> actualVelocity_{};
 
 	bool enableMotor_{true};
+	bool resetMotor_{false};
 
 	int16_t outputPWM_{};
 };
