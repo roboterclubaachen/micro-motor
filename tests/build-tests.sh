@@ -12,11 +12,13 @@ TESTS+=" bldc_foc"
 TESTS+=" can"
 TESTS+=" gatedriver"
 TESTS+=" current_measurement"
+TESTS+=" canopen_bldc_hosted"
+TESTS+=" canopen_bldc_commander"
 
 for test in $TESTS
 do
     pushd $test
     lbuild build
-    scons -j8
+    scons build -j8
     popd
 done
