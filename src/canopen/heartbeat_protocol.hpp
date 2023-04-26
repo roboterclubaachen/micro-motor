@@ -13,35 +13,27 @@
 
 using namespace std::literals;
 
-struct HeartbeatObjects
-{
-	static constexpr modm_canopen::Address TimeBetweenHeartbeats{0x1017, 0};
+struct HeartbeatObjects {
+  static constexpr modm_canopen::Address TimeBetweenHeartbeats{0x1017, 0};
 };
 
-class HeartbeatProtocol
-{
+template <size_t id> class HeartbeatProtocol {
 public:
-	static inline auto timeBetweenHeatbeats{200ms};
-	static inline modm::PeriodicTimer heartBeatTimer_{timeBetweenHeatbeats / 2};
+  static inline auto timeBetweenHeatbeats{200ms};
+  static inline modm::PeriodicTimer heartBeatTimer_{timeBetweenHeatbeats / 2};
 
 public:
-	static bool
-	applicable(const MotorState&)
-	{
-		return true;
-	}
+  static bool applicable(const MotorState &) { return true; }
 
-	template<typename Device, typename MessageCallback>
-	static bool
-	update(MotorState& state, MessageCallback&& cb);
+  template <typename Device, typename MessageCallback>
+  static bool update(MotorState &state, MessageCallback &&cb);
 
-	template<typename ObjectDictionary, const MotorState& state>
-	static constexpr void
-	registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map);
+  template <typename ObjectDictionary, const MotorState &state>
+  static constexpr void
+  registerHandlers(modm_canopen::HandlerMap<ObjectDictionary> &map);
 
 private:
-	static inline void
-	makeHeartbeatMSG(uint8_t canId, modm::can::Message& msg);
+  static inline void makeHeartbeatMSG(uint8_t canId, modm::can::Message &msg);
 };
 
 #include "heartbeat_protocol_impl.hpp"

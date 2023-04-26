@@ -9,6 +9,8 @@
 #include "velocity_protocol.hpp"
 #include "position_protocol.hpp"
 
+using MotorControl0 = MotorControl_t<0>;
+
 class CanOpen
 {
 public:

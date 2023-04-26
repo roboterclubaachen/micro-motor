@@ -82,7 +82,7 @@ struct Test
 	constexpr void
 	registerHandlers(uint8_t, modm_canopen::HandlerMapRT<ObjectDictionary>& map)
 	{
-		map.template setWriteHandler<Objects::Test1, uint32_t>(+[](uint32_t value) {
+		map.template setWriteHandler<Objects::UpdateTime, uint32_t>(+[](uint32_t value) {
 			updateTime = value;
 			return SdoErrorCode::NoError;
 		});
@@ -212,7 +212,7 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t testRpdoMotor{};
 	testRpdoMotor.setInactive();
-	assert(testRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::Test1, 32}) ==
+	assert(testRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::UpdateTime, 32}) ==
 		   SdoErrorCode::NoError);
 	testRpdoMotor.setMappingCount(1);
 	assert(testRpdoMotor.setActive() == SdoErrorCode::NoError);

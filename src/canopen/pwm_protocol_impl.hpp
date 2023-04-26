@@ -3,26 +3,26 @@
 #endif
 #include <modm/debug/logger.hpp>
 
-template<typename Device, typename MessageCallback>
-bool
-PWMProtocol::update(MotorState& state, MessageCallback&&)
-{
-	state.outputPWM_ = commandedPWM_;
-	state.status_.setBit<modm_canopen::cia402::StatusBits::TargetReached>(true);
-	return true;
+template <size_t id>
+template <typename Device, typename MessageCallback>
+bool PWMProtocol<id>::update(MotorState &state, MessageCallback &&) {
+  state.outputPWM_ = commandedPWM_;
+  state.status_.setBit<modm_canopen::cia402::StatusBits::TargetReached>(true);
+  return true;
 }
 
-template<typename ObjectDictionary, const MotorState& state>
-constexpr void
-PWMProtocol::registerHandlers(modm_canopen::HandlerMap<ObjectDictionary>& map)
-{
-	using modm_canopen::SdoErrorCode;
+template <size_t id>
+template <typename ObjectDictionary, const MotorState &state>
+constexpr void PWMProtocol<id>::registerHandlers(
+    modm_canopen::HandlerMap<ObjectDictionary> &map) {
+  using modm_canopen::SdoErrorCode;
 
-	map.template setReadHandler<PWMObjects::PWMCommand>(+[]() { return commandedPWM_; });
+  map.template setReadHandler<PWMObjects::PWMCommand>(
+      +[]() { return commandedPWM_; });
 
-	map.template setWriteHandler<PWMObjects::PWMCommand>(+[](int16_t value) {
-		commandedPWM_ = value;
-		MODM_LOG_INFO << "Set commanded PWM to " << commandedPWM_ << modm::endl;
-		return SdoErrorCode::NoError;
-	});
+  map.template setWriteHandler<PWMObjects::PWMCommand>(+[](int16_t value) {
+    commandedPWM_ = value;
+    MODM_LOG_INFO << "Set commanded PWM to " << commandedPWM_ << modm::endl;
+    return SdoErrorCode::NoError;
+  });
 }
