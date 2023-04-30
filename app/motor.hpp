@@ -55,8 +55,13 @@ Motor::update(MessageCallback&& cb)
 	{
 		MotorControl0::setActualPosition(actualPosition_);
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
-		if (!MotorControl0::state().enableMotor_) { motor_.disable(); }
-		motor_.setSetpoint(MotorControl0::outputPWM());
+		if (!MotorControl0::state().enableMotor_)
+		{
+			motor_.disable();
+		} else
+		{
+			motor_.setSetpoint(MotorControl0::outputPWM());
+		}
 		updated = true;
 	}
 	motor_.update();
