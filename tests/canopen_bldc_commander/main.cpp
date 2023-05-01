@@ -5,7 +5,7 @@
 #include <modm-canopen/cia402/operating_mode.hpp>
 #include <modm-canopen/cia402/state_machine.hpp>
 
-#include <micro-motor/canopen/canopen_objects.hpp>
+#include <motor-canopen/canopen_objects.hpp>
 
 #include <modm-canopen/canopen_master.hpp>
 #include <modm-canopen/sdo_client.hpp>

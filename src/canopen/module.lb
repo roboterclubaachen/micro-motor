@@ -18,14 +18,17 @@
 def init(module):
     module.name = ":canopen"
 
+
 def prepare(module, options):
-    module.depends(   
-    "modm:build", 
-    "modm-canopen:device",
-    "modm-canopen:device:cia402",
-    "modm:math:filter",
+    module.depends(
+        "modm:build",
+        "modm-canopen:device",
+        "modm-canopen:device:cia402",
+        "motor-canopen:common",
+        "modm:math:filter",
     )
     return True
+
 
 def build(env):
     env.outbasepath = "micro-motor/src/micro-motor/canopen"

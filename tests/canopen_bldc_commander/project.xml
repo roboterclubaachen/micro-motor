@@ -9,6 +9,9 @@
     <repository>
       <path>../../repo.lb</path>
     </repository>
+    <repository>
+      <path>../../../motor-canopen/repo.lb</path>
+    </repository>
   </repositories>
 
 
@@ -25,7 +28,7 @@
     <module>modm-canopen:device:cia402</module>
     <module>modm-canopen:device:test</module>
     <module>modm:platform:socketcan</module>
-    <module>micro-motor:canopen</module>
+    <module>motor-canopen:common</module>
   </modules>
 </library>
 

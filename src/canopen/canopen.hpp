@@ -4,10 +4,10 @@
 #include <modm-canopen/canopen_device.hpp>
 #include <modm/debug/logger.hpp>
 
-#include "motor_control.hpp"
-#include "pwm_protocol.hpp"
-#include "velocity_protocol.hpp"
-#include "position_protocol.hpp"
+#include <motor-canopen/motor_control.hpp>
+#include <motor-canopen/pwm_protocol.hpp>
+#include <motor-canopen/velocity_protocol.hpp>
+#include <motor-canopen/position_protocol.hpp>
 
 using MotorControl0 = MotorControl_t<0>;
 
