@@ -21,7 +21,6 @@
   </options>
 
   <modules>
-    <module>modm:build:scons</module>
     <module>micro-motor:canopen</module>
     <module>micro-motor:common</module>
   </modules>

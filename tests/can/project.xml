@@ -13,5 +13,6 @@
 
   <modules>
     <module>librobots2:motor</module>
+    <module>modm:build:scons</module>
   </modules>
 </library>
