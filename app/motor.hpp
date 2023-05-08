@@ -6,7 +6,7 @@
 
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 #include <micro-motor/hardware.hpp>
-#include <motor-canopen/motor_control.hpp>
+#include <librobots2/motor-canopen/motor_control.hpp>
 #include <modm/processing/timer.hpp>
 #include <micro-motor/canopen/canopen.hpp>
 

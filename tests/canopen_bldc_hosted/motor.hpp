@@ -7,7 +7,7 @@
 
 #include "sim_motor.hpp"
 #include <micro-motor/canopen/canopen.hpp>
-#include <motor-canopen/motor_control.hpp>
+#include <librobots2/motor-canopen/motor_control.hpp>
 
 using namespace std::literals;
 

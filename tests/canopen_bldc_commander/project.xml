@@ -6,11 +6,11 @@
     <repository>
       <path>../../../modm-canopen/repo.lb</path>
     </repository>
-    <repository>
-      <path>../../repo.lb</path>
+        <repository>
+      <path>../../../librobots2/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../motor-canopen/repo.lb</path>
+      <path>../../repo.lb</path>
     </repository>
   </repositories>
 
@@ -28,7 +28,7 @@
     <module>modm-canopen:device:cia402</module>
     <module>modm-canopen:device:test</module>
     <module>modm:platform:socketcan</module>
-    <module>motor-canopen:common</module>
+    <module>librobots2:motor-canopen</module>
   </modules>
 </library>
 

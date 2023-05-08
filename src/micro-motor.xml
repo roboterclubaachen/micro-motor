@@ -10,9 +10,6 @@
     <repository>
       <path>../../modm-canopen/repo.lb</path>
     </repository>
-    <repository>
-      <path>../../motor-canopen/repo.lb</path>
-    </repository>
   </repositories>
 
   <options>

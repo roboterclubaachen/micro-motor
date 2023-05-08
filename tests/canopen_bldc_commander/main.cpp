@@ -5,7 +5,7 @@
 #include <modm-canopen/cia402/operating_mode.hpp>
 #include <modm-canopen/cia402/state_machine.hpp>
 
-#include <motor-canopen/canopen_objects.hpp>
+#include <librobots2/motor-canopen/canopen_objects.hpp>
 
 #include <modm-canopen/canopen_master.hpp>
 #include <modm-canopen/sdo_client.hpp>
@@ -35,7 +35,7 @@ struct CommandSendInfo
 };
 uint32_t updateTime = 0;
 bool targetReached = true;
-int16_t commandedPWM = 6000;
+int16_t commandedPWM = 0;
 int16_t outputPWM = 0;
 int32_t velocityValue = 0;
 int32_t positionValue = 0;
@@ -45,12 +45,11 @@ OperatingMode currMode = OperatingMode::Voltage;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
 modm::platform::SocketCan can;
-constexpr uint8_t motorId = 1;  // Keep consistent with firmware
+constexpr uint8_t motorId = 2;  // Keep consistent with firmware
 
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
-#define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr float vPID_kP = 150.0f;
@@ -65,14 +64,14 @@ int32_t targetPosition = 0;
 #else
 // TODO tune
 constexpr char canDevice[] = "can0";
-constexpr float vPID_kP = 210.0f;
-constexpr float vPID_kI = 62.0f;
-constexpr float vPID_kD = 200.0f;
-int32_t targetSpeed = 10;
+constexpr float vPID_kP = -1.0f;
+constexpr float vPID_kI = -0.1f;
+constexpr float vPID_kD = -0.01f;
+int32_t targetSpeed = 2000;
 
 constexpr float pPID_kP = 1.0f;
-constexpr float pPID_kI = 0.01f;
-constexpr float pPID_kD = 0.01f;
+constexpr float pPID_kI = 0.0f;
+constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
 #endif
 

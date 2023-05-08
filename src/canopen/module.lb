@@ -24,7 +24,7 @@ def prepare(module, options):
         "modm:build",
         "modm-canopen:device",
         "modm-canopen:device:cia402",
-        "motor-canopen:common",
+        "librobots2:motor-canopen",
         "modm:math:filter",
     )
     return True
