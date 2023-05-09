@@ -68,16 +68,11 @@ main(int argc, char** argv)
 		Motor0.update(sendMessage);
 		CanOpen::update(sendMessage);
 
-		/*if (debugTimer.execute())
+		if (debugTimer.execute())
 		{
-			MODM_LOG_DEBUG << "dummy A: " << Motor0.dummy().acceleration() << modm::endl;
-			MODM_LOG_DEBUG << "dummy V: " << Motor0.dummy().velocity() << modm::endl;
-			MODM_LOG_DEBUG << "dummy P: " << Motor0.dummy().position() << modm::endl;
-			MODM_LOG_DEBUG << "position: " << MotorControl0::state().actualPosition_ << modm::endl;
-			MODM_LOG_DEBUG << "velocity: " << MotorControl0::state().actualVelocity_.getValue()
-						   << "\n"
+			MODM_LOG_DEBUG << nodeId << " position: " << MotorControl0::state().actualPosition_
 						   << modm::endl;
-		}*/
+		}
 	}
 	return 0;
 }
