@@ -6,13 +6,14 @@
 
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <librobots2/motor-canopen/pwm_protocol.hpp>
+#include <librobots2/motor-canopen/error_protocol.hpp>
 #include <librobots2/motor-canopen/velocity_protocol.hpp>
 #include <librobots2/motor-canopen/position_protocol.hpp>
 
 template<size_t id>
-using MotorControl_t =
-	MotorControl<id, IdentityProtocol<id>, HeartbeatProtocol<id>, PWMProtocol<id>,
-				 VelocityProtocol<id>, PositionProtocol<id>, QuickstopProtocol<id>>;
+using MotorControl_t = MotorControl<id, IdentityProtocol<id>, HeartbeatProtocol<id>,
+									PWMProtocol<id>, VelocityProtocol<id>, PositionProtocol<id>,
+									QuickstopProtocol<id>, ErrorProtocol<id>>;
 
 using MotorControl0 = MotorControl_t<0>;
 
