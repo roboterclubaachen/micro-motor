@@ -9,6 +9,11 @@
 #include <librobots2/motor-canopen/velocity_protocol.hpp>
 #include <librobots2/motor-canopen/position_protocol.hpp>
 
+template<size_t id>
+using MotorControl_t =
+	MotorControl<id, IdentityProtocol<id>, HeartbeatProtocol<id>, PWMProtocol<id>,
+				 VelocityProtocol<id>, PositionProtocol<id>, QuickstopProtocol<id>>;
+
 using MotorControl0 = MotorControl_t<0>;
 
 class CanOpen
