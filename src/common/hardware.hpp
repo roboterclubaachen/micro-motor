@@ -444,6 +444,7 @@ namespace MotorCurrent {
 		//RCC->AHB2ENR1 |= RCC_AHB2ENR_DAC3EN;
 		DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
 		DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
+		//5mohm shunt, 50V pro V gain amplifier
 		setCurrentLimit(0xFFFF / 2); // 50%
 
 		AdcU::initialize(AdcU::ClockMode::SynchronousPrescaler4,
