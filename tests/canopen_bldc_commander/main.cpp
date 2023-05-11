@@ -35,7 +35,7 @@ struct CommandSendInfo
 };
 uint32_t updateTime = 0;
 bool targetReached = true;
-int16_t commandedPWM = 0;
+int16_t commandedPWM = 8000;
 int16_t outputPWM = 0;
 int32_t velocityValue = 0;
 int32_t positionValue = 0;
@@ -64,9 +64,9 @@ int32_t targetPosition = 0;
 #else
 // TODO tune
 constexpr char canDevice[] = "can0";
-constexpr float vPID_kP = -1.0f;
-constexpr float vPID_kI = -0.1f;
-constexpr float vPID_kD = -0.01f;
+constexpr float vPID_kP = -10.0f;
+constexpr float vPID_kI = -0.f;
+constexpr float vPID_kD = -0.0f;
 int32_t targetSpeed = 2000;
 
 constexpr float pPID_kP = 1.0f;
@@ -252,7 +252,7 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 15000;
+size_t maxTime = 8000;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -264,44 +264,20 @@ constexpr std::array sendCommands{
 					.time{20},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Voltage},
 					.time{30},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
-					.time{1030},
+					.mode{OperatingMode::Voltage},
+					.time{4030},
 					.custom{[]() {
-						targetSpeed = -targetSpeed;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
-												sendMessage);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{2030},
-					.custom{[]() {
-						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetSpeed,
-												sendMessage);
-						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{7030},
-					.custom{[]() {
-						targetPosition = 500;
-						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
-												sendMessage);
-						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{13030},
-					.custom{[]() {
-						SdoClient::requestWrite(motorId, Objects::PositionWindow, (uint32_t)400,
+						commandedPWM = -commandedPWM;
+						SdoClient::requestWrite(motorId, Objects::PWMCommand, commandedPWM,
 												sendMessage);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{14030},
+					.time{7030},
 					.custom{nullptr}},
 };
 

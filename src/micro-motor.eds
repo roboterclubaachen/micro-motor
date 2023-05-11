@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=7
+SupportedObjects=8
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1319,6 +1319,7 @@ SupportedObjects=7
 5=0x2005
 6=0x2006
 7=0x2007
+8=0x2009
 
 [2001]
 ParameterName=Update time
@@ -1429,4 +1430,38 @@ ObjectType=0x7
 DataType=0x0002
 AccessType=wo
 DefaultValue=0
+PDOMapping=1
+
+[2008]
+ParameterName=Encoder Values
+ObjectType=0x8
+SubNumber=3
+
+[2008sub1]
+ParameterName= Encoder Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=1
+
+[2008sub2]
+ParameterName= Encoder Timestep
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=1
+
+[2008sub3]
+ParameterName= Encoder Delta
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=1
+
+[2009]
+ParameterName=MasterHeartbeatTimeout
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=200
 PDOMapping=1
