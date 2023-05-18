@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=13
+SupportedObjects=14
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1325,6 +1325,8 @@ SupportedObjects=13
 11=0x2012
 12=0x2013
 13=0x2014
+14=0x2015
+15=0x2016
 
 [2001]
 ParameterName=Update time
@@ -1509,7 +1511,7 @@ ParameterName=Max Current
 ObjectType=0x7
 DataType=0x0008
 AccessType=rww
-DefaultValue=200
+DefaultValue=2
 PDOMapping=1
 
 [2012]
@@ -1517,7 +1519,7 @@ ParameterName=Current Error
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro
-DefaultValue=200
+DefaultValue=0
 PDOMapping=1
 
 [2013]
@@ -1525,13 +1527,29 @@ ParameterName=Actual Current
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro
-DefaultValue=200
+DefaultValue=0
 PDOMapping=1
 
 [2014]
-ParameterName=Commanded Current
+ParameterName=Target Current
 ObjectType=0x7
 DataType=0x0008
 AccessType=rww
-DefaultValue=200
+DefaultValue=0
+PDOMapping=1
+
+[2015]
+ParameterName=Max Charge
+ObjectType=0x7
+DataType=0x0008
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
+[2016]
+ParameterName=Commanded Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=0
 PDOMapping=1
