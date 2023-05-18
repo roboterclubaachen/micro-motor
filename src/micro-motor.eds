@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=8
+SupportedObjects=13
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1320,6 +1320,11 @@ SupportedObjects=8
 6=0x2006
 7=0x2007
 8=0x2009
+9=0x2010
+10=0x2011
+11=0x2012
+12=0x2013
+13=0x2014
 
 [2001]
 ParameterName=Update time
@@ -1462,6 +1467,71 @@ PDOMapping=1
 ParameterName=MasterHeartbeatTimeout
 ObjectType=0x7
 DataType=0x0006
+AccessType=rww
+DefaultValue=200
+PDOMapping=1
+
+[2010]
+ParameterName=Current Pid
+ObjectType=0x8
+SubNumber=4
+
+[2010sub1]
+ParameterName= Current Pid kP 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2010sub2]
+ParameterName= Current Pid kI 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2010sub3]
+ParameterName= Current Pid kD 
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2010sub4]
+ParameterName= Current Pid Max Error Sum
+ObjectType=0x7
+DataType=0x0008
+AccessType=wo
+PDOMapping=1
+
+[2011]
+ParameterName=Max Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=rww
+DefaultValue=200
+PDOMapping=1
+
+[2012]
+ParameterName=Current Error
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=200
+PDOMapping=1
+
+[2013]
+ParameterName=Actual Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=200
+PDOMapping=1
+
+[2014]
+ParameterName=Commanded Current
+ObjectType=0x7
+DataType=0x0008
 AccessType=rww
 DefaultValue=200
 PDOMapping=1

@@ -28,3 +28,10 @@ Motor::updatePosition()
 	actualPosition_ += hallDiff(lastHallState_, hallState);
 	lastHallState_ = hallState;
 }
+
+void
+Motor::updateCurrent()
+{
+	auto currents = Board::MotorCurrent::getClarkePhaseCurrents();
+	current_.updateCurrentAverage(currents.first, currents.second);
+}

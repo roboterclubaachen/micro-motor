@@ -5,6 +5,7 @@
 #include <limits>
 
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
+#include <librobots2/motor/bldc_motor_current.hpp>
 #include <micro-motor/hardware.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <modm/processing/timer.hpp>
@@ -18,7 +19,8 @@ private:
 	int32_t actualPosition_{};
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
-	modm::PeriodicTimer controlTimer_{10ms};
+	modm::PeriodicTimer controlTimer_{1ms};
+	librobots2::motor::BldcMotorCurrent<10> current_;
 
 	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
@@ -28,6 +30,9 @@ private:
 		const auto& HallStates = librobots2::motor::block_commutation::SequenceLut;
 		return HallStates[Hall::read(commutationOffset_) & 0b111];
 	}
+
+	void
+	updateCurrent();
 
 	void
 	updatePosition();
@@ -54,6 +59,8 @@ Motor::update(MessageCallback&& cb)
 	if (controlTimer_.execute())
 	{
 		MotorControl0::setActualPosition(actualPosition_);
+		MotorControl0::setOrientedCurrent(current_.getOrientedCurrent());
+		current_.goToNextAverage();
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
 		if (!MotorControl0::state().enableMotor_)
 		{

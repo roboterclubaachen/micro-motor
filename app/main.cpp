@@ -78,7 +78,6 @@ main()
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
-	Board::MotorCurrent::setCurrentLimit(0xFFFF / 4);  // Set current limit to 25%
 
 	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
 				   << modm::endl;
@@ -92,6 +91,7 @@ main()
 
 	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
+	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
 
 	Motor0.initializeHall();
 
