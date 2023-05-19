@@ -39,13 +39,15 @@ int16_t commandedPWM = 8000;
 int16_t outputPWM = 0;
 int32_t velocityValue = 0;
 int32_t positionValue = 0;
+float currentValue = 0.0f;
 int32_t velErrorValue = 0;
 int32_t posErrorValue = 0;
-OperatingMode currMode = OperatingMode::Voltage;
+float currentErrorValue = 0.0f;
+OperatingMode currMode = OperatingMode::Current;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
 modm::platform::SocketCan can;
-constexpr uint8_t motorId = 2;  // Keep consistent with firmware
+constexpr uint8_t motorId = 22;  // Keep consistent with firmware
 
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
@@ -64,16 +66,22 @@ int32_t targetPosition = 0;
 #else
 // TODO tune
 constexpr char canDevice[] = "can0";
-constexpr float vPID_kP = -10.0f;
-constexpr float vPID_kI = -0.f;
-constexpr float vPID_kD = -0.0f;
-int32_t targetSpeed = 2000;
+constexpr float vPID_kP = 1.0f;
+constexpr float vPID_kI = 0.f;
+constexpr float vPID_kD = 0.0f;
+int32_t targetSpeed = 0;
 
 constexpr float pPID_kP = 1.0f;
 constexpr float pPID_kI = 0.0f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
 #endif
+
+constexpr float cPID_kP = 1.0f;
+constexpr float cPID_kI = 0.0f;
+constexpr float cPID_kD = 0.0f;
+float targetCurrent = 0.0f;
+float commandedCurrent = 0.0f;
 
 struct Test
 {
@@ -94,7 +102,7 @@ struct Test
 		map.template setWriteHandler<Objects::OutputPWM, int16_t>(+[](int16_t value) {
 			if (outputPWM != value)
 			{
-				// MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
+				MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
 				outputPWM = value;
 			}
 			return SdoErrorCode::NoError;
@@ -144,6 +152,33 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
+		map.template setWriteHandler<Objects::ActualCurrent, float>(+[](float value) {
+			if (currentValue != value)
+			{
+				MODM_LOG_INFO << "Updated Current " << modm::endl;
+				currentValue = value;
+			}
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::CommandedCurrent, float>(+[](float value) {
+			if (commandedCurrent != value)
+			{
+				MODM_LOG_INFO << "Updated commanded Current " << modm::endl;
+				commandedCurrent = value;
+			}
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::CurrentError, float>(+[](float value) {
+			if (currentErrorValue != value)
+			{
+				MODM_LOG_INFO << "Updated Current error " << modm::endl;
+				currentErrorValue = value;
+			}
+			return SdoErrorCode::NoError;
+		});
+
 		map.template setWriteHandler<Objects::FollowingErrorActualValue, int32_t>(
 			+[](int32_t value) {
 				if (posErrorValue != value) { posErrorValue = value; }
@@ -179,7 +214,7 @@ setPDOs(MessageCallback&& sendMessage)
 		   SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
 																  8}) == SdoErrorCode::NoError);
-	statusRpdoMotor.setMappingCount(3);
+	assert(statusRpdoMotor.setMappingCount(3) == SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 0, statusRpdoMotor);
 	Master::configureRemoteTPDO(motorId, 0, statusRpdoMotor,
@@ -187,51 +222,50 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t infoRpdoMotor{};
 	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
-																32}) == SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
-																32}) == SdoErrorCode::NoError);
-	infoRpdoMotor.setMappingCount(2);
+	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::CurrentError, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::ActualCurrent, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 1, infoRpdoMotor);
 	Master::configureRemoteTPDO(motorId, 1, infoRpdoMotor,
-								std::forward<MessageCallback>(sendMessage));
-
-	MotorNode::ReceivePdo_t errorRpdoMotor{};
-	errorRpdoMotor.setInactive();
-	assert(errorRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(errorRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::FollowingErrorActualValue,
-																 32}) == SdoErrorCode::NoError);
-	errorRpdoMotor.setMappingCount(2);
-	assert(errorRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Master::setRPDO(motorId, 2, errorRpdoMotor);
-	Master::configureRemoteTPDO(motorId, 2, errorRpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
 	MotorNode::ReceivePdo_t testRpdoMotor{};
 	testRpdoMotor.setInactive();
 	assert(testRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::UpdateTime, 32}) ==
 		   SdoErrorCode::NoError);
-	testRpdoMotor.setMappingCount(1);
+	assert(testRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CommandedCurrent, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(testRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(testRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Master::setRPDO(motorId, 3, testRpdoMotor);
-	Master::configureRemoteTPDO(motorId, 3, testRpdoMotor,
+	Master::setRPDO(motorId, 2, testRpdoMotor);
+	Master::configureRemoteTPDO(motorId, 2, testRpdoMotor,
+								std::forward<MessageCallback>(sendMessage));
+
+	MotorNode::ReceivePdo_t test2RpdoMotor{};
+	test2RpdoMotor.setInactive();
+	assert(test2RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
+																 32}) == SdoErrorCode::NoError);
+	assert(test2RpdoMotor.setMappingCount(1) == SdoErrorCode::NoError);
+	assert(test2RpdoMotor.setActive() == SdoErrorCode::NoError);
+	Master::setRPDO(motorId, 3, test2RpdoMotor);
+	Master::configureRemoteTPDO(motorId, 3, test2RpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
 	MotorNode::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
 	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PWMCommand, 16}) ==
+	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
 		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
-		   SdoErrorCode::NoError);
-	commandTpdoMotor.setMappingCount(3);
+	assert(commandTpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setTPDO(motorId, 0, commandTpdoMotor);
 	Master::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
+
 	SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
@@ -250,9 +284,19 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::PositionPID_kD, pPID_kD,
 							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, Objects::CurrentPID_kP, cPID_kP,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::CurrentPID_kI, cPID_kI,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, Objects::CurrentPID_kD, cPID_kD,
+							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
+							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 8000;
+size_t maxTime = 4100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -266,18 +310,14 @@ constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Voltage},
 					.time{30},
-					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Voltage},
-					.time{4030},
 					.custom{[]() {
-						commandedPWM = -commandedPWM;
+						commandedPWM = 8000;
 						SdoClient::requestWrite(motorId, Objects::PWMCommand, commandedPWM,
 												sendMessage);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
-					.mode{OperatingMode::Voltage},
-					.time{7030},
+					.mode{OperatingMode::Disabled},
+					.time{4030},
 					.custom{nullptr}},
 };
 
@@ -285,7 +325,8 @@ int
 main()
 {
 	auto start = modm::Clock::now();
-	CSVWriter writer{{"Time", "Position", "Velocity", "PWM", "VelError", "PosError", "Time"}};
+	CSVWriter writer{{"Time", "Current", "Error", "Target", "UpdateTime", "Mode", "Commanded",
+					  "PWM", "Velocity"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -325,7 +366,6 @@ main()
 			Master::processMessage(message, handleResponse);
 		}
 		Master::update(sendMessage);
-		std::this_thread::sleep_for(std::chrono::milliseconds{1});
 	}
 	if (!success)
 	{
@@ -369,10 +409,10 @@ main()
 		if (debugTimer.execute())
 		{
 			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
-						   std::to_string(positionValue), std::to_string(velocityValue),
-						   std::to_string((float)outputPWM / std::numeric_limits<int16_t>::max()),
-						   std::to_string(velErrorValue), std::to_string(posErrorValue),
-						   std::to_string(updateTime)});
+						   std::to_string(currentValue), std::to_string(currentErrorValue),
+						   std::to_string(targetCurrent), std::to_string(updateTime),
+						   std::to_string((int8_t)receivedMode), std::to_string(commandedCurrent),
+						   std::to_string(outputPWM), std::to_string(velocityValue)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

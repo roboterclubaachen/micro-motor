@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=14
+SupportedObjects=15
 1=0x2001
 2=0x2002
 3=0x2003

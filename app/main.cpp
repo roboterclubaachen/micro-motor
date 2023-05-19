@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <micro-motor/hardware.hpp>
+#include <micro-motor/micro-motor.hpp>
 #include <modm/driver/motor/drv832x_spi.hpp>
 
 #include <modm/debug/logger.hpp>
@@ -36,7 +36,7 @@ inline modm::log::Logger modm::log::error(loggerDevice);
 
 using namespace std::literals;
 
-modm::PeriodicTimer debugTimer{100ms};
+modm::PeriodicTimer debugTimer{500ms};
 
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs>
 	gateDriver;
@@ -78,6 +78,7 @@ main()
 	Board::initializeMcu();
 	Board::initializeAllPeripherals();
 	Board::Ui::initializeLeds();
+	micro_motor::initialize();
 
 	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
 				   << modm::endl;
@@ -123,35 +124,27 @@ main()
 
 		Motor0.update(Board::CanBus::Can::sendMessage);
 		CanOpen::update(Board::CanBus::Can::sendMessage);
-		if ((now - lastMessage) >= noMessageTimeout)
-		{
-			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
-			break;
-		}
-		if (MotorControl0::state().resetMotor_)
-		{
-			MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
-			break;
-		}
+		// if ((now - lastMessage) >= noMessageTimeout)
+		//{
+		//	MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
+		//	break;
+		// }
+		//  if (MotorControl0::state().resetMotor_)
+		//{
+		//	MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
+		//	break;
+		//  }
 
 		auto& state = MotorControl0::state();
 		if (debugTimer.execute())
 		{
-			MODM_LOG_DEBUG
-				<< "MotorState:\n"
-				<< "Enabled : " << state.enableMotor_ << "\n"
-				<< "Position: " << state.actualPosition_ << "\n"
-				<< "Target Position: " << PositionProtocol<0>::commandedPosition_ << "\n"
-				<< "Velocity: " << state.actualVelocity_.getValue() << "\n"
-				<< "Control : " << modm::bin << state.control_.value() << modm::ascii << "\n"
-				<< "Mode: " << state.mode_ << "\n"
-				<< "PWM: " << state.outputPWM_ << "\n"
-				<< "Status: " << modm::bin << state.status_.status() << modm::ascii << "\n"
-				<< "Target Reached: "
-				<< (state.status_.isSet<modm_canopen::cia402::StatusBits::TargetReached>()
-						? "true"
-						: "false")
-				<< modm::endl;
+			MODM_LOG_DEBUG << "MotorState:\n"
+						   << "Max Current: " << state.maxCurrent_ << "\n"
+						   << "Commanded Current: " << CurrentControl<0>::commandedCurrent_ << "\n"
+						   << "Target Current: " << CurrentProtocol<0>::targetCurrent_ << "\n"
+						   << "Actual Current: " << state.actualCurrent_ << "\n"
+						   << "Mode: " << state.mode_ << "\n"
+						   << "PWM: " << state.outputPWM_ << modm::endl;
 		}
 	}
 

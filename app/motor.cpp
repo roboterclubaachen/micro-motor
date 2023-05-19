@@ -1,4 +1,5 @@
 #include "motor.hpp"
+#include <micro-motor/micro-motor.hpp>
 #include <modm/debug/logger.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
@@ -32,6 +33,10 @@ Motor::updatePosition()
 void
 Motor::updateCurrent()
 {
-	auto currents = Board::MotorCurrent::getClarkePhaseCurrents();
-	current_.updateCurrentAverage(currents.first, currents.second);
+	auto currents = micro_motor::getClarkePhaseCurrents();
+	current_.update(std::get<0>(currents), std::get<1>(currents));
+	// MODM_LOG_INFO << "O " << current_.getOrientedCurrent() << modm::endl;
+	// MODM_LOG_INFO << "M " << current_.getMagnitude() << modm::endl;
+	// MODM_LOG_INFO << "A " << current_.getAngleDifference() << modm::endl;
+	// MODM_LOG_INFO << std::get<0>(currents) << " " << std::get<1>(currents) << modm::endl;
 }

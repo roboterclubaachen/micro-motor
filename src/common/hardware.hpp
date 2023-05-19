@@ -192,7 +192,7 @@ struct Motor
 	using PhaseConfig = librobots2::motor::PhaseConfig;
 	using BridgeConfig = librobots2::motor::BridgeConfig;
 
-	static constexpr uint16_t MaxPwm{1023};  // 10 bit PWM
+	static constexpr uint16_t MaxPwm{2047};  // 11 bit PWM
 
 	static inline void
 	setCompareValue(uint16_t compareValue)
@@ -302,10 +302,10 @@ struct Motor
 		MotorTimer::setMode(MotorTimer::Mode::CenterAligned1);
 
 		// MotorTimer clock: APB2 timer clock (170MHz)
-		MotorTimer::setPrescaler(2);
+		MotorTimer::setPrescaler(1);
 		// Prescaler: 1 -> Timer counter frequency: 170MHz
 		MotorTimer::setOverflow(MaxPwm);
-		// Pwm frequency: 170MHz / 1024  / 2 = 83kHz
+		// Pwm frequency: 170MHz / 2048  / 2 = 83kHz
 
 		configure(Phase::PhaseU, PhaseConfig::HiZ);
 		configure(Phase::PhaseV, PhaseConfig::HiZ);
@@ -320,9 +320,9 @@ struct Motor
 		// must be set directly after starting the timer
 		TIM1->RCR = 1;
 		// 0b1101: "tim_oc4refc rising or tim_oc6refc falling edges generate pulses on tim_trgo2"
-		TIM1->CR2 |= (0b1101 << TIM_CR2_MMS2_Pos);
+		TIM1->CR2 |= (0b0111 << TIM_CR2_MMS2_Pos);
 
-		MotorTimer::configureOutputChannel(4, MotorTimer::OutputCompareMode::Pwm2,
+		MotorTimer::configureOutputChannel(4, MotorTimer::OutputCompareMode::Pwm,
 										   int(MaxPwm * 0.95));
 
 		// MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
@@ -406,64 +406,6 @@ setCurrentLimit(uint16_t limit)
 	// Limit to 12 bit
 	DAC3->DHR12R1 = limit >> 4;
 	DAC3->DHR12R2 = limit >> 4;
-}
-
-inline float
-convertADCToCurrent(uint16_t adcValue)
-{
-	constexpr float ShuntResistance = 5e-3;
-	constexpr float CurrentGain = 50;
-	constexpr float ReferenceVoltage = 2.9;
-	constexpr uint16_t AdcCounts = (1 << 12) - 1;
-
-	const float adcVoltage = adcValue * (ReferenceVoltage / AdcCounts);
-	const float current =
-		(adcVoltage - (ReferenceVoltage / 2)) * (1 / (CurrentGain * ShuntResistance));
-	return current;
-}
-
-inline uint16_t
-convertCurrentToADC(float current)
-{
-	constexpr float ShuntResistance = 5e-3;
-	constexpr float CurrentGain = 50;
-	constexpr float ReferenceVoltage = 2.9;
-	constexpr uint16_t AdcCounts = (1 << 12) - 1;
-	const float adcVoltage =
-		(current / (1 / CurrentGain * ShuntResistance)) + (ReferenceVoltage / 2);
-	const float adcValue = adcVoltage / (ReferenceVoltage / AdcCounts);
-	return (uint16_t)adcValue;
-}
-
-inline void
-setCurrentLimitAmps(float limit)
-{
-	uint16_t limit_12_bit = convertCurrentToADC(limit) & 0x0FFF;
-	DAC3->DHR12R1 = limit_12_bit;
-	DAC3->DHR12R2 = limit_12_bit;
-}
-
-constexpr std::pair<float, float>
-clarkeTransform(float u, float v)
-{
-	constexpr float one_by_sqrt3 = 1.f / sqrt(3.f);
-	constexpr float two_by_sqrt3 = 2.f / sqrt(3.f);
-
-	return {u, u * one_by_sqrt3 + v * two_by_sqrt3};
-}
-
-inline std::pair<float, float>
-getClarkePhaseCurrents()
-{
-	const auto u = convertADCToCurrent(AdcU::getValue());
-	const auto v = convertADCToCurrent(AdcV::getValue());
-	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
-									AdcU::InterruptFlag::EndOfSampling |
-									AdcU::InterruptFlag::Overrun);
-	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
-									AdcV::InterruptFlag::EndOfSampling |
-									AdcV::InterruptFlag::Overrun);
-	return clarkeTransform(u, v);
 }
 
 inline void

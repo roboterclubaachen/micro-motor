@@ -52,6 +52,8 @@ def prepare(module, options):
 def build(env):
     env.outbasepath = "micro-motor/src/micro-motor"
     env.copy("hardware.hpp")
+    env.copy("micro-motor.hpp")
+    env.copy("micro-motor.cpp")
     #env.copy("imotor.hpp")
     #env.copy("imotor.cpp")
     #env.copy("logger.cpp")
