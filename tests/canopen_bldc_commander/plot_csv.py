@@ -15,6 +15,10 @@ ax1.set_xlabel('Time/s')
 ax2.plot(df.Time, df.PWM, label="PWM Duty Cycle")
 ax2.set_xlabel('Time/s')
 
+ax3.plot(df.Time, df.Velocity, label="Velocity")
+ax3.set_xlabel('Time/s')
+
+
 ax1.legend()
 ax2.legend()
 ax3.legend()
