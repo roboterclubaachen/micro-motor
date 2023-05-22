@@ -7,8 +7,9 @@
 
 #include <librobots2/motor-canopen/canopen_objects.hpp>
 
-#include <modm-canopen/canopen_master.hpp>
-#include <modm-canopen/sdo_client.hpp>
+#include <modm-canopen/master/canopen_master.hpp>
+#include <modm-canopen/master/sdo_client.hpp>
+#include <modm-canopen/generated/micro-motor_od.hpp>
 
 #include <thread>
 #include <cassert>
@@ -22,7 +23,7 @@ using modm_canopen::CanopenMaster;
 using modm_canopen::CanopenNode;
 using modm_canopen::SdoErrorCode;
 using modm_canopen::cia402::OperatingMode;
-using modm_canopen::generated::DefaultObjects;
+using modm_canopen::generated::micromotor_OD;
 
 using namespace std::literals;
 
@@ -47,22 +48,29 @@ OperatingMode currMode = OperatingMode::Current;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
 modm::platform::SocketCan can;
-constexpr uint8_t motorId = 22;  // Keep consistent with firmware
+constexpr uint8_t motorId = 10;  // Keep consistent with firmware
 
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
+#define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
-constexpr float vPID_kP = 150.0f;
-constexpr float vPID_kI = 22.0f;
-constexpr float vPID_kD = 200.5f;
+constexpr float vPID_kP = 1.0f;
+constexpr float vPID_kI = 0.0f;
+constexpr float vPID_kD = 0.0f;
 int32_t targetSpeed = 10;
 
-constexpr float pPID_kP = 0.05f;
-constexpr float pPID_kI = 0.05f;
-constexpr float pPID_kD = 0.05f;
+constexpr float pPID_kP = 1.0f;
+constexpr float pPID_kI = 0.0f;
+constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
+
+constexpr float cPID_kP = 1000.0f;
+constexpr float cPID_kI = 0.0f;
+constexpr float cPID_kD = 0.0f;
+float targetCurrent = 0.0f;
+float commandedCurrent = 0.0f;
 #else
 // TODO tune
 constexpr char canDevice[] = "can0";
@@ -75,13 +83,13 @@ constexpr float pPID_kP = 1.0f;
 constexpr float pPID_kI = 0.0f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
-#endif
 
 constexpr float cPID_kP = -3000.0f;
 constexpr float cPID_kI = -300.0f;
 constexpr float cPID_kD = -40.0f;
 float targetCurrent = 0.0f;
 float commandedCurrent = 0.0f;
+#endif
 
 struct Test
 {
@@ -184,7 +192,7 @@ struct Test
 	}
 };
 
-using MotorNode = CanopenNode<DefaultObjects, Test>;
+using MotorNode = CanopenNode<micromotor_OD, Test>;
 using Master = CanopenMaster<MotorNode>;
 using SdoClient = modm_canopen::SdoClient<Master>;
 
@@ -290,19 +298,19 @@ size_t maxTime = 4100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Current},
 					.time{10},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::SwitchOn},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Current},
 					.time{20},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Current},
 					.time{30},
 					.custom{[]() {
-						targetSpeed = 2000.0f;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+						targetCurrent = 0.5f;
+						SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
 												sendMessage);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},

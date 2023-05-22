@@ -1,6 +1,7 @@
 #include "sim_motor.hpp"
 #include <limits>
-
+#include <modm/debug/logger.hpp>
+#include <cmath>
 void
 MotorSimulation::update(float timestep_s)
 {
@@ -19,8 +20,11 @@ MotorSimulation::update(float timestep_s)
 
 	double backEMF_mV = 1000.0 * rotorVelocity_ / motorSpeedConstant_1_Vs;
 	double backEMFCurrent_ma = 1000 * (backEMF_mV) / electricResistance_mOhm;
+	auto newCurrent_A = (inputCurrent_mA - backEMFCurrent_ma) / 1000.0;
+	if (std::abs(newCurrent_A) > std::abs(current_A)) MODM_LOG_INFO << newCurrent_A << modm::endl;
+	current_A = newCurrent_A;
 
-	double torque_Nm = (inputCurrent_mA - backEMFCurrent_ma) / (1000.0 * motorTorqueConstant_A_Nm);
+	double torque_Nm = current_A / motorTorqueConstant_A_Nm;
 
 	rotorAcceleration_ = torque_Nm / shaftInertia_kgm2;
 	rotorVelocity_ += rotorAcceleration_ * timestep_s;

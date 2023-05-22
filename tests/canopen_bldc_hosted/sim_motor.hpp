@@ -34,6 +34,9 @@ private:
 	// shaftInertia_ unit: kg*m^2
 	double shaftInertia_kgm2{1000.0};
 
+	// resulting phase current unit: A
+	double current_A{0.0};
+
 public:
 	MotorSimulation() = default;
 	inline void
@@ -95,5 +98,10 @@ public:
 	acceleration()
 	{
 		return rotorAcceleration_;
+	}
+	inline float
+	current()
+	{
+		return current_A * 10000.0;  // fidget constant to make it work
 	}
 };

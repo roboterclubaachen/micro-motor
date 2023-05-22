@@ -14,7 +14,6 @@
 
   <options>
     <option name="modm:target">stm32g474cet6</option>
-    <option name="modm-canopen:device:eds_file">micro-motor.eds</option>
   </options>
 
   <modules>

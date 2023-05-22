@@ -1,7 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <limits>
-#include <modm-canopen/canopen_device.hpp>
+#include <modm-canopen/generated/micro-motor_od.hpp>
+
+#include <modm-canopen/device/canopen_device.hpp>
+#include <modm-canopen/object_dictionary.hpp>
 #include <modm/debug/logger.hpp>
 
 #include <librobots2/motor-canopen/current_protocol.hpp>
@@ -22,7 +25,7 @@ class CanOpen
 {
 public:
 	using Device =
-		modm_canopen::CanopenDevice<modm_canopen::generated::DefaultObjects, MotorControl0>;
+		modm_canopen::CanopenDevice<modm_canopen::generated::micromotor_OD, MotorControl0>;
 
 	static inline void
 	initialize(uint8_t nodeId);

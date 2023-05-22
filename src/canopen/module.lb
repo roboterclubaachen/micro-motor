@@ -23,7 +23,7 @@ def prepare(module, options):
     module.depends(
         "modm:build",
         "modm-canopen:device",
-        "modm-canopen:device:cia402",
+        "modm-canopen:common:cia402",
         "librobots2:motor-canopen",
         "modm:math:filter",
     )
@@ -34,3 +34,4 @@ def build(env):
     env.outbasepath = "micro-motor/src/micro-motor/canopen"
     env.copy(".")
     env.collect("modm:build:path.include", "micro-motor/src")
+    env.collect("modm-canopen:common:eds_files","micro-motor.eds")

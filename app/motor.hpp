@@ -7,9 +7,9 @@
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 #include <librobots2/motor/bldc_motor_current.hpp>
 #include <micro-motor/hardware.hpp>
+#include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <modm/processing/timer.hpp>
-#include <micro-motor/canopen/canopen.hpp>
 
 using namespace std::literals;
 

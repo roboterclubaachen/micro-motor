@@ -17,7 +17,7 @@ private:
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
 	int32_t actualPosition_{};
-	modm::PeriodicTimer controlTimer_{10ms};
+	modm::PeriodicTimer controlTimer_{1ms};
 
 	MotorSimulation dummy_{};
 
@@ -51,6 +51,7 @@ Motor::update(MessageCallback&& cb)
 	updatePosition();
 	if (controlTimer_.execute())
 	{
+		MotorControl0::setOrientedCurrent(dummy_.current());
 		MotorControl0::setActualPosition(actualPosition_);
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
 		dummy_.setInputVoltageInt(MotorControl0::outputPWM());
