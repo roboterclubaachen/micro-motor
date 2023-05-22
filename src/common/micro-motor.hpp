@@ -13,7 +13,14 @@ getAdcVValue();
 inline void
 initialize()
 {
+	using AdcU = Board::MotorCurrent::AdcU;
+	using AdcV = Board::MotorCurrent::AdcV;
+	using SenseU = Board::MotorCurrent::SenseU;
+	using SenseV = Board::MotorCurrent::SenseV;
 	using MotorTimer = Board::Motor::MotorTimer;
+
+	AdcU::setPinChannel<SenseU>(AdcU::SampleTime::Cycles641);
+	AdcV::setPinChannel<SenseV>(AdcV::SampleTime::Cycles641);
 	MotorTimer::enableInterruptVector(MotorTimer::Interrupt::Update, true, 5);
 	MotorTimer::enableInterrupt(MotorTimer::Interrupt::Update);
 }

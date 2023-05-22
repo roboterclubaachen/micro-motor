@@ -19,8 +19,8 @@ private:
 	int32_t actualPosition_{};
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
-	modm::PeriodicTimer controlTimer_{10ms};
-	librobots2::motor::BldcMotorCurrent<1> current_;
+	modm::PeriodicTimer controlTimer_{1ms};
+	librobots2::motor::BldcMotorCurrent<128> current_;
 
 	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;

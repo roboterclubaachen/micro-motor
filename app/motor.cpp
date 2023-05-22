@@ -34,7 +34,7 @@ void
 Motor::updateCurrent()
 {
 	auto currents = micro_motor::getClarkePhaseCurrents();
-	current_.update(std::get<0>(currents), std::get<1>(currents));
+	current_.updateCurrentAverage(std::get<0>(currents), std::get<1>(currents));
 	// MODM_LOG_INFO << "O " << current_.getOrientedCurrent() << modm::endl;
 	// MODM_LOG_INFO << "M " << current_.getMagnitude() << modm::endl;
 	// MODM_LOG_INFO << "A " << current_.getAngleDifference() << modm::endl;
