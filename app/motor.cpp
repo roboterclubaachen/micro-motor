@@ -3,6 +3,9 @@
 #include <modm/debug/logger.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
 
+static uint16_t adc_u_value = 0x7ff;
+static uint16_t adc_v_value = 0x7ff;
+
 namespace
 {
 int_fast8_t
@@ -33,10 +36,36 @@ Motor::updatePosition()
 void
 Motor::updateCurrent()
 {
-	auto currents = micro_motor::getClarkePhaseCurrents();
+	auto currents = micro_motor::getClarkePhaseCurrents(adc_u_value, adc_v_value);
 	current_.updateCurrentAverage(std::get<0>(currents), std::get<1>(currents));
 	// MODM_LOG_INFO << "O " << current_.getOrientedCurrent() << modm::endl;
 	// MODM_LOG_INFO << "M " << current_.getMagnitude() << modm::endl;
 	// MODM_LOG_INFO << "A " << current_.getAngleDifference() << modm::endl;
 	// MODM_LOG_INFO << std::get<0>(currents) << " " << std::get<1>(currents) << modm::endl;
 }
+
+void
+Motor::updateMotor()
+{
+	motor_.update();
+}
+
+namespace micro_motor
+{
+MODM_ISR(TIM1_UP_TIM16)
+{
+	using AdcU = Board::MotorCurrent::AdcU;
+	using AdcV = Board::MotorCurrent::AdcV;
+
+	::adc_u_value = AdcU::getValue();
+	::adc_v_value = AdcV::getValue();
+	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
+									AdcV::InterruptFlag::EndOfSampling |
+									AdcV::InterruptFlag::Overrun);
+	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
+									AdcU::InterruptFlag::EndOfSampling |
+									AdcU::InterruptFlag::Overrun);
+	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
+	Motor0.updateMotor();
+}
+}  // namespace micro_motor

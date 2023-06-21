@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=15
+SupportedObjects=17
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1327,6 +1327,8 @@ SupportedObjects=15
 13=0x2014
 14=0x2015
 15=0x2016
+16=0x2017
+17=0x2018
 
 [2001]
 ParameterName=Update time
@@ -1548,6 +1550,22 @@ PDOMapping=1
 
 [2016]
 ParameterName=Commanded Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[2017]
+ParameterName=Current Charge
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[2018]
+ParameterName=Filtered Current
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro

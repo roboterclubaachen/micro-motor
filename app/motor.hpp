@@ -20,7 +20,7 @@ private:
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
 	modm::PeriodicTimer controlTimer_{1ms};
-	librobots2::motor::BldcMotorCurrent<128> current_;
+	librobots2::motor::BldcMotorCurrent<1024> current_;
 
 	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
@@ -45,6 +45,9 @@ public:
 		lastHallState_ = readHall();
 	}
 
+	void
+	updateMotor();
+
 	template<typename MessageCallback>
 	bool
 	update(MessageCallback&& cb);
@@ -60,9 +63,9 @@ Motor::update(MessageCallback&& cb)
 	if (controlTimer_.execute())
 	{
 		MotorControl0::setActualPosition(actualPosition_);
-		auto current = current_.getMagnitude();
-		auto velocity = MotorControl0::state().actualVelocity_.getValue();
-		if (std::signbit(velocity)) current = -current;
+		auto current = current_.getOrientedCurrent();
+		// auto velocity = MotorControl0::state().actualVelocity_.getValue();
+		// if (std::signbit(velocity)) current = -current;
 		MotorControl0::setOrientedCurrent(current);
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
 		if (!MotorControl0::state().enableMotor_)
@@ -74,7 +77,6 @@ Motor::update(MessageCallback&& cb)
 		}
 		updated = true;
 	}
-	motor_.update();
 	return updated;
 }
 

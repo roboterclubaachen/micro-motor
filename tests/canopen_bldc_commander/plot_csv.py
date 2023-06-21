@@ -10,6 +10,7 @@ ax1.plot(df.Time, df.Current, label="Current", marker="o")
 ax1.plot(df.Time, df.Error, label="Error")
 ax1.plot(df.Time, df.Target, label="Target")
 ax1.plot(df.Time, df.Commanded, label="Commanded")
+#ax1.plot(df.Time, df.Charge, label="Charge")
 ax1.set_xlabel('Time/s')
 
 ax2.plot(df.Time, df.PWM, label="PWM Duty Cycle")

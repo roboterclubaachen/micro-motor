@@ -48,34 +48,21 @@ OperatingMode currMode = OperatingMode::Current;
 OperatingMode receivedMode = OperatingMode::Disabled;
 
 modm::platform::SocketCan can;
-constexpr uint8_t motorId = 10;  // Keep consistent with firmware
+constexpr uint8_t motorId = 22;  // Keep consistent with firmware
 
 modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
+
 #define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
-constexpr float vPID_kP = 1.0f;
-constexpr float vPID_kI = 0.0f;
-constexpr float vPID_kD = 0.0f;
-int32_t targetSpeed = 10;
-
-constexpr float pPID_kP = 1.0f;
-constexpr float pPID_kI = 0.0f;
-constexpr float pPID_kD = 0.0f;
-int32_t targetPosition = 0;
-
-constexpr float cPID_kP = 1000.0f;
-constexpr float cPID_kI = 0.0f;
-constexpr float cPID_kD = 0.0f;
-float targetCurrent = 0.0f;
-float commandedCurrent = 0.0f;
 #else
-// TODO tune
 constexpr char canDevice[] = "can0";
-constexpr float vPID_kP = 0.0005f;
-constexpr float vPID_kI = 0.00001f;
+#endif
+
+constexpr float vPID_kP = 0.0001f;
+constexpr float vPID_kI = 0.0f;
 constexpr float vPID_kD = 0.0f;
 int32_t targetSpeed = 0;
 
@@ -84,12 +71,13 @@ constexpr float pPID_kI = 0.0f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
 
-constexpr float cPID_kP = -3000.0f;
-constexpr float cPID_kI = -300.0f;
-constexpr float cPID_kD = -40.0f;
+constexpr float cPID_kP = 45000.0f;
+constexpr float cPID_kI = 500.0f;
+constexpr float cPID_kD = 200.0f;
 float targetCurrent = 0.0f;
 float commandedCurrent = 0.0f;
-#endif
+float maxCharge = 0.0f;
+float currentCharge = 0.0f;
 
 struct Test
 {
@@ -110,7 +98,7 @@ struct Test
 		map.template setWriteHandler<Objects::OutputPWM, int16_t>(+[](int16_t value) {
 			if (outputPWM != value)
 			{
-				MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
+				// MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
 				outputPWM = value;
 			}
 			return SdoErrorCode::NoError;
@@ -172,6 +160,16 @@ struct Test
 
 		map.template setWriteHandler<Objects::CurrentError, float>(+[](float value) {
 			if (currentErrorValue != value) { currentErrorValue = value; }
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<{0x2015, 0}, float>(+[](float value) {
+			if (maxCharge != value) { maxCharge = value; }
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<{0x2017, 0}, float>(+[](float value) {
+			if (currentCharge != value) { currentCharge = value; }
 			return SdoErrorCode::NoError;
 		});
 
@@ -252,6 +250,16 @@ setPDOs(MessageCallback&& sendMessage)
 	Master::configureRemoteTPDO(motorId, 3, test2RpdoMotor, 100,
 								std::forward<MessageCallback>(sendMessage));
 
+	/*MotorNode::ReceivePdo_t test3RpdoMotor{};
+	test3RpdoMotor.setInactive();
+	assert(test3RpdoMotor.setMapping(0, modm_canopen::PdoMapping{{0x2017, 0}, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setMappingCount(1) == SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setActive() == SdoErrorCode::NoError);
+	Master::setRPDO(motorId, 3, test3RpdoMotor);
+	Master::configureRemoteTPDO(motorId, 3, test3RpdoMotor, 100,
+								std::forward<MessageCallback>(sendMessage));*/
+
 	MotorNode::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
 	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
@@ -309,7 +317,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Current},
 					.time{30},
 					.custom{[]() {
-						targetCurrent = 0.5f;
+						targetCurrent = 0.3f;
 						SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
 												sendMessage);
 					}}},
@@ -324,7 +332,7 @@ main()
 {
 	auto start = modm::Clock::now();
 	CSVWriter writer{{"Time", "Current", "Error", "Target", "UpdateTime", "Mode", "Commanded",
-					  "PWM", "Velocity", "VelocityError", "VelocityTarget"}};
+					  "PWM", "Velocity", "VelocityError", "VelocityTarget", "Charge"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -411,7 +419,8 @@ main()
 						   std::to_string(targetCurrent), std::to_string(updateTime),
 						   std::to_string((int8_t)receivedMode), std::to_string(commandedCurrent),
 						   std::to_string(outputPWM), std::to_string(velocityValue),
-						   std::to_string(velErrorValue), std::to_string(targetSpeed)});
+						   std::to_string(velErrorValue), std::to_string(targetSpeed),
+						   std::to_string(currentCharge)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

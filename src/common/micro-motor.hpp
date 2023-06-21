@@ -5,10 +5,6 @@
 #include <modm/debug/logger.hpp>
 namespace micro_motor
 {
-uint16_t
-getAdcUValue();
-uint16_t
-getAdcVValue();
 
 inline void
 initialize()
@@ -72,10 +68,9 @@ setCurrentLimitAmps(float limit)
 }
 
 inline std::tuple<float, float>
-getClarkePhaseCurrents()
+getClarkePhaseCurrents(uint16_t adcU, uint16_t adcV)
 {
-	return clarkeTransform(convertAdcToCurrent(getAdcUValue()),
-						   convertAdcToCurrent(getAdcVValue()));
+	return clarkeTransform(convertAdcToCurrent(adcU), convertAdcToCurrent(adcV));
 }
 
 };  // namespace micro_motor

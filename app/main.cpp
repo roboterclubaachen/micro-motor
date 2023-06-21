@@ -142,7 +142,11 @@ main()
 						   << "Max Current: " << state.maxCurrent_ << "\n"
 						   << "Commanded Current: " << CurrentControl<0>::commandedCurrent_ << "\n"
 						   << "Target Current: " << CurrentProtocol<0>::targetCurrent_ << "\n"
-						   << "Actual Current: " << state.actualCurrent_ << "\n"
+						   << "Filtered Current: " << CurrentControl<0>::filteredActualCurrent_
+						   << "\n"
+						   << "Actual Current: "
+						   << state.actualCurrent_ - CurrentControl<0>::zeroAverage_.getValue()
+						   << "\n"
 						   << "Mode: " << state.mode_ << "\n"
 						   << "PWM: " << state.outputPWM_ << modm::endl;
 		}
