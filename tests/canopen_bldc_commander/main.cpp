@@ -54,16 +54,15 @@ modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
 
-#define HOSTED
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 #else
 constexpr char canDevice[] = "can0";
 #endif
 
-constexpr float vPID_kP = 0.0001f;
-constexpr float vPID_kI = 0.0f;
-constexpr float vPID_kD = 0.0f;
+constexpr float vPID_kP = 0.00014f;
+constexpr float vPID_kI = 0.000003f;
+constexpr float vPID_kD = 0.000009f;
 int32_t targetSpeed = 0;
 
 constexpr float pPID_kP = 1.0f;
@@ -71,9 +70,9 @@ constexpr float pPID_kI = 0.0f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
 
-constexpr float cPID_kP = 45000.0f;
-constexpr float cPID_kI = 500.0f;
-constexpr float cPID_kD = 200.0f;
+constexpr float cPID_kP = -50000.0f;
+constexpr float cPID_kI = -800.0f;
+constexpr float cPID_kD = -0.1f;
 float targetCurrent = 0.0f;
 float commandedCurrent = 0.0f;
 float maxCharge = 0.0f;
@@ -302,28 +301,60 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 4100;
+size_t maxTime = 6100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
-					.mode{OperatingMode::Current},
+					.mode{OperatingMode::Velocity},
 					.time{10},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::SwitchOn},
-					.mode{OperatingMode::Current},
+					.mode{OperatingMode::Velocity},
 					.time{20},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Current},
+					.mode{OperatingMode::Velocity},
 					.time{30},
 					.custom{[]() {
-						targetCurrent = 0.3f;
-						SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
+						targetSpeed = 3000;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Velocity},
+					.time{1030},
+					.custom{[]() {
+						targetSpeed = 4000;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Velocity},
+					.time{2030},
+					.custom{[]() {
+						targetSpeed = 5000;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Velocity},
+					.time{3030},
+					.custom{[]() {
+						targetSpeed = 4000;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+												sendMessage);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Velocity},
+					.time{4030},
+					.custom{[]() {
+						targetSpeed = 3000;
+						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
 												sendMessage);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Disabled},
-					.time{4030},
+					.time{5030},
 					.custom{nullptr}},
 };
 

@@ -42,6 +42,12 @@ Motor::updateCurrent()
 	// MODM_LOG_INFO << "M " << current_.getMagnitude() << modm::endl;
 	// MODM_LOG_INFO << "A " << current_.getAngleDifference() << modm::endl;
 	// MODM_LOG_INFO << std::get<0>(currents) << " " << std::get<1>(currents) << modm::endl;
+
+	auto curr_u = micro_motor::convertAdcToCurrent(adc_u_value);
+	auto curr_v = micro_motor::convertAdcToCurrent(adc_v_value);
+	auto curr_w = -curr_u - curr_v;
+	auto curr_max = std::max(std::max(std::abs(curr_u), std::abs(curr_v)), std::abs(curr_w));
+	max_current_.update(curr_max);
 }
 
 void
