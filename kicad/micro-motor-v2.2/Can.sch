@@ -1,0 +1,126 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 5
+Title "Micro-Motor V2.1"
+Date "2021-07-31"
+Rev "1"
+Comp "Roboterclub Aachen e.V."
+Comment1 "Raphael Lehmann"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Interface_CAN_LIN:TCAN332 U201
+U 1 1 5DA8F9B4
+P 5250 3450
+F 0 "U201" H 5250 4031 50  0000 C CNN
+F 1 "TCAN332" H 5250 3940 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23-8" H 5250 2950 50  0001 C CIN
+F 3 "http://www.ti.com/lit/ds/symlink/tcan337.pdf" H 5250 3450 50  0001 C CNN
+	1    5250 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0202
+U 1 1 5DA8FEB1
+P 5250 4300
+F 0 "#PWR0202" H 5250 4050 50  0001 C CNN
+F 1 "GND" H 5255 4127 50  0000 C CNN
+F 2 "" H 5250 4300 50  0001 C CNN
+F 3 "" H 5250 4300 50  0001 C CNN
+	1    5250 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5250 3850 5250 4300
+$Comp
+L power:+3V3 #PWR0201
+U 1 1 5DA91693
+P 5250 2450
+F 0 "#PWR0201" H 5250 2300 50  0001 C CNN
+F 1 "+3V3" H 5265 2623 50  0000 C CNN
+F 2 "" H 5250 2450 50  0001 C CNN
+F 3 "" H 5250 2450 50  0001 C CNN
+	1    5250 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5250 3050 5250 2600
+Text HLabel 3750 3250 0    50   Input ~ 0
+CAN_TX
+Text HLabel 3750 3350 0    50   Output ~ 0
+CAN_RX
+Wire Wire Line
+	4750 3350 3750 3350
+Wire Wire Line
+	3750 3250 4750 3250
+$Comp
+L Connector_Generic_MountingPin:Conn_01x02_MountingPin J201
+U 1 1 5DA925F6
+P 7300 3400
+F 0 "J201" H 7388 3314 50  0000 L CNN
+F 1 "CAN" H 7388 3223 50  0000 L CNN
+F 2 "Connector_JST:JST_GH_BM02B-GHS-TBT_1x02-1MP_P1.25mm_Vertical" H 7300 3400 50  0001 C CNN
+F 3 "~" H 7300 3400 50  0001 C CNN
+	1    7300 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 3350 6900 3350
+Wire Wire Line
+	6900 3350 6900 3400
+Wire Wire Line
+	6900 3400 7100 3400
+Wire Wire Line
+	5750 3550 7100 3550
+Wire Wire Line
+	7100 3550 7100 3500
+$Comp
+L power:GND #PWR0113
+U 1 1 5D855606
+P 7300 3800
+F 0 "#PWR0113" H 7300 3550 50  0001 C CNN
+F 1 "GND" H 7305 3627 50  0000 C CNN
+F 2 "" H 7300 3800 50  0001 C CNN
+F 3 "" H 7300 3800 50  0001 C CNN
+	1    7300 3800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7300 3800 7300 3700
+$Comp
+L Device:C C201
+U 1 1 5DBDEFDE
+P 5800 2750
+F 0 "C201" H 5915 2796 50  0000 L CNN
+F 1 "100n" H 5915 2705 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0402_1005Metric" H 5838 2600 50  0001 C CNN
+F 3 "~" H 5800 2750 50  0001 C CNN
+	1    5800 2750
+	1    0    0    -1  
+$EndComp
+Connection ~ 5250 2600
+Wire Wire Line
+	5250 2600 5250 2450
+Wire Wire Line
+	5250 2600 5800 2600
+$Comp
+L power:GND #PWR0203
+U 1 1 5DBE02A7
+P 5800 2900
+F 0 "#PWR0203" H 5800 2650 50  0001 C CNN
+F 1 "GND" H 5805 2727 50  0000 C CNN
+F 2 "" H 5800 2900 50  0001 C CNN
+F 3 "" H 5800 2900 50  0001 C CNN
+	1    5800 2900
+	1    0    0    -1  
+$EndComp
+Text Label 6250 3350 0    50   ~ 0
+CANH
+Text Label 6250 3550 0    50   ~ 0
+CANL
+$EndSCHEMATC
