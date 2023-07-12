@@ -62,13 +62,15 @@ constexpr char canDevice[] = "can0";
 
 constexpr float vPID_kP = 0.00014f;
 constexpr float vPID_kI = 0.000003f;
-constexpr float vPID_kD = 0.000009f;
-int32_t targetSpeed = 0;
+constexpr float vPID_kD = 0.0f;
+int32_t targetSpeed = 128;
+int32_t velDemand = 0;
 
-constexpr float pPID_kP = 1.0f;
+constexpr float pPID_kP = 2.0f;
 constexpr float pPID_kI = 0.0f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
+int32_t posDemand = 0;
 
 constexpr float cPID_kP = -50000.0f;
 constexpr float cPID_kI = -800.0f;
@@ -142,12 +144,22 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
+		map.template setWriteHandler<Objects::PositionDemandValue, int32_t>(+[](int32_t value) {
+			if (posDemand != value) { posDemand = value; }
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<Objects::VelocityDemandValue, int32_t>(+[](int32_t value) {
+			if (velDemand != value) { velDemand = value; }
+			return SdoErrorCode::NoError;
+		});
+
 		map.template setWriteHandler<Objects::VelocityError, int32_t>(+[](int32_t value) {
 			if (velErrorValue != value) { velErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::ActualCurrent, float>(+[](float value) {
+		map.template setWriteHandler<Objects::FilteredActualCurrent, float>(+[](float value) {
 			if (currentValue != value) { currentValue = value; }
 			return SdoErrorCode::NoError;
 		});
@@ -162,12 +174,12 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<{0x2015, 0}, float>(+[](float value) {
+		map.template setWriteHandler<Objects::MaxCharge, float>(+[](float value) {
 			if (maxCharge != value) { maxCharge = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<{0x2017, 0}, float>(+[](float value) {
+		map.template setWriteHandler<Objects::CurrentCharge, float>(+[](float value) {
 			if (currentCharge != value) { currentCharge = value; }
 			return SdoErrorCode::NoError;
 		});
@@ -215,9 +227,9 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t infoRpdoMotor{};
 	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::CurrentError, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::ActualCurrent, 32}) ==
+	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::FilteredActualCurrent,
+																32}) == SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CommandedCurrent, 32}) ==
 		   SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
@@ -225,39 +237,29 @@ setPDOs(MessageCallback&& sendMessage)
 	Master::configureRemoteTPDO(motorId, 1, infoRpdoMotor, 100,
 								std::forward<MessageCallback>(sendMessage));
 
-	MotorNode::ReceivePdo_t testRpdoMotor{};
-	testRpdoMotor.setInactive();
-	assert(testRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::UpdateTime, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(testRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CommandedCurrent, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(testRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
-	assert(testRpdoMotor.setActive() == SdoErrorCode::NoError);
-	Master::setRPDO(motorId, 2, testRpdoMotor);
-	Master::configureRemoteTPDO(motorId, 2, testRpdoMotor, 100,
-								std::forward<MessageCallback>(sendMessage));
-
 	MotorNode::ReceivePdo_t test2RpdoMotor{};
 	test2RpdoMotor.setInactive();
 	assert(test2RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
 																 32}) == SdoErrorCode::NoError);
-	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::VelocityError, 32}) ==
-		   SdoErrorCode::NoError);
+	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
+																 32}) == SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setActive() == SdoErrorCode::NoError);
-	Master::setRPDO(motorId, 3, test2RpdoMotor);
-	Master::configureRemoteTPDO(motorId, 3, test2RpdoMotor, 100,
+	Master::setRPDO(motorId, 2, test2RpdoMotor);
+	Master::configureRemoteTPDO(motorId, 2, test2RpdoMotor, 100,
 								std::forward<MessageCallback>(sendMessage));
 
-	/*MotorNode::ReceivePdo_t test3RpdoMotor{};
+	MotorNode::ReceivePdo_t test3RpdoMotor{};
 	test3RpdoMotor.setInactive();
-	assert(test3RpdoMotor.setMapping(0, modm_canopen::PdoMapping{{0x2017, 0}, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(test3RpdoMotor.setMappingCount(1) == SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityDemandValue,
+																 32}) == SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionDemandValue,
+																 32}) == SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test3RpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 3, test3RpdoMotor);
 	Master::configureRemoteTPDO(motorId, 3, test3RpdoMotor, 100,
-								std::forward<MessageCallback>(sendMessage));*/
+								std::forward<MessageCallback>(sendMessage));
 
 	MotorNode::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
@@ -271,6 +273,8 @@ setPDOs(MessageCallback&& sendMessage)
 	Master::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
+	SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
+							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
@@ -296,64 +300,33 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, Objects::CurrentPID_kD, cPID_kD,
 							std::forward<MessageCallback>(sendMessage));
-
-	SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
-							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 6100;
+size_t maxTime = 5100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Voltage},
 					.time{10},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::SwitchOn},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Voltage},
 					.time{20},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Velocity},
 					.time{30},
-					.custom{[]() {
-						targetSpeed = 3000;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
-												sendMessage);
-					}}},
+					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
+					.mode{OperatingMode::Position},
 					.time{1030},
 					.custom{[]() {
-						targetSpeed = 4000;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetSpeed,
 												sendMessage);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
-					.time{2030},
-					.custom{[]() {
-						targetSpeed = 5000;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
-												sendMessage);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
-					.time{3030},
-					.custom{[]() {
-						targetSpeed = 4000;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
-												sendMessage);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Velocity},
-					.time{4030},
-					.custom{[]() {
-						targetSpeed = 3000;
-						SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
-												sendMessage);
+						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
-					.mode{OperatingMode::Disabled},
+					.mode{OperatingMode::Voltage},
 					.time{5030},
 					.custom{nullptr}},
 };
@@ -362,8 +335,8 @@ int
 main()
 {
 	auto start = modm::Clock::now();
-	CSVWriter writer{{"Time", "Current", "Error", "Target", "UpdateTime", "Mode", "Commanded",
-					  "PWM", "Velocity", "VelocityError", "VelocityTarget", "Charge"}};
+	CSVWriter writer{{"Time", "Current", "Commanded", "Velocity", "VelocityTarget", "Position",
+					  "PositionTarget", "PWM", "Mode"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -446,12 +419,10 @@ main()
 		if (debugTimer.execute())
 		{
 			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
-						   std::to_string(currentValue), std::to_string(currentErrorValue),
-						   std::to_string(targetCurrent), std::to_string(updateTime),
-						   std::to_string((int8_t)receivedMode), std::to_string(commandedCurrent),
-						   std::to_string(outputPWM), std::to_string(velocityValue),
-						   std::to_string(velErrorValue), std::to_string(targetSpeed),
-						   std::to_string(currentCharge)});
+						   std::to_string(currentValue), std::to_string(commandedCurrent),
+						   std::to_string(velocityValue), std::to_string(velDemand),
+						   std::to_string(positionValue), std::to_string(posDemand),
+						   std::to_string(outputPWM), std::to_string(receivedMode)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});
