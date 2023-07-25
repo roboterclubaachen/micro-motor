@@ -63,18 +63,18 @@ constexpr char canDevice[] = "can0";
 constexpr float vPID_kP = 0.00014f;
 constexpr float vPID_kI = 0.000003f;
 constexpr float vPID_kD = 0.0f;
-int32_t targetSpeed = 128;
+int32_t targetSpeed = 2000;
 int32_t velDemand = 0;
 
 constexpr float pPID_kP = 2.0f;
-constexpr float pPID_kI = 0.0f;
+constexpr float pPID_kI = 0.004f;
 constexpr float pPID_kD = 0.0f;
 int32_t targetPosition = 0;
 int32_t posDemand = 0;
 
-constexpr float cPID_kP = -50000.0f;
-constexpr float cPID_kI = -800.0f;
-constexpr float cPID_kD = -0.1f;
+constexpr float cPID_kP = -10000.0f;
+constexpr float cPID_kI = -750.0f;
+constexpr float cPID_kD = 0.0f;
 float targetCurrent = 0.0f;
 float commandedCurrent = 0.0f;
 float maxCharge = 0.0f;
@@ -302,7 +302,7 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 }
 
-size_t maxTime = 5100;
+size_t maxTime = 10100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -321,13 +321,22 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Position},
 					.time{1030},
 					.custom{[]() {
-						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetSpeed,
+						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
+												sendMessage);
+						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
+					}}},
+	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+					.mode{OperatingMode::Position},
+					.time{5030},
+					.custom{[]() {
+						targetPosition = 500;
+						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
 												sendMessage);
 						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{5030},
+					.time{10030},
 					.custom{nullptr}},
 };
 
