@@ -241,8 +241,8 @@ setPDOs(MessageCallback&& sendMessage)
 	test2RpdoMotor.setInactive();
 	assert(test2RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
 																 32}) == SdoErrorCode::NoError);
-	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
-																 32}) == SdoErrorCode::NoError);
+	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CurrentCharge, 32}) ==
+		   SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 2, test2RpdoMotor);
@@ -253,7 +253,7 @@ setPDOs(MessageCallback&& sendMessage)
 	test3RpdoMotor.setInactive();
 	assert(test3RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityDemandValue,
 																 32}) == SdoErrorCode::NoError);
-	assert(test3RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionDemandValue,
+	assert(test3RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
 																 32}) == SdoErrorCode::NoError);
 	assert(test3RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test3RpdoMotor.setActive() == SdoErrorCode::NoError);
@@ -317,7 +317,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Velocity},
 					.time{30},
 					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+	/*CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Position},
 					.time{1030},
 					.custom{[]() {
@@ -333,7 +333,7 @@ constexpr std::array sendCommands{
 						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
 												sendMessage);
 						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
+					}}},*/
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
 					.time{10030},
@@ -345,7 +345,7 @@ main()
 {
 	auto start = modm::Clock::now();
 	CSVWriter writer{{"Time", "Current", "Commanded", "Velocity", "VelocityTarget", "Position",
-					  "PositionTarget", "PWM", "Mode"}};
+					  "PositionTarget", "PWM", "Mode", "Charge"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -431,7 +431,8 @@ main()
 						   std::to_string(currentValue), std::to_string(commandedCurrent),
 						   std::to_string(velocityValue), std::to_string(velDemand),
 						   std::to_string(positionValue), std::to_string(posDemand),
-						   std::to_string(outputPWM), std::to_string(receivedMode)});
+						   std::to_string(outputPWM), std::to_string(receivedMode),
+						   std::to_string(currentCharge)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

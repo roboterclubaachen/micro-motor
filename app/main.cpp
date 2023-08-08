@@ -148,6 +148,7 @@ main()
 						   << state.actualCurrent_ - CurrentControl<0>::zeroAverage_.getValue()
 						   << "\n"
 						   << "Mode: " << state.mode_ << "\n"
+						   << "Charge: " << CurrentControl<0>::currentCharge_ << "\n"
 						   << "PWM: " << state.outputPWM_ << modm::endl;
 		}
 	}
