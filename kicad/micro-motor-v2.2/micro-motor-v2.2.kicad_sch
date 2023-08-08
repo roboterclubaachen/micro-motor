@@ -5,8 +5,8 @@
   (paper "A4")
 
   (title_block
-    (title "Micro-Motor V2.1")
-    (date "2021-07-31")
+    (title "Micro-Motor V2.2")
+    (date "2023-07-25")
     (rev "1")
     (company "Roboterclub Aachen e.V.")
     (comment 1 "Raphael Lehmann")

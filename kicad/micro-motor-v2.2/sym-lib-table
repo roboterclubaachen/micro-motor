@@ -1,5 +1,6 @@
 (sym_lib_table
-  (lib (name stm32)(type Legacy)(uri ${KIPRJMOD}/../lib/stm32.lib)(options "")(descr ""))
-  (lib (name FDMD82xx)(type Legacy)(uri ${KIPRJMOD}/../lib/FDMD82xx.lib)(options "")(descr ""))
-  (lib (name drv8323s)(type Legacy)(uri ${KIPRJMOD}/../lib/drv8320s.lib)(options "")(descr ""))
+  (version 7)
+  (lib (name "stm32")(type "KiCad")(uri "${KIPRJMOD}/../lib/stm32.kicad_sym")(options "")(descr ""))
+  (lib (name "FDMD82xx")(type "KiCad")(uri "${KIPRJMOD}/../lib/FDMD82xx.kicad_sym")(options "")(descr ""))
+  (lib (name "drv8323s")(type "KiCad")(uri "${KIPRJMOD}/../lib/drv8320s.kicad_sym")(options "")(descr ""))
 )
