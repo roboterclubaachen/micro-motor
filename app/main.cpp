@@ -124,19 +124,19 @@ main()
 
 		Motor0.update(Board::CanBus::Can::sendMessage);
 		CanOpen::update(Board::CanBus::Can::sendMessage);
-		// if ((now - lastMessage) >= noMessageTimeout)
-		//{
-		//	MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
-		//	break;
-		// }
-		//  if (MotorControl0::state().resetMotor_)
-		//{
-		//	MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
-		//	break;
-		//  }
+		 if ((now - lastMessage) >= noMessageTimeout)
+		{
+			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
+			break;
+		 }
+		  if (MotorControl0::state().resetMotor_)
+		{
+			MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
+			break;
+		  }
 
 		auto& state = MotorControl0::state();
-		if (debugTimer.execute())
+		if (debugTimer.execute()&&false)
 		{
 			MODM_LOG_DEBUG << "MotorState:\n"
 						   << "Max Current: " << state.maxCurrent_ << "\n"
