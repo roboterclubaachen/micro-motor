@@ -86,17 +86,18 @@ struct Test
 	constexpr void
 	registerHandlers(uint8_t, modm_canopen::HandlerMapRT<ObjectDictionary>& map)
 	{
-		map.template setWriteHandler<Objects::UpdateTime, uint32_t>(+[](uint32_t value) {
+		map.template setWriteHandler<StateObjects::UpdateTime, uint32_t>(+[](uint32_t value) {
 			updateTime = value;
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Objects::PWMCommand, int16_t>(+[]() { return commandedPWM; });
+		map.template setReadHandler<PWMObjects::PWMCommand, int16_t>(
+			+[]() { return commandedPWM; });
 
-		map.template setWriteHandler<Objects::PWMCommand, int16_t>(
+		map.template setWriteHandler<PWMObjects::PWMCommand, int16_t>(
 			+[](int16_t) { return SdoErrorCode::UnsupportedAccess; });
 
-		map.template setWriteHandler<Objects::OutputPWM, int16_t>(+[](int16_t value) {
+		map.template setWriteHandler<StateObjects::OutputPWM, int16_t>(+[](int16_t value) {
 			if (outputPWM != value)
 			{
 				// MODM_LOG_INFO << "Received Output PWM of " << value << modm::endl;
@@ -105,7 +106,7 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::StatusWord, uint16_t>(+[](uint16_t value) {
+		map.template setWriteHandler<StateObjects::StatusWord, uint16_t>(+[](uint16_t value) {
 			state_.set(value);
 			if (state_.isSet<modm_canopen::cia402::StatusBits::TargetReached>() && !targetReached)
 			{
@@ -120,84 +121,90 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setReadHandler<Objects::ControlWord, uint16_t>(
+		map.template setReadHandler<StateObjects::ControlWord, uint16_t>(
 			+[]() { return control_.value(); });
 
-		map.template setReadHandler<Objects::ModeOfOperation, int8_t>(
+		map.template setReadHandler<StateObjects::ModeOfOperation, int8_t>(
 			+[]() { return (int8_t)currMode; });
 
-		map.template setWriteHandler<Objects::ModeOfOperationDisplay, int8_t>(+[](int8_t value) {
-			if ((int8_t)receivedMode != value)
-			{
-				MODM_LOG_INFO << "Received Mode " << value << modm::endl;
-				receivedMode = (OperatingMode)value;
-			}
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<StateObjects::ModeOfOperationDisplay, int8_t>(
+			+[](int8_t value) {
+				if ((int8_t)receivedMode != value)
+				{
+					MODM_LOG_INFO << "Received Mode " << value << modm::endl;
+					receivedMode = (OperatingMode)value;
+				}
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::PositionActualValue, int32_t>(+[](int32_t value) {
-			if (positionValue != value)
-			{
-				// MODM_LOG_INFO << "Received Output Position of " << value << modm::endl;
-				positionValue = value;
-			}
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<StateObjects::PositionActualValue, int32_t>(
+			+[](int32_t value) {
+				if (positionValue != value)
+				{
+					// MODM_LOG_INFO << "Received Output Position of " << value << modm::endl;
+					positionValue = value;
+				}
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::PositionDemandValue, int32_t>(+[](int32_t value) {
-			if (posDemand != value) { posDemand = value; }
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<PositionObjects::PositionDemandValue, int32_t>(
+			+[](int32_t value) {
+				if (posDemand != value) { posDemand = value; }
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::VelocityDemandValue, int32_t>(+[](int32_t value) {
-			if (velDemand != value) { velDemand = value; }
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<VelocityObjects::VelocityDemandValue, int32_t>(
+			+[](int32_t value) {
+				if (velDemand != value) { velDemand = value; }
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::VelocityError, int32_t>(+[](int32_t value) {
+		map.template setWriteHandler<VelocityObjects::VelocityError, int32_t>(+[](int32_t value) {
 			if (velErrorValue != value) { velErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::FilteredActualCurrent, float>(+[](float value) {
-			if (currentValue != value) { currentValue = value; }
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<CurrentObjects::FilteredActualCurrent, float>(
+			+[](float value) {
+				if (currentValue != value) { currentValue = value; }
+				return SdoErrorCode::NoError;
+			});
 
-		map.template setWriteHandler<Objects::CommandedCurrent, float>(+[](float value) {
+		map.template setWriteHandler<CurrentObjects::CommandedCurrent, float>(+[](float value) {
 			if (commandedCurrent != value) { commandedCurrent = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::CurrentError, float>(+[](float value) {
+		map.template setWriteHandler<CurrentObjects::CurrentError, float>(+[](float value) {
 			if (currentErrorValue != value) { currentErrorValue = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::MaxCharge, float>(+[](float value) {
+		map.template setWriteHandler<StateObjects::MaxCharge, float>(+[](float value) {
 			if (maxCharge != value) { maxCharge = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::CurrentCharge, float>(+[](float value) {
+		map.template setWriteHandler<CurrentObjects::CurrentCharge, float>(+[](float value) {
 			if (currentCharge != value) { currentCharge = value; }
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<Objects::FollowingErrorActualValue, int32_t>(
+		map.template setWriteHandler<PositionObjects::FollowingErrorActualValue, int32_t>(
 			+[](int32_t value) {
 				if (posErrorValue != value) { posErrorValue = value; }
 				return SdoErrorCode::NoError;
 			});
 
-		map.template setWriteHandler<Objects::VelocityActualValue, int32_t>(+[](int32_t value) {
-			if (velocityValue != value)
-			{
-				// MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
-				velocityValue = value;
-			}
-			return SdoErrorCode::NoError;
-		});
+		map.template setWriteHandler<StateObjects::VelocityActualValue, int32_t>(
+			+[](int32_t value) {
+				if (velocityValue != value)
+				{
+					// MODM_LOG_INFO << "Received Output Velocity of " << value << modm::endl;
+					velocityValue = value;
+				}
+				return SdoErrorCode::NoError;
+			});
 	}
 };
 
@@ -213,12 +220,13 @@ setPDOs(MessageCallback&& sendMessage)
 {
 	MotorNode::ReceivePdo_t statusRpdoMotor{};
 	statusRpdoMotor.setInactive();
-	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::StatusWord, 16}) ==
+	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::StatusWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::OutputPWM, 16}) ==
+	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{StateObjects::OutputPWM, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(2, modm_canopen::PdoMapping{Objects::ModeOfOperationDisplay,
-																  8}) == SdoErrorCode::NoError);
+	assert(statusRpdoMotor.setMapping(
+			   2, modm_canopen::PdoMapping{StateObjects::ModeOfOperationDisplay, 8}) ==
+		   SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setMappingCount(3) == SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 0, statusRpdoMotor);
@@ -227,10 +235,11 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t infoRpdoMotor{};
 	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::FilteredActualCurrent,
-																32}) == SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CommandedCurrent, 32}) ==
+	assert(infoRpdoMotor.setMapping(
+			   0, modm_canopen::PdoMapping{CurrentObjects::FilteredActualCurrent, 32}) ==
 		   SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{CurrentObjects::CommandedCurrent,
+																32}) == SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 1, infoRpdoMotor);
@@ -239,10 +248,10 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t test2RpdoMotor{};
 	test2RpdoMotor.setInactive();
-	assert(test2RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityActualValue,
+	assert(test2RpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::VelocityActualValue,
 																 32}) == SdoErrorCode::NoError);
-	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::CurrentCharge, 32}) ==
-		   SdoErrorCode::NoError);
+	assert(test2RpdoMotor.setMapping(1, modm_canopen::PdoMapping{CurrentObjects::CurrentCharge,
+																 32}) == SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test2RpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 2, test2RpdoMotor);
@@ -251,9 +260,10 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t test3RpdoMotor{};
 	test3RpdoMotor.setInactive();
-	assert(test3RpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::VelocityDemandValue,
-																 32}) == SdoErrorCode::NoError);
-	assert(test3RpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::PositionActualValue,
+	assert(test3RpdoMotor.setMapping(
+			   0, modm_canopen::PdoMapping{VelocityObjects::VelocityDemandValue, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(test3RpdoMotor.setMapping(1, modm_canopen::PdoMapping{StateObjects::PositionActualValue,
 																 32}) == SdoErrorCode::NoError);
 	assert(test3RpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(test3RpdoMotor.setActive() == SdoErrorCode::NoError);
@@ -263,42 +273,42 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::TransmitPdo_t commandTpdoMotor{};
 	commandTpdoMotor.setInactive();
-	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{Objects::ControlWord, 16}) ==
-		   SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{Objects::ModeOfOperation, 8}) ==
-		   SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::ControlWord,
+																   16}) == SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{StateObjects::ModeOfOperation,
+																   8}) == SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setTPDO(motorId, 0, commandTpdoMotor);
 	Master::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, Objects::TargetCurrent, targetCurrent,
+	SdoClient::requestWrite(motorId, CurrentObjects::TargetCurrent, targetCurrent,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::TargetVelocity, targetSpeed,
+	SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity, targetSpeed,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
-							std::forward<MessageCallback>(sendMessage));
-
-	SdoClient::requestWrite(motorId, Objects::VelocityPID_kP, vPID_kP,
-							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::VelocityPID_kI, vPID_kI,
-							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::VelocityPID_kD, vPID_kD,
+	SdoClient::requestWrite(motorId, PositionObjects::TargetPosition, targetPosition,
 							std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, Objects::PositionPID_kP, pPID_kP,
+	SdoClient::requestWrite(motorId, VelocityObjects::VelocityPID_kP, vPID_kP,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::PositionPID_kI, pPID_kI,
+	SdoClient::requestWrite(motorId, VelocityObjects::VelocityPID_kI, vPID_kI,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::PositionPID_kD, pPID_kD,
+	SdoClient::requestWrite(motorId, VelocityObjects::VelocityPID_kD, vPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, Objects::CurrentPID_kP, cPID_kP,
+	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kP, pPID_kP,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::CurrentPID_kI, cPID_kI,
+	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kI, pPID_kI,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, Objects::CurrentPID_kD, cPID_kD,
+	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kD, pPID_kD,
+							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kP, cPID_kP,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kI, cPID_kI,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kD, cPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 }
 
@@ -321,8 +331,8 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Position},
 					.time{1030},
 					.custom{[]() {
-						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
-												sendMessage);
+						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
+	targetPosition, sendMessage);
 						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
@@ -330,8 +340,8 @@ constexpr std::array sendCommands{
 					.time{5030},
 					.custom{[]() {
 						targetPosition = 500;
-						SdoClient::requestWrite(motorId, Objects::TargetPosition, targetPosition,
-												sendMessage);
+						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
+	targetPosition, sendMessage);
 						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},*/
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
@@ -421,8 +431,8 @@ main()
 				control_.apply(modm_canopen::cia402::StateCommands[(uint8_t)c.name].cmd);
 				currMode = c.mode;
 				if (c.custom != nullptr) c.custom();
-				motorNode_.setValueChanged(Objects::ControlWord);
-				motorNode_.setValueChanged(Objects::ModeOfOperation);
+				motorNode_.setValueChanged(StateObjects::ControlWord);
+				motorNode_.setValueChanged(StateObjects::ModeOfOperation);
 			}
 		}
 		if (debugTimer.execute())
