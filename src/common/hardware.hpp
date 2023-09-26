@@ -22,10 +22,12 @@
 #include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
 #include <modm/platform/uart/uart_1.hpp>
+#include <modm/processing/timer.hpp>
 
 #include <librobots2/motor/motor_bridge.hpp>
 
 using namespace modm::platform;
+using namespace std::chrono_literals;
 
 namespace Board
 {
@@ -442,6 +444,10 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
 	// 5mohm shunt, 50V pro V gain amplifier
 	setCurrentLimit(0xFFFF / 2);  // 50%
+
+	modm::Timeout waitForVRefBuf = modm::Timeout(20ms);
+	while (!waitForVRefBuf.execute())
+		;
 
 	AdcU::initialize(AdcU::ClockMode::SynchronousPrescaler4, AdcU::ClockSource::SystemClock,
 					 AdcU::Prescaler::Disabled, AdcU::CalibrationMode::SingleEndedInputsMode);
