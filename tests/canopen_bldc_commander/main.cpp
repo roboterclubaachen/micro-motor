@@ -66,9 +66,9 @@ constexpr uint8_t motorId = 22;  // Keep consistent with firmware
 // constexpr float vPID_kI = 0.000005f;
 // constexpr float vPID_kD = 0.0000001f;
 
-constexpr float vPID_kP = 0.0002f;
-constexpr float vPID_kI = 0.0000005f;
-constexpr float vPID_kD = 0.0f;
+constexpr float vPID_kP = 0.0015f;
+constexpr float vPID_kI = 0.000002f;
+constexpr float vPID_kD = 0.0000001f;
 int32_t targetSpeed = 0;
 int32_t velDemand = 0;
 
@@ -82,7 +82,7 @@ int32_t posDemand = 0;
 // constexpr float cPID_kI = -0.005f;
 // constexpr float cPID_kD = 0.0f;
 
-constexpr float cPID_kP = -1.5f;
+constexpr float cPID_kP = -0.001f;
 constexpr float cPID_kI = -0.004f;
 constexpr float cPID_kD = 0.0f;
 float targetCurrent = 0.4f;
@@ -253,11 +253,11 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t infoRpdoMotor{};
 	infoRpdoMotor.setInactive();
-	assert(infoRpdoMotor.setMapping(
-			   0, modm_canopen::PdoMapping{CurrentObjects::FilteredActualCurrent, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(infoRpdoMotor.setMapping(1, modm_canopen::PdoMapping{CurrentObjects::CommandedCurrent,
+	assert(infoRpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::VelocityActualValue,
 																32}) == SdoErrorCode::NoError);
+	assert(infoRpdoMotor.setMapping(
+			   1, modm_canopen::PdoMapping{VelocityObjects::VelocityDemandValue, 32}) ==
+		   SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(infoRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 1, infoRpdoMotor);
@@ -266,9 +266,12 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t currentRpdoMotor{};
 	currentRpdoMotor.setInactive();
-	assert(currentRpdoMotor.setMapping(0, modm_canopen::PdoMapping{CurrentObjects::CurrentCharge,
+	assert(currentRpdoMotor.setMapping(
+			   0, modm_canopen::PdoMapping{CurrentObjects::FilteredActualCurrent, 32}) ==
+		   SdoErrorCode::NoError);
+	assert(currentRpdoMotor.setMapping(1, modm_canopen::PdoMapping{CurrentObjects::CommandedCurrent,
 																   32}) == SdoErrorCode::NoError);
-	assert(currentRpdoMotor.setMappingCount(1) == SdoErrorCode::NoError);
+	assert(currentRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(currentRpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setRPDO(motorId, 2, currentRpdoMotor);
 	Master::configureRemoteTPDO(motorId, 2, currentRpdoMotor, 100,
@@ -487,7 +490,7 @@ main()
 		{
 			const double offset = counter - 100;
 			const auto mult = 4000;
-			targetSpeed = mult * std::sin(offset / 100);
+			targetSpeed = mult * std::sin(offset / 800);
 			MODM_LOG_INFO << targetSpeed << modm::endl;
 			motorNode_.setValueChanged(VelocityObjects::TargetVelocity);
 		} else if (counter == 10030)
