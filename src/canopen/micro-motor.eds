@@ -120,47 +120,43 @@ AccessType=ro
 PDOMapping=0
 
 [OptionalObjects]
-SupportedObjects=40
+SupportedObjects=36
 1=0x1400
 2=0x1401
 3=0x1402
 4=0x1403
-5=0x1404
-6=0x1600
-7=0x1601
-8=0x1602
-9=0x1603
-10=0x1604
-11=0x1800
-12=0x1801
-13=0x1802
-14=0x1803
-15=0x1804
-16=0x1A00
-17=0x1A01
-18=0x1A02
-19=0x1A03
-20=0x1A04
-21=0x6060
-22=0x6064
-23=0x606C
-24=0x60FF
-25=0x6040
-26=0x6041
-27=0x607A
-28=0x607E
-29=0x6067
-30=0x6062
-31=0x6093
-32=0x6094
-33=0x6097
-34=0x6061
-35=0x1200
-36=0x6063
-37=0x60F4
-38=0x6083
-39=0x606B
-40=0x6085
+5=0x1600
+6=0x1601
+7=0x1602
+8=0x1603
+9=0x1800
+10=0x1801
+11=0x1802
+12=0x1803
+13=0x1A00
+14=0x1A01
+15=0x1A02
+16=0x1A03
+17=0x6060
+18=0x6064
+19=0x606C
+20=0x60FF
+21=0x6040
+22=0x6041
+23=0x607A
+24=0x607E
+25=0x6067
+26=0x6062
+27=0x6093
+28=0x6094
+29=0x6097
+30=0x6061
+31=0x1200
+32=0x6063
+33=0x60F4
+34=0x6083
+35=0x606B
+36=0x6085
 
 [1200]
 ParameterName=Server SDO Parameter
@@ -299,35 +295,6 @@ DefaultValue=$NODEID+0x500
 PDOMapping=0
 
 [1403sub2]
-ParameterName=Transmission type
-ObjectType=0x7
-DataType=0x0005
-AccessType=rw
-DefaultValue=255
-PDOMapping=0
-
-[1404]
-ParameterName=RPDO5 Communication Parameter
-ObjectType=0x9
-SubNumber=3
-
-[1404sub0]
-ParameterName=Number of entries
-ObjectType=0x7
-DataType=0x0005
-AccessType=ro
-DefaultValue=2
-PDOMapping=0
-
-[1404sub1]
-ParameterName=COB-ID RPDO5
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=$NODEID+0x600
-PDOMapping=0
-
-[1404sub2]
 ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
@@ -651,85 +618,6 @@ AccessType=rw
 DefaultValue=0x00000000
 PDOMapping=0
 
-[1604]
-ParameterName=RPDO5 Mapping Parameter
-ObjectType=0x9
-SubNumber=9
-
-[1604sub0]
-ParameterName=Number of entries
-ObjectType=0x7
-DataType=0x0005
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-LowLimit=0
-HighLimit=8
-
-[1604sub1]
-ParameterName=Mapped object #1
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub2]
-ParameterName=Mapped object #2
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub3]
-ParameterName=Mapped object #3
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub4]
-ParameterName=Mapped object #4
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub5]
-ParameterName=Mapped object #5
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub6]
-ParameterName=Mapped object #6
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub7]
-ParameterName=Mapped object #7
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1604sub8]
-ParameterName=Mapped object #8
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
 [1800]
 ParameterName=TPDO1 Communication Parameter
 ObjectType=0x9
@@ -903,51 +791,6 @@ DefaultValue=0
 PDOMapping=0
 
 [1803sub5]
-ParameterName=Event timer
-ObjectType=0x7
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[1804]
-ParameterName=TPDO5 Communication Parameter
-ObjectType=0x9
-SubNumber=5
-
-[1804sub0]
-ParameterName=Number of entries
-ObjectType=0x7
-DataType=0x0005
-AccessType=ro
-DefaultValue=5
-PDOMapping=0
-
-[1804sub1]
-ParameterName=COB-ID TPDO5
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=$NODEID+0x80000580
-PDOMapping=0
-
-[1804sub2]
-ParameterName=Transmission type
-ObjectType=0x7
-DataType=0x0005
-AccessType=rw
-DefaultValue=255
-PDOMapping=0
-
-[1804sub3]
-ParameterName=Inhibit Time
-ObjectType=0x7
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[1804sub5]
 ParameterName=Event timer
 ObjectType=0x7
 DataType=0x0006
@@ -1264,85 +1107,6 @@ DefaultValue=0x00000000
 PDOMapping=0
 
 [1A03sub8]
-ParameterName=Mapped object #8
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04]
-ParameterName=TPDO5 Mapping Parameter
-ObjectType=0x9
-SubNumber=9
-
-[1A04sub0]
-ParameterName=Number of entries
-ObjectType=0x7
-DataType=0x0005
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-LowLimit=0
-HighLimit=8
-
-[1A04sub1]
-ParameterName=Mapped object #1
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub2]
-ParameterName=Mapped object #2
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub3]
-ParameterName=Mapped object #3
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub4]
-ParameterName=Mapped object #4
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub5]
-ParameterName=Mapped object #5
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub6]
-ParameterName=Mapped object #6
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub7]
-ParameterName=Mapped object #7
-ObjectType=0x7
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000000
-PDOMapping=0
-
-[1A04sub8]
 ParameterName=Mapped object #8
 ObjectType=0x7
 DataType=0x0007
