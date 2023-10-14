@@ -1583,7 +1583,7 @@ DefaultValue=0
 PDOMapping=1
 
 [2020]
-ParameterName=Oriented Current Angle
+ParameterName=Oriented Current Angle Difference
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro

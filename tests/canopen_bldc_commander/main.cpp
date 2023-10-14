@@ -90,6 +90,9 @@ float commandedCurrent = 0.0f;
 float maxCharge = 0.0f;
 float currentCharge = 0.0f;
 
+float orientedCurrent = 0.0f;
+float orientedCurrentAngleDiff = 0.0f;
+
 struct Test
 {
 	template<typename ObjectDictionary>
@@ -195,7 +198,7 @@ struct Test
 			return SdoErrorCode::NoError;
 		});
 
-		map.template setWriteHandler<CurrentObjects::CurrentCharge, float>(+[](float value) {
+		map.template setWriteHandler<StateObjects::CurrentCharge, float>(+[](float value) {
 			if (currentCharge != value) { currentCharge = value; }
 			return SdoErrorCode::NoError;
 		});
@@ -223,6 +226,17 @@ struct Test
 			if (targetSpeed != value) { targetSpeed = value; }
 			return SdoErrorCode::NoError;
 		});
+
+		map.template setWriteHandler<StateObjects::OrientedCurrent, float>(+[](int32_t value) {
+			if (orientedCurrent != value) { orientedCurrent = value; }
+			return SdoErrorCode::NoError;
+		});
+
+		map.template setWriteHandler<StateObjects::OrientedCurrentAngleDiff, float>(
+			+[](int32_t value) {
+				if (orientedCurrentAngleDiff != value) { orientedCurrentAngleDiff = value; }
+				return SdoErrorCode::NoError;
+			});
 	}
 };
 
@@ -279,11 +293,10 @@ setPDOs(MessageCallback&& sendMessage)
 
 	MotorNode::ReceivePdo_t velocityRpdoMotor{};
 	velocityRpdoMotor.setInactive();
+	assert(velocityRpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::OrientedCurrent,
+																	32}) == SdoErrorCode::NoError);
 	assert(velocityRpdoMotor.setMapping(
-			   0, modm_canopen::PdoMapping{PositionObjects::PositionDemandValue, 32}) ==
-		   SdoErrorCode::NoError);
-	assert(velocityRpdoMotor.setMapping(
-			   1, modm_canopen::PdoMapping{StateObjects::PositionActualValue, 32}) ==
+			   1, modm_canopen::PdoMapping{StateObjects::OrientedCurrentAngleDiff, 32}) ==
 		   SdoErrorCode::NoError);
 	assert(velocityRpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
 	assert(velocityRpdoMotor.setActive() == SdoErrorCode::NoError);
@@ -377,7 +390,8 @@ main()
 {
 	auto start = modm::Clock::now();
 	CSVWriter writer{{"Time", "Current", "Commanded", "Velocity", "VelocityTarget", "Position",
-					  "PositionTarget", "PWM", "Mode", "Charge", "MaxCharge"}};
+					  "PositionTarget", "PWM", "Mode", "Charge", "MaxCharge", "OrientedCurrent",
+					  "OrientedCurrentAngleDiff"}};
 	if (!writer.create("vel.csv"))
 	{
 		MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
@@ -511,7 +525,9 @@ main()
 						   std::to_string(velocityValue), std::to_string(velDemand),
 						   std::to_string(positionValue), std::to_string(posDemand),
 						   std::to_string(outputPWM), std::to_string(receivedMode),
-						   std::to_string(currentCharge), std::to_string(maxCharge)});
+						   std::to_string(currentCharge), std::to_string(maxCharge),
+						   std::to_string(orientedCurrent),
+						   std::to_string(orientedCurrentAngleDiff)});
 			writer.flush();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});

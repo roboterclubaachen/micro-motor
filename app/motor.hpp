@@ -69,7 +69,7 @@ Motor::update(MessageCallback&& cb)
 		// if (std::signbit(velocity)) current = -current;
 		MotorControl0::setUnorientedCurrent(max_current_.getValue());
 		MotorControl0::setOrientedCurrent(current_.getOrientedCurrent());
-		MotorControl0::setOrientedCurrentAngle(current_.getAngleDifference());
+		MotorControl0::setOrientedCurrentAngleDiff(current_.getAngleDifference());
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
 		if (!MotorControl0::state().enableMotor_)
 		{
