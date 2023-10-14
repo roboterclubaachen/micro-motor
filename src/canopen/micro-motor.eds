@@ -1547,7 +1547,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=17
+SupportedObjects=19
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1565,6 +1565,8 @@ SupportedObjects=17
 15=0x2016
 16=0x2017
 17=0x2018
+18=0x2019
+19=0x2020
 
 [2001]
 ParameterName=Update time
@@ -1761,7 +1763,7 @@ DefaultValue=0
 PDOMapping=1
 
 [2013]
-ParameterName=Actual Current
+ParameterName=Unoriented Current
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro
@@ -1802,6 +1804,22 @@ PDOMapping=1
 
 [2018]
 ParameterName=Filtered Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[2019]
+ParameterName=Oriented Current
+ObjectType=0x7
+DataType=0x0008
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+
+[2020]
+ParameterName=Oriented Current Angle
 ObjectType=0x7
 DataType=0x0008
 AccessType=ro

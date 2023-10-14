@@ -38,11 +38,6 @@ Motor::updateCurrent()
 {
 	auto currents = micro_motor::getClarkePhaseCurrents(adc_u_value, adc_v_value);
 	current_.updateCurrentAverage(std::get<0>(currents), std::get<1>(currents));
-	// MODM_LOG_INFO << "O " << current_.getOrientedCurrent() << modm::endl;
-	// MODM_LOG_INFO << "M " << current_.getMagnitude() << modm::endl;
-	// MODM_LOG_INFO << "A " << current_.getAngleDifference() << modm::endl;
-	// MODM_LOG_INFO << std::get<0>(currents) << " " << std::get<1>(currents) << modm::endl;
-
 	auto curr_u = micro_motor::convertAdcToCurrent(adc_u_value);
 	auto curr_v = micro_motor::convertAdcToCurrent(adc_v_value);
 	auto curr_w = -curr_u - curr_v;

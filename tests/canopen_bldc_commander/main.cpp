@@ -53,6 +53,7 @@ modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
 // #define HOSTED
+#define SINUS
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr uint8_t motorId = 10;  // Keep consistent with firmware
@@ -66,9 +67,9 @@ constexpr uint8_t motorId = 22;  // Keep consistent with firmware
 // constexpr float vPID_kD = 0.0000001f;
 
 constexpr float vPID_kP = 0.0002f;
-constexpr float vPID_kI = 0.000005f;
-constexpr float vPID_kD = 0.0000001f;
-int32_t targetSpeed = 2000;
+constexpr float vPID_kI = 0.0000005f;
+constexpr float vPID_kD = 0.0f;
+int32_t targetSpeed = 0;
 int32_t velDemand = 0;
 
 constexpr float pPID_kP = 2.0f;
@@ -81,8 +82,8 @@ int32_t posDemand = 0;
 // constexpr float cPID_kI = -0.005f;
 // constexpr float cPID_kD = 0.0f;
 
-constexpr float cPID_kP = -1.0f;
-constexpr float cPID_kI = -0.005f;
+constexpr float cPID_kP = -1.5f;
+constexpr float cPID_kI = -0.004f;
 constexpr float cPID_kD = 0.0f;
 float targetCurrent = 0.4f;
 float commandedCurrent = 0.0f;
@@ -214,6 +215,14 @@ struct Test
 				}
 				return SdoErrorCode::NoError;
 			});
+
+		map.template setReadHandler<VelocityObjects::TargetVelocity, int32_t>(
+			+[]() { return targetSpeed; });
+
+		map.template setWriteHandler<VelocityObjects::TargetVelocity, int32_t>(+[](int32_t value) {
+			if (targetSpeed != value) { targetSpeed = value; }
+			return SdoErrorCode::NoError;
+		});
 	}
 };
 
@@ -299,7 +308,9 @@ setPDOs(MessageCallback&& sendMessage)
 																   16}) == SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setMapping(1, modm_canopen::PdoMapping{StateObjects::ModeOfOperation,
 																   8}) == SdoErrorCode::NoError);
-	assert(commandTpdoMotor.setMappingCount(2) == SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMapping(2, modm_canopen::PdoMapping{VelocityObjects::TargetVelocity,
+																   32}) == SdoErrorCode::NoError);
+	assert(commandTpdoMotor.setMappingCount(3) == SdoErrorCode::NoError);
 	assert(commandTpdoMotor.setActive() == SdoErrorCode::NoError);
 	Master::setTPDO(motorId, 0, commandTpdoMotor);
 	Master::configureRemoteRPDO(motorId, 0, commandTpdoMotor,
@@ -349,7 +360,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Velocity},
 					.time{30},
 					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
+	/*CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
 					.mode{OperatingMode::Position},
 					.time{1030},
 					.custom{[]() {
@@ -365,7 +376,7 @@ constexpr std::array sendCommands{
 						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
 												targetPosition, sendMessage);
 						control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
+					}}},*/
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
 					.time{10030},
@@ -445,6 +456,7 @@ main()
 			Master::processMessage(message, handleResponse);
 		}
 		Master::update(sendMessage);
+#if defined(CMDLIST)
 		for (auto c : sendCommands)
 		{
 			if (c.time == counter)
@@ -457,6 +469,52 @@ main()
 				motorNode_.setValueChanged(StateObjects::ModeOfOperation);
 			}
 		}
+#elif defined(SINUS)
+		if (10 == counter)
+		{
+			MODM_LOG_DEBUG << "Next Command..." << modm::endl;
+			control_.apply(modm_canopen::cia402::StateCommands
+							   [(uint8_t)modm_canopen::cia402::StateCommandNames::Shutdown]
+								   .cmd);
+			currMode = OperatingMode::Voltage;
+			motorNode_.setValueChanged(StateObjects::ControlWord);
+			motorNode_.setValueChanged(StateObjects::ModeOfOperation);
+		} else if (20 == counter)
+		{
+			MODM_LOG_DEBUG << "Next Command..." << modm::endl;
+			control_.apply(modm_canopen::cia402::StateCommands
+							   [(uint8_t)modm_canopen::cia402::StateCommandNames::SwitchOn]
+								   .cmd);
+			currMode = OperatingMode::Voltage;
+			motorNode_.setValueChanged(StateObjects::ControlWord);
+			motorNode_.setValueChanged(StateObjects::ModeOfOperation);
+		} else if (30 == counter)
+		{
+			MODM_LOG_DEBUG << "Next Command..." << modm::endl;
+			control_.apply(modm_canopen::cia402::StateCommands
+							   [(uint8_t)modm_canopen::cia402::StateCommandNames::EnableOperation]
+								   .cmd);
+			currMode = OperatingMode::Velocity;
+			motorNode_.setValueChanged(StateObjects::ControlWord);
+			motorNode_.setValueChanged(StateObjects::ModeOfOperation);
+		} else if (counter > 100 && counter < 10000 && counter % 100)
+		{
+			const double offset = counter - 100;
+			const auto mult = 3000;
+			targetSpeed = mult * std::sin(offset / 1500);
+			MODM_LOG_INFO << targetSpeed << modm::endl;
+			motorNode_.setValueChanged(VelocityObjects::TargetVelocity);
+		} else if (counter == 10030)
+		{
+			MODM_LOG_DEBUG << "Next Command..." << modm::endl;
+			control_.apply(modm_canopen::cia402::StateCommands
+							   [(uint8_t)modm_canopen::cia402::StateCommandNames::DisableVoltage]
+								   .cmd);
+			currMode = OperatingMode::Voltage;
+			motorNode_.setValueChanged(StateObjects::ControlWord);
+			motorNode_.setValueChanged(StateObjects::ModeOfOperation);
+		}
+#endif
 		if (debugTimer.execute())
 		{
 			writer.addRow({std::to_string((float)(modm::Clock::now() - start).count() / 1000.0f),
