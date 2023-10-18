@@ -70,7 +70,7 @@ setCurrentLimitAmps(float limit)
 inline std::tuple<float, float>
 getClarkePhaseCurrents(uint16_t adcU, uint16_t adcV)
 {
-	MODM_LOG_INFO << modm::hex << "ADCU " << adcU << " ADCV " << adcV << modm::endl;
+	// MODM_LOG_INFO << modm::hex << "ADCU " << adcU << " ADCV " << adcV << modm::endl;
 	return clarkeTransform(convertAdcToCurrent(adcU), convertAdcToCurrent(adcV));
 }
 
