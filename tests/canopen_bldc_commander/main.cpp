@@ -53,21 +53,21 @@ modm::PeriodicTimer debugTimer{10ms};
 modm_canopen::cia402::CommandWord control_{0};
 modm_canopen::cia402::StateMachine state_{modm_canopen::cia402::State::SwitchOnDisabled};
 // #define HOSTED
-#define CMDLIST
+#define SINUS
 #ifdef HOSTED
 constexpr char canDevice[] = "vcan0";
 constexpr uint8_t motorId = 10;  // Keep consistent with firmware
 #else
 constexpr char canDevice[] = "can0";
-constexpr uint8_t motorId = 22;  // Keep consistent with firmware
+constexpr uint8_t motorId = 12;  // Keep consistent with firmware
 #endif
 
 // constexpr float vPID_kP = 0.0002f;
 // constexpr float vPID_kI = 0.000005f;
 // constexpr float vPID_kD = 0.0000001f;
 
-constexpr float vPID_kP = 0.0015f;
-constexpr float vPID_kI = 0.000002f;
+constexpr float vPID_kP = 0.0025f;
+constexpr float vPID_kI = 0.0000015f;
 constexpr float vPID_kD = 0.0000001f;
 int32_t targetSpeed = 0;
 int32_t velDemand = 0;
@@ -503,7 +503,7 @@ main()
 		} else if (counter > 100 && counter < 10000 && counter % 100)
 		{
 			const double offset = counter - 100;
-			const auto mult = 4000;
+			const auto mult = 600;
 			targetSpeed = mult * std::sin(offset / 800);
 			MODM_LOG_INFO << targetSpeed << modm::endl;
 			motorNode_.setValueChanged(VelocityObjects::TargetVelocity);
