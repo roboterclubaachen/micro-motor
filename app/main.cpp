@@ -84,7 +84,9 @@ main()
 				   << modm::endl;
 
 	const uint8_t boardId = readBoardId();
+	const uint8_t nodeId = 2 * boardId;
 	MODM_LOG_INFO.printf("Board ID: %d\n", boardId);
+	MODM_LOG_INFO.printf("Node ID: %d\n", nodeId);
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
@@ -104,10 +106,9 @@ main()
 										  modm::can::ExtendedIdentifier(0),
 										  modm::can::ExtendedMask(0));
 
-	const uint8_t nodeId = 2 * boardId;
-	MODM_LOG_INFO.printf("Node ID: %d\n", nodeId);
 	CanOpen::initialize(nodeId);
 	auto lastMessage = modm::Clock::now();
+
 	MODM_LOG_INFO << "Starting App Main Loop..." << modm::endl;
 	while (1)
 	{
@@ -124,19 +125,19 @@ main()
 
 		Motor0.update(Board::CanBus::Can::sendMessage);
 		CanOpen::update(Board::CanBus::Can::sendMessage);
-		 if ((now - lastMessage) >= noMessageTimeout)
+		if ((now - lastMessage) >= noMessageTimeout)
 		{
 			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
 			break;
-		 }
-		  if (MotorControl0::state().resetMotor_)
+		}
+		if (MotorControl0::state().resetMotor_)
 		{
 			MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
 			break;
-		  }
+		}
 
 		auto& state = MotorControl0::state();
-		if (debugTimer.execute()&&false)
+		if (debugTimer.execute() && false)
 		{
 			MODM_LOG_DEBUG << "MotorState:\n"
 						   << "Max Current: " << state.maxCurrent_ << "\n"
