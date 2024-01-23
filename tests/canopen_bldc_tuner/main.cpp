@@ -5,6 +5,7 @@
 #include "motor_state.hpp"
 #include "canopen_callbacks.hpp"
 #include "csv_writer.hpp"
+#include "relay.hpp"
 #include "motor_config.hpp"
 
 #include <thread>
@@ -18,13 +19,11 @@ modm::platform::SocketCan can;
 constexpr char canDevice[] = "can0";
 
 auto sendMessage = [](const modm::can::Message& msg) { return can.sendMessage(msg); };
+Relay relay = Relay();
 
 int
 main()
 {
-	uint64_t counter = 0;
-	constexpr uint64_t maxTime = 10000;
-
 	bool success = can.open(canDevice);
 	if (!success)
 	{
@@ -64,6 +63,7 @@ main()
 	MODM_LOG_INFO << "Configuration done." << modm::endl;
 	while (true)
 	{
+		auto now = modm::Clock::now();
 		while (SdoClient::waiting())
 		{
 			if (can.isMessageAvailable())
@@ -82,11 +82,29 @@ main()
 			can.getMessage(message);
 			Master::processMessage(message, handleResponse);
 		}
+		relay.update(now);
+		if (relay.errored())
+		{
+			MODM_LOG_ERROR << "Relay errored out, aborting..." << modm::endl;
+			break;
+		}
+		if (relay.done())
+		{
+			MODM_LOG_INFO << "Relay done!" << modm::endl;
+			break;
+		}
+		if (state_.targetCurrent != relay.getTargetCurrent())
+		{
+			state_.targetCurrent = relay.getTargetCurrent();
+			motorNode_.setValueChanged(CurrentObjects::TargetCurrent);
+		}
+
 		Master::update(sendMessage);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});
-		counter++;
-		if (counter == maxTime) { break; }
 	}
+	if (relay.errored())
+		while (true) {}  // Spin on error
+
 	return 0;
 }

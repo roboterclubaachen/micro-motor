@@ -123,5 +123,13 @@ struct CanopenCallbacks
 			if (state_.targetSpeed != value) { state_.targetSpeed = value; }
 			return SdoErrorCode::NoError;
 		});
+
+		map.template setReadHandler<CurrentObjects::TargetCurrent, float>(
+			+[]() { return state_.targetCurrent; });
+
+		map.template setWriteHandler<CurrentObjects::TargetCurrent, float>(+[](float value) {
+			if (state_.targetCurrent != value) { state_.targetCurrent = value; }
+			return SdoErrorCode::NoError;
+		});
 	}
 };
