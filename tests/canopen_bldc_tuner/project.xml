@@ -6,8 +6,11 @@
     <repository>
       <path>../../../modm-canopen/repo.lb</path>
     </repository>
-        <repository>
+    <repository>
       <path>../../../librobots2/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../../eigen-lbuild/repo.lb</path>
     </repository>
     <repository>
       <path>../../repo.lb</path>
@@ -32,6 +35,7 @@
     <module>modm-canopen:master</module>
     <module>modm:platform:socketcan</module>
     <module>librobots2:motor-canopen</module>
+    <module>eigen-lbuild:eigen</module>
   </modules>
 </library>
 

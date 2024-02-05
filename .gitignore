@@ -9,6 +9,7 @@ micro-motor/
 librobots2/
 modm-canopen/
 motor-canopen/
+Eigen/
 build/
 SConstruct
 
