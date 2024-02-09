@@ -41,6 +41,27 @@ updatePIDs(MessageCallback&& sendMessage)
 
 template<typename MessageCallback>
 void
+setUnits(MessageCallback&& sendMessage)
+{
+
+	constexpr auto ticks_per_rev = 42;
+	constexpr auto seconds_per_minute = 60;
+
+	// Convert Ticks to rotations
+	SdoClient::requestWrite(motorId, StateObjects::PositionFactorDivisor, ticks_per_rev,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, StateObjects::PositionFactorNumerator, 1,
+							std::forward<MessageCallback>(sendMessage));
+
+	// Convert ticks per second to rev/min
+	SdoClient::requestWrite(motorId, StateObjects::VelocityFactorDivisor, ticks_per_rev,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, StateObjects::VelocityFactorNumerator, seconds_per_minute,
+							std::forward<MessageCallback>(sendMessage));
+}
+
+template<typename MessageCallback>
+void
 configure(MessageCallback&& sendMessage)
 {
 	MotorNode::ReceivePdo_t statusRpdoMotor{};
@@ -129,4 +150,7 @@ configure(MessageCallback&& sendMessage)
 
 	// Update PIDs
 	updatePIDs(std::forward<MessageCallback>(sendMessage));
+
+	// Configure Motor Units
+	setUnits(std::forward<MessageCallback>(sendMessage));
 }

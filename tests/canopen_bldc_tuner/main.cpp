@@ -82,6 +82,7 @@ main()
 			can.getMessage(message);
 			Master::processMessage(message, handleResponse);
 		}
+		relay.setValues(state_.currentValue, state_.velocityValue);
 		relay.update(now);
 		if (relay.errored())
 		{
@@ -103,8 +104,13 @@ main()
 
 		std::this_thread::sleep_for(std::chrono::milliseconds{1});
 	}
-	if (relay.errored())
-		while (true) {}  // Spin on error
+	if (!relay.errored())
+	{
+		relay.dumpToCSV();
+		// TODO analyze and compute PID
+	}
+
+	while (true) {}  // Spin
 
 	return 0;
 }
