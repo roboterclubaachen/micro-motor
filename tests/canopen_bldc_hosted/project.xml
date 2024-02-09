@@ -13,6 +13,12 @@
     <repository>
       <path>../../ext/modm-canopen/repo.lb</path>
     </repository>
+    <repository>
+      <path>../../../gnuplot-lbuild/repo.lb</path>
+    </repository>
+            <repository>
+      <path>../../../eigen-lbuild/repo.lb</path>
+    </repository>
   </repositories>
 
   <options>
@@ -24,5 +30,8 @@
     <module>modm:platform:socketcan</module>
     <module>micro-motor:canopen</module>
     <module>modm:debug</module>
+    <module>gnuplot-lbuild:gnuplot</module>
+    <module>eigen-lbuild:eigen</module>
+    <module>librobots2:motor</module>
   </modules>
 </library>

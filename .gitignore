@@ -9,7 +9,8 @@ micro-motor/
 librobots2/
 modm-canopen/
 motor-canopen/
-Eigen/
+eigen-lbuild/
+gnuplot-lbuild/
 build/
 SConstruct
 

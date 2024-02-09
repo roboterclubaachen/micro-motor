@@ -16,12 +16,14 @@ hallDiff(int_fast8_t oldState, int_fast8_t newState)
 }
 }  // namespace
 
-Motor::Motor(uint_fast8_t commutationOffset) : commutationOffset_{commutationOffset} {}
+Motor::Motor(uint_fast8_t commutationOffset)
+	: commutationOffset_{commutationOffset}, motor_{commutationOffset}
+{}
 
 void
 Motor::updatePosition()
 {
-	const auto hallState = dummy_.hall();
+	const auto hallState = readHall();
 	actualPosition_ += hallDiff(lastHallState_, hallState);
 	lastHallState_ = hallState;
 }

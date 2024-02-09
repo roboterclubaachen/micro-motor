@@ -5,11 +5,16 @@
 #include <limits>
 #include <modm/processing/timer.hpp>
 
-#include "sim_motor.hpp"
+#include "sim/motor_bridge.hpp"
+#include "sim/sim_motor.hpp"
 #include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
+#include <librobots2/motor/bldc_motor_block_commutation.hpp>
 
 using namespace std::literals;
+
+using sim::MotorBridge;
+using sim::MotorSimulation;
 
 class Motor
 {
@@ -19,7 +24,16 @@ private:
 	int32_t actualPosition_{};
 	modm::PeriodicTimer controlTimer_{1ms};
 
-	MotorSimulation dummy_{};
+	modm::PreciseClock::time_point lastUpdate_{modm::PreciseClock::now()};
+
+	librobots2::motor::BldcMotorBlockCommutation<MotorBridge> motor_;
+	using Hall = librobots2::motor::HallPermutations<MotorBridge::HallPort>;
+	uint_fast8_t
+	readHall()
+	{
+		const auto& HallStates = librobots2::motor::block_commutation::SequenceLut;
+		return HallStates[Hall::read(commutationOffset_) & 0b111];
+	}
 
 	void
 	updatePosition();
@@ -29,14 +43,8 @@ public:
 	void
 	initializeHall()
 	{
-		lastHallState_ = dummy_.hall();
+		lastHallState_ = readHall();
 	}
-
-	inline MotorSimulation&
-	dummy()
-	{
-		return dummy_;
-	};
 
 	template<typename MessageCallback>
 	bool
@@ -47,17 +55,29 @@ template<typename MessageCallback>
 bool
 Motor::update(MessageCallback&& cb)
 {
+	auto now = modm::PreciseClock::now();
 	bool updated = false;
 	updatePosition();
 	if (controlTimer_.execute())
 	{
-		MotorControl0::setOrientedCurrent(dummy_.current());
+		MotorControl0::setUnorientedCurrent(MotorSimulation::maxCurrent());
 		MotorControl0::setActualPosition(actualPosition_);
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
-		dummy_.setInputVoltageInt(MotorControl0::outputPWM());
+		if (!MotorControl0::state().enableMotor_)
+		{
+			motor_.disable();
+		} else
+		{
+			MODM_LOG_INFO << MotorControl0::outputPWM() << modm::endl;
+
+			motor_.setSetpoint(MotorControl0::outputPWM());
+		}
 		updated = true;
 	}
-	dummy_.update(0.1f);
+	auto timestep = std::chrono::duration<double>(now - lastUpdate_).count();
+	motor_.update();
+	MotorSimulation::update(timestep);
+	lastUpdate_ = now;
 	return updated;
 }
 
