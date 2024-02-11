@@ -12,6 +12,10 @@ motor-canopen/
 build/
 SConstruct
 
+!ext/modm
+!ext/modm-canopen
+!ext/librobots2
+
 # Codium/Code
 **/.vscode/
 
