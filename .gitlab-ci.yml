@@ -4,10 +4,6 @@ variables:
   SCONSFLAGS: "-j3"
   GIT_SUBMODULE_STRATEGY: recursive
 
-before_script:
-  - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.roboterclub.rwth-aachen.de/rca/rca-ci-helper.git
-  - rca-ci-helper/populate_rca_software.sh
-
 gen-kicad-pcb-pdfs:
   image: ghcr.io/rleh/kicad5_and_pandoc:latest
   before_script:

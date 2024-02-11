@@ -5,13 +5,13 @@
       <path>../../repo.lb</path>
     </repository>
     <repository>
-      <path>../../../modm/repo.lb</path>
+      <path>../../ext/modm/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../librobots2/repo.lb</path>
+      <path>../../ext/librobots2/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../modm-canopen/repo.lb</path>
+      <path>../../ext/modm-canopen/repo.lb</path>
     </repository>
   </repositories>
 
