@@ -44,46 +44,80 @@ MotorSimulation::emfFunction(double rotor_p)
 		}
 		rotor_p += M_PI * 2.0 / 3.0;
 	}
-	return out;
+	return -out;
 }
 
-void
-MotorSimulation::updateVoltages()
+Eigen::Vector3d
+MotorSimulation::computeVoltages(double v, const std::array<Gate, 3>& config,
+								 const Eigen::Vector3d& bemf)
 {
-	// Switching Pattern-Independent Simulation Model for Brushless DC Motors (Kang et al. 2011)
-	const auto bemfConstant = 30.0 / (data_.k_v * M_PI);
-	auto backEMF = bemfConstant * emfFunction(state_.rotor_theta * (data_.num_poles / 2));
-
+	size_t acc{0};
+	double center{0.0};
 	Eigen::Vector3d voltages{0, 0, 0};
-	double star_v = 0.0;
-	size_t div = 0;
 
-	if (state_.switches[0] != Gate::HiZ)
+	// At this point we technically compute potentials
+	for (size_t i = 0; i < config.size(); i++)
 	{
-		voltages(0) = state_.supply_v / 2 * (state_.switches[0] == Gate::High ? 1 : -1);
-		star_v += voltages(0) - backEMF(0);
-		div += 1;
+		voltages(i) =
+			v / 2 *
+			(int8_t)config[i];  // Set outside points to +-half VDC depending if Gate is high or low
+		if (config[i] != Gate::HiZ)
+		{
+			acc++;
+			center += voltages(i) - bemf(i);  // Add bemf subtracted voltage to midpoint
+		}
 	}
-	if (state_.switches[1] != Gate::HiZ)
-	{
-		voltages(1) = state_.supply_v / 2 * (state_.switches[1] == Gate::High ? 1 : -1);
-		star_v += voltages(1) - backEMF(1);
-		div += 1;
-	}
-	if (state_.switches[2] != Gate::HiZ)
-	{
-		voltages(2) = state_.supply_v / 2 * (state_.switches[2] == Gate::High ? 1 : -1);
-		star_v += voltages(2) - backEMF(2);
-		div += 1;
-	}
-	if (div != 0) star_v /= div;
+	center /= acc;  // Compute center voltage
 
-	if (state_.switches[0] == Gate::HiZ) { voltages(0) = backEMF(0) + star_v; }
-	if (state_.switches[1] == Gate::HiZ) { voltages(1) = backEMF(1) + star_v; }
-	if (state_.switches[2] == Gate::HiZ) { voltages(2) = backEMF(2) + star_v; }
+	// Make voltages relative to center
+	for (size_t i = 0; i < config.size(); i++)
+	{
+		if (config[i] == Gate::HiZ)
+		{
+			voltages(i) = bemf(i);
+		} else
+		{
+			voltages(i) -= center;
+		}
+	}
 
-	state_.phase_v = voltages;
-	state_.star_v = star_v;
+	return voltages;
+}
+
+MotorState
+MotorSimulation::nextState(const std::array<Gate, 3> config, double timestep)
+{
+	// Trapezoidal function
+	const auto emf_factor = emfFunction(state_.omega_m * data_.p / 2);
+
+	// Actual back emf voltages
+	const auto e = emf_factor * data_.k_e * state_.omega_m;
+
+	// Phase voltages
+	const auto v = computeVoltages(data_.vdc, config, e);
+
+	// Phase Currents
+	const auto d_i = (v - data_.r_s * state_.i - e) / (data_.l - data_.m);
+	const auto i = state_.i + d_i * timestep;
+
+	// Torque
+	const auto t_e = emf_factor.dot(state_.i) * data_.k_e;
+
+	// Mechanics
+	const auto d_omega_m = (t_e - state_.t_l - data_.f * state_.omega_m) / data_.j;
+	const auto omega_m = state_.omega_m + d_omega_m * timestep;
+	const auto theta_m = angleMod(state_.theta_m + state_.omega_m * timestep);
+
+	// Create new state object
+	MotorState out{};
+	out.e = e;
+	out.i = i;
+	out.v = v;
+	out.omega_m = omega_m;
+	out.theta_m = theta_m;
+	out.t_e = t_e;
+	out.t_l = state_.t_l;
+	return out;
 }
 
 void
@@ -91,66 +125,29 @@ MotorSimulation::update(double timestep)
 {
 	// Update our bridge config
 	MotorBridge::update(timestep);
-	state_.switches = MotorBridge::getConfig();
-
-	// Switching Pattern-Independent Simulation Model for Brushless DC Motors
-	// (Kang et al. 2011)
-	const auto bemfConstant = 30.0 / (data_.k_v * M_PI);
-	const auto bemfFactors = emfFunction(state_.rotor_theta * (data_.num_poles / 2));
-	const auto backEMF = bemfConstant * bemfFactors;
-	MODM_LOG_DEBUG << "BackEMF " << backEMF(0) << " " << backEMF(1) << " " << backEMF(2)
-				   << modm::endl;
-
-	double e_torque =
-		state_.rotor_omega == 0.0 ? 0.0 : (backEMF.dot(state_.phase_i)) / state_.rotor_omega;
-
-	double m_torque = ((e_torque * (data_.num_poles / 2)) - (data_.damping * state_.rotor_omega) -
-					   state_.loadTorque);
-
-	if (std::abs(m_torque) < state_.friction)
-	{
-		m_torque = 0;
-	} else if (m_torque > 0 && std::abs(m_torque) >= state_.friction)
-	{
-		m_torque -= std::copysign(state_.friction, m_torque);
-	}
-
-	MODM_LOG_DEBUG << "Torque " << e_torque << " " << m_torque << modm::endl;
-
-	state_.rotor_omega_dot = m_torque / data_.inertia;
-	state_.rotor_omega += state_.rotor_omega_dot / timestep;
-	state_.rotor_theta += state_.rotor_omega / timestep;
-	state_.rotor_theta = angleMod(state_.rotor_theta);
-
-	MODM_LOG_DEBUG << "Rotor " << state_.rotor_omega_dot << " " << state_.rotor_omega << " "
-				   << state_.rotor_theta << modm::endl;
-
-	updateVoltages();
-
-	MODM_LOG_DEBUG << "V " << state_.phase_v(0) << " " << state_.phase_v(1) << " "
-				   << state_.phase_v(2) << modm::endl;
-
-	state_.phase_i = (state_.phase_v - data_.stator_phase_r * state_.phase_i - backEMF -
-					  Eigen::Vector3d::Constant(state_.star_v)) /
-					 (data_.stator_phase_l - data_.mutual_inductance);
-	updateHallPort();
+	state_ = nextState(MotorBridge::getConfig(), timestep);
 }
 
 double
 MotorSimulation::maxCurrent()
 {
-	return state_.phase_i.cwiseAbs().maxCoeff();
+	return state_.i.cwiseAbs().maxCoeff();
 }
 
 void
 MotorSimulation::updateHallPort()
 {
-	const auto index =
-		((unsigned int)std::round(angleMod(state_.rotor_theta) * 6 / (2 * M_PI))) % 6;
+	const auto index = ((unsigned int)std::round(angleMod(state_.theta_m) * 6 / (2 * M_PI))) % 6;
 
 	Pin<0>::set(index == 5 || index == 0 || index == 1);
 	Pin<1>::set(index == 1 || index == 2 || index == 3);
 	Pin<2>::set(index == 3 || index == 4 || index == 5);
+}
+
+MotorState&
+MotorSimulation::state()
+{
+	return state_;
 }
 
 }  // namespace sim

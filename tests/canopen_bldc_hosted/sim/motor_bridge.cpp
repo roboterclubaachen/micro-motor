@@ -115,10 +115,6 @@ MotorBridge::update(double timestep)
 			}
 		}
 	}
-	MODM_LOG_DEBUG << "Switches " << (uint8_t)phaseConfig[0] << " " << (uint8_t)phaseConfig[1]
-				   << " " << (uint8_t)phaseConfig[2] << modm::endl;
-
-	MODM_LOG_DEBUG << "pwm " << pwms[0] << " " << pwms[1] << " " << pwms[2] << modm::endl;
 }
 
 }  // namespace sim

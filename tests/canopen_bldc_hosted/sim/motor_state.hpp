@@ -5,24 +5,33 @@
 namespace sim
 {
 
-enum class Gate : uint8_t
+enum class Gate : int8_t
 {
 	HiZ = 0,
-	Low = 1,
-	High = 2
+	Low = -1,
+	High = 1
+};
+
+struct MotorData
+{
+	double l{0.0215};           // Phase inductance
+	double m{0.002};            // Mutual inductance
+	double r_s{11.05};          // Stator resistance
+	double k_e{0.0143};         // BackEMF constant
+	uint8_t p{6};               // Number of pole pairs
+	double vdc{2 * 10 * M_PI};  // Supply voltage
+
+	double j{0.0001};  // Inertia
+	double f{0.1};     // Friction
 };
 
 struct MotorState
 {
-	double supply_v{100};
-	double loadTorque{0.0};
-	double friction{0.0};
-
-	std::array<Gate, 3> switches{Gate::HiZ, Gate::HiZ, Gate::HiZ};
-
-	double rotor_theta{0.0}, rotor_omega{0.0}, rotor_omega_dot{0.0};
-	Eigen::Vector3d phase_v{0, 0, 0}, phase_i{0, 0, 0};
-	double star_v{0.0};
+	Eigen::Vector3d i{0, 0, 0}, v{0, 0, 0}, e{0, 0, 0};  // Current Voltage and BackEMF
+	double omega_m{};                                    // Mechanical angular velocity
+	double t_e{};                                        // Electromagnetic Torque
+	double t_l{0.1};                                     // Load Torque
+	double theta_m{};                                    // Mechanical angle
 };
 
 }  // namespace sim

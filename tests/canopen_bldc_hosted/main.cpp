@@ -68,7 +68,8 @@ int
 main(int argc, char** argv)
 {
 
-	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega"}};
+	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "g1", "g2",
+					  "g3", "e1", "e2", "e3"}};
 	if (!writer.create("sim_motor.csv"))
 	{
 		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
@@ -108,10 +109,12 @@ main(int argc, char** argv)
 		if (debugTimer.execute())
 		{
 			auto& state = sim::MotorSimulation::state();
+			auto config = sim::MotorBridge::getConfig();
 			auto time = Motor0.lastUpdateTime().time_since_epoch().count();
-			writer.addRowC(time, state.phase_v(0), state.phase_v(1), state.phase_v(2),
-						   state.phase_i(0), state.phase_i(1), state.phase_i(2), state.rotor_theta,
-						   state.rotor_omega);
+			writer.addRowC(time, state.v(0), state.v(1), state.v(2), state.i(0), state.i(1),
+						   state.i(2), state.theta_m, state.omega_m, (int8_t)config[0],
+						   (int8_t)config[1], (int8_t)config[2], state.e(0), state.e(1),
+						   state.e(2));
 			writer.flush();
 		}
 	}
