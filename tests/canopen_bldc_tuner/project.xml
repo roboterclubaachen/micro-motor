@@ -1,16 +1,16 @@
 <library>
   <repositories>
     <repository>
-      <path>../../../modm/repo.lb</path>
+      <path>../../ext/modm/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../modm-canopen/repo.lb</path>
+      <path>../../ext/modm-canopen/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../librobots2/repo.lb</path>
+      <path>../../ext/librobots2/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../eigen-lbuild/repo.lb</path>
+      <path>../../ext/eigen-lbuild/repo.lb</path>
     </repository>
     <repository>
       <path>../../repo.lb</path>

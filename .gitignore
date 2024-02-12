@@ -17,6 +17,8 @@ SConstruct
 !ext/modm
 !ext/modm-canopen
 !ext/librobots2
+!ext/gnuplot-lbuild
+!ext/eigen-lbuild
 
 # Codium/Code
 **/.vscode/

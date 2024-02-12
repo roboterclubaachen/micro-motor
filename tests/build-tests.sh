@@ -14,6 +14,7 @@ TESTS+=" gatedriver"
 TESTS+=" current_measurement"
 TESTS+=" canopen_bldc_hosted"
 TESTS+=" canopen_bldc_commander"
+TESTS+=" canopen_bldc_tuner"
 
 for test in $TESTS
 do

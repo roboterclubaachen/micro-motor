@@ -14,10 +14,10 @@
       <path>../../ext/modm-canopen/repo.lb</path>
     </repository>
     <repository>
-      <path>../../../gnuplot-lbuild/repo.lb</path>
+      <path>../../ext/gnuplot-lbuild/repo.lb</path>
     </repository>
             <repository>
-      <path>../../../eigen-lbuild/repo.lb</path>
+      <path>../../ext/eigen-lbuild/repo.lb</path>
     </repository>
   </repositories>
 
