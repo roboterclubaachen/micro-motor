@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "motor.hpp"
+#include "csv_writer.hpp"
 #include <gnuplot/gnuplot-iostream.h>
 
 using namespace std::literals;
@@ -59,13 +60,20 @@ main()
 	return 0;
 }*/
 
-modm::PeriodicTimer debugTimer{1000ms};
+modm::PeriodicTimer debugTimer{100us};
 
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
 int
 main(int argc, char** argv)
 {
+
+	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega"}};
+	if (!writer.create("sim_motor.csv"))
+	{
+		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
+		return 1;
+	}
 
 	uint8_t nodeId = 10;
 	if (argc == 2) { nodeId = std::atoi(argv[1]); }
@@ -99,8 +107,12 @@ main(int argc, char** argv)
 
 		if (debugTimer.execute())
 		{
-			MODM_LOG_DEBUG << nodeId << " position: " << MotorControl0::state().actualPosition_
-						   << modm::endl;
+			auto& state = sim::MotorSimulation::state();
+			auto time = Motor0.lastUpdateTime().time_since_epoch().count();
+			writer.addRowC(time, state.phase_v(0), state.phase_v(1), state.phase_v(2),
+						   state.phase_i(0), state.phase_i(1), state.phase_i(2), state.rotor_theta,
+						   state.rotor_omega);
+			writer.flush();
 		}
 	}
 	return 0;

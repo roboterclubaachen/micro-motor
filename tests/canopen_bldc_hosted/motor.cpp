@@ -27,3 +27,9 @@ Motor::updatePosition()
 	actualPosition_ += hallDiff(lastHallState_, hallState);
 	lastHallState_ = hallState;
 }
+
+modm::PreciseClock::time_point
+Motor::lastUpdateTime() const
+{
+	return lastUpdate_;
+}

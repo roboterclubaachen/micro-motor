@@ -49,6 +49,9 @@ public:
 	template<typename MessageCallback>
 	bool
 	update(MessageCallback&& cb);
+
+	modm::PreciseClock::time_point
+	lastUpdateTime() const;
 };
 
 template<typename MessageCallback>
@@ -68,8 +71,6 @@ Motor::update(MessageCallback&& cb)
 			motor_.disable();
 		} else
 		{
-			MODM_LOG_INFO << MotorControl0::outputPWM() << modm::endl;
-
 			motor_.setSetpoint(MotorControl0::outputPWM());
 		}
 		updated = true;
@@ -81,5 +82,5 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-constexpr uint8_t motor0CommutationOffset{1};
+constexpr uint8_t motor0CommutationOffset{0};
 inline Motor Motor0{motor0CommutationOffset};
