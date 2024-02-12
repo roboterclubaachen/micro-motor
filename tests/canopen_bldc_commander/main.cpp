@@ -1,5 +1,5 @@
 #define HOSTED
-#define PWM_RUN
+#define PWM_CMDS
 
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
@@ -19,44 +19,6 @@
 using namespace std::literals;
 
 modm::PeriodicTimer debugTimer{10ms};
-
-size_t maxTime = 10100;
-
-constexpr std::array sendCommands{
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
-					.mode{OperatingMode::Voltage},
-					.time{10},
-					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::SwitchOn},
-					.mode{OperatingMode::Voltage},
-					.time{20},
-					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{30},
-					.custom{nullptr}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{1030},
-					.custom{[]() {
-						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
-												state.targetPosition, sendMessage);
-						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
-					.time{5030},
-					.custom{[]() {
-						state.targetPosition = 2000;
-						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
-												state.targetPosition, sendMessage);
-						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
-					.mode{OperatingMode::Voltage},
-					.time{10030},
-					.custom{nullptr}},
-};
 
 int
 main()
@@ -138,8 +100,8 @@ main()
 			if (c.time == counter)
 			{
 				MODM_LOG_DEBUG << "Next Command..." << modm::endl;
-				control_.apply(modm_canopen::cia402::StateCommands[(uint8_t)c.name].cmd);
-				currMode = c.mode;
+				state.control_.apply(modm_canopen::cia402::StateCommands[(uint8_t)c.name].cmd);
+				state.currMode = c.mode;
 				if (c.custom != nullptr) c.custom();
 				motorNode_.setValueChanged(StateObjects::ControlWord);
 				motorNode_.setValueChanged(StateObjects::ModeOfOperation);

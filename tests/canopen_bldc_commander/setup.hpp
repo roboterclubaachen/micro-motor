@@ -80,6 +80,8 @@ setPDOs(MessageCallback&& sendMessage)
 							std::forward<MessageCallback>(sendMessage));
 	SdoClient::requestWrite(motorId, PositionObjects::TargetPosition, state.targetPosition,
 							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, PWMObjects::PWMCommand, state.commandedPWM,
+							std::forward<MessageCallback>(sendMessage));
 
 	SdoClient::requestWrite(motorId, VelocityObjects::VelocityPID_kP, vPID_kP,
 							std::forward<MessageCallback>(sendMessage));
