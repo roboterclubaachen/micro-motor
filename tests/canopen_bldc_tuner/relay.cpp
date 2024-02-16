@@ -41,10 +41,10 @@ Relay::update(modm::Clock::time_point now)
 	auto timeSinceStart = now - firstUpdate;
 
 	auto periodsSinceStart =
-		((float)std::chrono::duration_cast<modm::chrono::milli_clock::duration, uint32_t>(
+		((double)std::chrono::duration_cast<modm::chrono::milli_clock::duration, uint32_t>(
 			 timeSinceStart)
 			 .count()) /
-		(((float)std::chrono::duration_cast<modm::chrono::milli_clock::duration, uint32_t>(
+		(((double)std::chrono::duration_cast<modm::chrono::milli_clock::duration, uint32_t>(
 			  halfPeriod)
 			  .count()) *
 		 2);
@@ -77,7 +77,7 @@ Relay::update(modm::Clock::time_point now)
 	lastUpdate = now;
 }
 
-float
+double
 Relay::getTargetCurrent() const
 {
 	return targetCurrent;
@@ -96,7 +96,7 @@ Relay::errored() const
 }
 
 void
-Relay::setValues(float actualCurrent, float actualVelocity)
+Relay::setValues(double actualCurrent, double actualVelocity)
 {
 	this->actualCurrent = actualCurrent;
 	this->actualVelocity = actualVelocity;

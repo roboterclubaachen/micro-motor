@@ -6,9 +6,9 @@
 struct RelayUpdate
 {
 	uint64_t period;
-	float current;
-	float velocity;
-	float demand;
+	double current;
+	double velocity;
+	double demand;
 	modm::Clock::time_point time;
 };
 
@@ -18,7 +18,7 @@ private:
 	constexpr static uint64_t count = 128;  // 128 Periods to run
 	constexpr static modm::Clock::duration halfPeriod =
 		std::chrono::duration<uint32_t, std::milli>(1000);  // 1s
-	constexpr static float onCurrent = 1.0f;                // 1A
+	constexpr static double onCurrent = 1.0f;               // 1A
 	constexpr static uint64_t reserveVectorSize = 1024;
 
 public:
@@ -28,11 +28,11 @@ public:
 	void
 	update(modm::Clock::time_point now);
 
-	float
+	double
 	getTargetCurrent() const;
 
 	void
-	setValues(float actualCurrent, float actualVelocity);
+	setValues(double actualCurrent, double actualVelocity);
 
 	bool
 	done() const;
@@ -50,7 +50,7 @@ private:
 	bool wasUpdated = false, error = false;
 	modm::Clock::time_point firstUpdate, lastUpdate;
 	uint64_t currentCount = 0;
-	float targetCurrent = 0.0f, actualCurrent = 0.0f, actualVelocity = 0.0f;
+	double targetCurrent = 0.0f, actualCurrent = 0.0f, actualVelocity = 0.0f;
 
 	std::vector<RelayUpdate> data;
 };
