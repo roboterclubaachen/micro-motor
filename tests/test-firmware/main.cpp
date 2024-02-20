@@ -137,7 +137,6 @@ main()
 				   << modm::endl;
 
 	const auto hardwareId = Board::readHardwareId();
-	const uint8_t nodeId = 1;
 
 	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;
 	MODM_LOG_INFO << "User:     " << MODM_BUILD_USER << modm::endl;
@@ -161,7 +160,6 @@ main()
 				  << MODM_GIT_UNTRACKED << modm::endl;
 	MODM_LOG_INFO << modm::endl;
 	MODM_LOG_INFO << "Hardware ID: 0x" << modm::hex << hardwareId << modm::endl;
-	MODM_LOG_INFO << "Node ID: " << nodeId << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
