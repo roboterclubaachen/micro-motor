@@ -39,24 +39,11 @@ using namespace std::literals;
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs>
 	gateDriver;
 
-static uint16_t adc_u_value = 0x7ff;
-static uint16_t adc_v_value = 0x7ff;
-
 namespace micro_motor
 {
 MODM_ISR(TIM1_UP_TIM16)
 {
-	using AdcU = Board::MotorCurrent::AdcU;
-	using AdcV = Board::MotorCurrent::AdcV;
-
-	::adc_u_value = AdcU::getValue();
-	::adc_v_value = AdcV::getValue();
-	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
-									AdcV::InterruptFlag::EndOfSampling |
-									AdcV::InterruptFlag::Overrun);
-	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
-									AdcU::InterruptFlag::EndOfSampling |
-									AdcU::InterruptFlag::Overrun);
+	micro_motor::updateADC();
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
 }
 }  // namespace micro_motor
@@ -74,10 +61,7 @@ test_zero_current()
 	auto testStart = modm::Clock::now();
 	while (modm::Clock::now() - testStart < 2s)
 	{
-		std::array<float, 3> currents;
-		currents[0] = micro_motor::convertAdcToCurrent(adc_u_value);
-		currents[1] = micro_motor::convertAdcToCurrent(adc_v_value);
-		currents[2] = -currents[0] - currents[1];
+		std::array<float, 3> currents = micro_motor::getADCCurrents();
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (currents[i] < minCurrent[i] || first) { minCurrent[i] = currents[i]; }
@@ -150,7 +134,7 @@ main()
 				   << modm::endl;
 
 	const auto hardwareId = Board::readHardwareId();
-	const uint8_t nodeId = 15;
+	const uint8_t nodeId = 1;
 
 	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;
 	MODM_LOG_INFO << "User:     " << MODM_BUILD_USER << modm::endl;

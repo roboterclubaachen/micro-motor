@@ -70,4 +70,5 @@ def build(env):
     else:
         print("Invalid Board version!")
     env.copy("micro-motor.hpp")
+    env.copy("micro-motor.cpp")
     env.collect("modm:build:openocd.source", localpath("openocd.cfg"))
