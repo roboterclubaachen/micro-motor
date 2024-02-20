@@ -25,6 +25,8 @@
 #include <modm/platform.hpp>
 #include <modm/processing/timer.hpp>
 
+#include "motor.hpp"
+
 #include <info_build.h>
 #include <info_git.h>
 
@@ -45,6 +47,7 @@ MODM_ISR(TIM1_UP_TIM16)
 {
 	micro_motor::updateADC();
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
+	Motor0.updateMotor();
 }
 }  // namespace micro_motor
 
@@ -167,6 +170,7 @@ main()
 	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
+	Motor0.initializeHall();
 
 	size_t failedTests = 0;
 	if (!test_zero_current()) { failedTests++; }
