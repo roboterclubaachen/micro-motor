@@ -25,8 +25,6 @@
 #include <modm/platform.hpp>
 #include <modm/processing/timer.hpp>
 
-#include "motor.hpp"
-
 #include <info_build.h>
 #include <info_git.h>
 
@@ -41,6 +39,104 @@ using namespace std::literals;
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs>
 	gateDriver;
 
+static uint16_t adc_u_value = 0x7ff;
+static uint16_t adc_v_value = 0x7ff;
+
+namespace micro_motor
+{
+MODM_ISR(TIM1_UP_TIM16)
+{
+	using AdcU = Board::MotorCurrent::AdcU;
+	using AdcV = Board::MotorCurrent::AdcV;
+
+	::adc_u_value = AdcU::getValue();
+	::adc_v_value = AdcV::getValue();
+	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
+									AdcV::InterruptFlag::EndOfSampling |
+									AdcV::InterruptFlag::Overrun);
+	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
+									AdcU::InterruptFlag::EndOfSampling |
+									AdcU::InterruptFlag::Overrun);
+	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
+}
+}  // namespace micro_motor
+
+bool
+test_zero_current()
+{
+
+	MODM_LOG_INFO << "Measuring current at no load... (2s)" << modm::endl;
+
+	bool first = true;
+	std::array<float, 3> minCurrent{}, maxCurrent{}, avgCurrentAcc{};
+	uint32_t avgCurrentNum{};
+
+	auto testStart = modm::Clock::now();
+	while (modm::Clock::now() - testStart < 2s)
+	{
+		std::array<float, 3> currents;
+		currents[0] = micro_motor::convertAdcToCurrent(adc_u_value);
+		currents[1] = micro_motor::convertAdcToCurrent(adc_v_value);
+		currents[2] = -currents[0] - currents[1];
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (currents[i] < minCurrent[i] || first) { minCurrent[i] = currents[i]; }
+			if (currents[i] > maxCurrent[i] || first) { maxCurrent[i] = currents[i]; }
+			avgCurrentAcc[i] += currents[i];
+		}
+		avgCurrentNum++;
+		first = false;
+		modm::delay_us(100);
+	}
+	constexpr float epsilon = 0.1f;
+
+	avgCurrentAcc[0] /= avgCurrentNum;
+	avgCurrentAcc[1] /= avgCurrentNum;
+	avgCurrentAcc[2] /= avgCurrentNum;
+
+	MODM_LOG_INFO << "Zero Current test done!" << modm::endl;
+	MODM_LOG_INFO << "Currents: [min,avg,max]" << modm::endl;
+
+	MODM_LOG_INFO << "Phase U: [" << minCurrent[0] << "," << (avgCurrentAcc[0]) << ","
+				  << maxCurrent[0] << "]" << modm::endl;
+
+	MODM_LOG_INFO << "Phase V: [" << minCurrent[1] << "," << (avgCurrentAcc[1]) << ","
+				  << maxCurrent[1] << "]" << modm::endl;
+
+	MODM_LOG_INFO << "Phase W: [" << minCurrent[2] << "," << (avgCurrentAcc[2]) << ","
+				  << maxCurrent[2] << "]" << modm::endl;
+
+	bool success = true;
+	for (size_t i = 0; i < 3; i++)
+	{
+		char phase = (i == 0 ? 'U' : (i == 2 ? 'V' : 'W'));
+		if (minCurrent[i] < -epsilon)
+		{
+			success = false;
+			MODM_LOG_INFO << "Phase " << phase << " minimum current is bigger than allowed!"
+						  << modm::endl;
+			MODM_LOG_INFO << minCurrent[i] << " < " << -epsilon << modm::endl;
+		}
+		if (maxCurrent[i] > epsilon)
+		{
+			success = false;
+			MODM_LOG_INFO << "Phase " << phase << " maximum current is bigger than allowed!"
+						  << modm::endl;
+			MODM_LOG_INFO << maxCurrent[i] << " > " << epsilon << modm::endl;
+		}
+		if (avgCurrentAcc[i] < -epsilon / 2.0f || avgCurrentAcc[i] > epsilon / 2.0f)
+		{
+			success = false;
+			MODM_LOG_INFO << "Phase " << phase << " average current is outside of allowed window!"
+						  << modm::endl;
+			MODM_LOG_INFO << avgCurrentAcc[i] << " < " << -epsilon / 2.0f << " || "
+						  << avgCurrentAcc[i] << " > " << epsilon / 2.0f << modm::endl;
+		}
+	}
+	if (!success) { MODM_LOG_INFO << "Failed zero current test!" << modm::endl; }
+	return success;
+}
+
 int
 main()
 {
@@ -54,7 +150,8 @@ main()
 				   << modm::endl;
 
 	const auto hardwareId = Board::readHardwareId();
-	const uint8_t nodeId = 1;
+	const uint8_t nodeId = 15;
+
 	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;
 	MODM_LOG_INFO << "User:     " << MODM_BUILD_USER << modm::endl;
 	MODM_LOG_INFO << "Os:       " << MODM_BUILD_OS << modm::endl;
@@ -76,7 +173,7 @@ main()
 	MODM_LOG_INFO << " Ren " << MODM_GIT_RENAMED << " Cop " << MODM_GIT_COPIED << " Unt "
 				  << MODM_GIT_UNTRACKED << modm::endl;
 	MODM_LOG_INFO << modm::endl;
-	MODM_LOG_INFO << "Hardware ID: " << hardwareId << modm::endl;
+	MODM_LOG_INFO << "Hardware ID: 0x" << modm::hex << hardwareId << modm::endl;
 	MODM_LOG_INFO << "Node ID: " << nodeId << modm::endl;
 
 	Board::MotorBridge::GateDriverEnable::set();
@@ -87,9 +184,16 @@ main()
 	Board::Motor::MotorTimer::start();
 	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
 
-	Motor0.initializeHall();
+	size_t failedTests = 0;
+	if (!test_zero_current()) { failedTests++; }
 
-	MODM_LOG_INFO << "Test done! Looping..." << modm::endl;
+	if (failedTests != 0)
+	{
+		MODM_LOG_ERROR << "Failed " << failedTests << " Tests!" << modm::endl;
+	} else
+	{
+		MODM_LOG_INFO << "All Tests passed!" << modm::endl;
+	}
 	while (1) {}
 
 	return 0;
