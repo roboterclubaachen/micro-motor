@@ -78,7 +78,7 @@ RelayAnalyzer::findLastLowInner(uint64_t period) const
 	auto end = start + interval.second;
 
 	auto high = data[end - 1].demand;
-	for (size_t i = end - 1; start <= end; i--)
+	for (size_t i = end - 1; start <= i; i--)
 	{
 		if (data[i].demand < high) return i;
 		if (i == 0) break;  // Prevent underflow
