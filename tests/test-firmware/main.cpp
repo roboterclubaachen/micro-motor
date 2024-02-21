@@ -26,6 +26,8 @@
 #include <modm/processing/timer.hpp>
 
 #include "motor.hpp"
+#include "motor_info.hpp"
+#include "tests/tests.hpp"
 
 #include <info_build.h>
 #include <info_git.h>
@@ -38,9 +40,56 @@ inline modm::log::Logger modm::log::error(loggerDevice);
 
 using namespace std::literals;
 
+bool
+findMotorParameters(Motor &Motor0, MotorInfo &output)
+{
+	constexpr float epsilon = 0.1f;
+	MODM_LOG_INFO << "Finding Motor Parameters..." << modm::endl;
+	MotorInfo state{};
+	float maxAvgVel{};
+	for (size_t commutationOffset = 0; commutationOffset < 6; commutationOffset++)
+	{
+
+		Motor0 = Motor(commutationOffset);
+		Motor0.initializeHall();
+
+		Motor0.setPWM(2000);
+		auto testStart = modm::Clock::now();
+		Motor0.update();
+		auto lastPosition = Motor0.getPosition();
+		float avgVelAcc = {};
+		size_t avgVelNum{};
+		while (modm::Clock::now() - testStart < 500ms)
+		{
+			modm::delay_ms(1);
+			Motor0.update();
+			auto pos = Motor0.getPosition();
+			auto vel = pos - lastPosition;
+			lastPosition = pos;
+			avgVelAcc += vel;
+			avgVelNum++;
+		}
+		Motor0.setPWM(0);
+		avgVelAcc /= avgVelNum;
+		if (std::abs(maxAvgVel) < std::abs(avgVelAcc))
+		{
+			state.commutationOffset = commutationOffset;
+			maxAvgVel = avgVelAcc;
+		}
+	}
+	if (std::abs(maxAvgVel) <= epsilon) return false;
+
+	MODM_LOG_INFO << "Found commutation offset " << state.commutationOffset << " " << maxAvgVel
+				  << "!" << modm::endl;
+	if (maxAvgVel < 0.0f) { state.reversed = true; }
+	output = state;
+	return true;
+}
+
 modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDriver::Cs>
 	gateDriver;
-
+constexpr uint8_t motorCommutationOffset{1};
+Motor Motor0{motorCommutationOffset};
 namespace micro_motor
 {
 MODM_ISR(TIM1_UP_TIM16)
@@ -50,79 +99,6 @@ MODM_ISR(TIM1_UP_TIM16)
 	Motor0.updateMotor();
 }
 }  // namespace micro_motor
-
-bool
-test_zero_current()
-{
-
-	MODM_LOG_INFO << "Measuring current at no load... (2s)" << modm::endl;
-
-	bool first = true;
-	std::array<float, 3> minCurrent{}, maxCurrent{}, avgCurrentAcc{};
-	uint32_t avgCurrentNum{};
-
-	auto testStart = modm::Clock::now();
-	while (modm::Clock::now() - testStart < 2s)
-	{
-		std::array<float, 3> currents = micro_motor::getADCCurrents();
-		for (size_t i = 0; i < 3; i++)
-		{
-			if (currents[i] < minCurrent[i] || first) { minCurrent[i] = currents[i]; }
-			if (currents[i] > maxCurrent[i] || first) { maxCurrent[i] = currents[i]; }
-			avgCurrentAcc[i] += currents[i];
-		}
-		avgCurrentNum++;
-		first = false;
-		modm::delay_us(100);
-	}
-	constexpr float epsilon = 0.1f;
-
-	avgCurrentAcc[0] /= avgCurrentNum;
-	avgCurrentAcc[1] /= avgCurrentNum;
-	avgCurrentAcc[2] /= avgCurrentNum;
-
-	MODM_LOG_INFO << "Zero Current test done!" << modm::endl;
-	MODM_LOG_INFO << "Currents: [min,avg,max]" << modm::endl;
-
-	MODM_LOG_INFO << "Phase U: [" << minCurrent[0] << "," << (avgCurrentAcc[0]) << ","
-				  << maxCurrent[0] << "]" << modm::endl;
-
-	MODM_LOG_INFO << "Phase V: [" << minCurrent[1] << "," << (avgCurrentAcc[1]) << ","
-				  << maxCurrent[1] << "]" << modm::endl;
-
-	MODM_LOG_INFO << "Phase W: [" << minCurrent[2] << "," << (avgCurrentAcc[2]) << ","
-				  << maxCurrent[2] << "]" << modm::endl;
-
-	bool success = true;
-	for (size_t i = 0; i < 3; i++)
-	{
-		char phase = (i == 0 ? 'U' : (i == 2 ? 'V' : 'W'));
-		if (minCurrent[i] < -epsilon)
-		{
-			success = false;
-			MODM_LOG_INFO << "Phase " << phase << " minimum current is bigger than allowed!"
-						  << modm::endl;
-			MODM_LOG_INFO << minCurrent[i] << " < " << -epsilon << modm::endl;
-		}
-		if (maxCurrent[i] > epsilon)
-		{
-			success = false;
-			MODM_LOG_INFO << "Phase " << phase << " maximum current is bigger than allowed!"
-						  << modm::endl;
-			MODM_LOG_INFO << maxCurrent[i] << " > " << epsilon << modm::endl;
-		}
-		if (avgCurrentAcc[i] < -epsilon / 2.0f || avgCurrentAcc[i] > epsilon / 2.0f)
-		{
-			success = false;
-			MODM_LOG_INFO << "Phase " << phase << " average current is outside of allowed window!"
-						  << modm::endl;
-			MODM_LOG_INFO << avgCurrentAcc[i] << " < " << -epsilon / 2.0f << " || "
-						  << avgCurrentAcc[i] << " > " << epsilon / 2.0f << modm::endl;
-		}
-	}
-	if (!success) { MODM_LOG_INFO << "Failed zero current test!" << modm::endl; }
-	return success;
-}
 
 int
 main()
@@ -168,10 +144,20 @@ main()
 	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
 	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
+	MotorInfo info{};
+	if (!findMotorParameters(Motor0, info))
+	{
+		MODM_LOG_INFO << "Failed to find motor parameters!" << modm::endl;
+		while (1) {};
+	}
+	Motor0 = Motor(info.commutationOffset);
 	Motor0.initializeHall();
 
 	size_t failedTests = 0;
-	if (!test_zero_current()) { failedTests++; }
+	for (size_t i = 0; i < tests.size(); i++)
+	{
+		if (!tests[i](Motor0)) failedTests++;
+	}
 
 	if (failedTests != 0)
 	{

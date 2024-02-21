@@ -52,19 +52,10 @@ public:
 	void
 	updateMotor();
 
-	template<typename MessageCallback>
 	bool
-	update(MessageCallback&& cb);
+	update()
+	{
+		updatePosition();
+		return true;
+	}
 };
-
-template<typename MessageCallback>
-bool
-Motor::update(MessageCallback&& cb)
-{
-	bool updated = false;
-	updatePosition();
-	return true;
-}
-
-constexpr uint8_t motor0CommutationOffset{0};
-inline Motor Motor0{motor0CommutationOffset};
