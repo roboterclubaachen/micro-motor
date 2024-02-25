@@ -33,7 +33,10 @@
 
 using namespace std::literals;
 
-/*int
+#define SIMPLE
+
+#ifdef TEST
+int
 main()
 {
 	Gnuplot gp;
@@ -58,7 +61,10 @@ main()
 	   << std::endl;
 
 	return 0;
-}*/
+}
+#endif
+
+#ifdef CAN
 
 modm::PeriodicTimer debugTimer{100us};
 
@@ -120,3 +126,46 @@ main(int argc, char** argv)
 	}
 	return 0;
 }
+
+#endif
+
+#ifdef SIMPLE
+modm::PeriodicTimer debugTimer{1000us};
+
+int
+main()
+{
+
+	MODM_LOG_INFO << "Running test..." << modm::endl;
+	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "g1", "g2",
+					  "g3", "e1", "e2", "e3", "pwm", "te", "tl", "tf"}};
+	if (!writer.create("sim_motor.csv"))
+	{
+		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
+		return 1;
+	}
+
+	Motor0.initializeHall();
+	auto start = modm::Clock::now();
+	while (1)
+	{
+		auto now = modm::Clock::now();
+		auto diff = now - start;
+		int pwm = -16000;  //-(diff.count() % 15000);
+		Motor0.testUpdate(pwm);
+		if (debugTimer.execute())
+		{
+			auto& state = sim::MotorSimulation::state();
+			auto config = sim::MotorBridge::getConfig();
+			writer.addRowC(diff.count(), state.v(0), state.v(1), state.v(2), state.i(0), state.i(1),
+						   state.i(2), state.theta_m, state.omega_m, (int8_t)config[0],
+						   (int8_t)config[1], (int8_t)config[2], state.e(0), state.e(1), state.e(2),
+						   pwm, state.t_e, state.t_l, state.t_f);
+			writer.flush();
+		}
+		if (diff > 10s) return 0;
+	}
+	return 0;
+}
+
+#endif

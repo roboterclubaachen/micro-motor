@@ -33,3 +33,15 @@ Motor::lastUpdateTime() const
 {
 	return lastUpdate_;
 }
+
+void
+Motor::testUpdate(int16_t pwm)
+{
+	auto now = modm::PreciseClock::now();
+	updatePosition();
+	motor_.setSetpoint(pwm);
+	auto timestep = std::chrono::duration<double>(now - lastUpdate_).count();
+	motor_.update();
+	MotorSimulation::update(timestep);
+	lastUpdate_ = now;
+}

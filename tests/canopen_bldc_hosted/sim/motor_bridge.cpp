@@ -25,17 +25,13 @@ void
 MotorBridge::initialize()
 {
 	phaseConfig = {PhaseConfig::HiZ, PhaseConfig::HiZ, PhaseConfig::HiZ};
-	gateConfig = {Gate::HiZ, Gate::HiZ, Gate::HiZ};
 	pwms = {};
-	onTime = {};
 }
 
 void
 MotorBridge::configure(const BridgeConfig& config)
 {
-	phaseConfig[toIndex(Phase::PhaseU)] = config.get(Phase::PhaseU);
-	phaseConfig[toIndex(Phase::PhaseV)] = config.get(Phase::PhaseV);
-	phaseConfig[toIndex(Phase::PhaseW)] = config.get(Phase::PhaseW);
+	phaseConfig = config.config;
 }
 
 void
@@ -68,53 +64,16 @@ void
 MotorBridge::applyCompareValues()
 {}
 
-std::array<Gate, 3>
+const std::array<PhaseConfig, 3>
 MotorBridge::getConfig()
 {
-	return gateConfig;
+	return phaseConfig;
 }
 
-void
-MotorBridge::update(double timestep)
+const std::array<float, 3>
+MotorBridge::getPWMs()
 {
-	for (size_t i = 0; i < 3; i++)
-	{
-		if (phaseConfig[i] != PhaseConfig::Pwm)
-		{
-			auto g = Gate::HiZ;
-			switch (phaseConfig[i])
-			{
-				case PhaseConfig::High:
-					g = Gate::High;
-					break;
-				case PhaseConfig::Low:
-					g = Gate::Low;
-					break;
-				default:
-					break;
-			}
-			gateConfig[i] = g;
-		} else
-		{
-			constexpr double pwmPeriod = 0.00001;  // 10us
-			// TODO use the nanosecond clock to determine timestep if its too coarse
-			// Maybe implement constexpr double timeScale = 0.0001 on all timers or something?
-
-			onTime[i] += timestep;
-
-			const double ratio = (double)pwms[i] / MaxPwm;
-
-			double maxOnTime = 0.0;
-			if (gateConfig[i] == Gate::High) { maxOnTime = pwmPeriod * ratio; }
-			if (gateConfig[i] == Gate::Low) { maxOnTime = pwmPeriod * (1 - ratio); }
-
-			if (onTime[i] >= maxOnTime)
-			{
-				onTime[i] = 0.0;
-				gateConfig[i] = (gateConfig[i] == Gate::High ? Gate::Low : Gate::High);
-			}
-		}
-	}
+	return {(float)pwms[0] / MaxPwm, (float)pwms[1] / (float)MaxPwm, (float)pwms[2] / MaxPwm};
 }
 
 }  // namespace sim

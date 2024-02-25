@@ -42,13 +42,14 @@ MotorSimulation::emfFunction(double rotor_p)
 		{
 			out(i) = (rotor_p - 2 * M_PI) * 6 / M_PI;
 		}
-		rotor_p += M_PI * 2.0 / 3.0;
+		rotor_p += M_PI * 4.0 / 3.0;
 	}
 	return -out;
 }
 
 Eigen::Vector3d
-MotorSimulation::computeVoltages(double v, const std::array<Gate, 3>& config,
+MotorSimulation::computeVoltages(double v, const std::array<float, 3>& pwms,
+								 const std::array<PhaseConfig, 3>& config,
 								 const Eigen::Vector3d& bemf)
 {
 	size_t acc{0};
@@ -58,10 +59,24 @@ MotorSimulation::computeVoltages(double v, const std::array<Gate, 3>& config,
 	// At this point we technically compute potentials
 	for (size_t i = 0; i < config.size(); i++)
 	{
+		float mult = 0.0f;
+		switch (config[i])
+		{
+			case PhaseConfig::HiZ:
+				break;
+			case PhaseConfig::Low:
+				mult = -1.0f;
+				break;
+			case PhaseConfig::High:
+				mult = 1.0f;
+				break;
+			case PhaseConfig::Pwm:
+				mult = pwms[i];
+				break;
+		}
 		voltages(i) =
-			v / 2 *
-			(int8_t)config[i];  // Set outside points to +-half VDC depending if Gate is high or low
-		if (config[i] != Gate::HiZ)
+			v / 2 * mult;  // Set outside points to +-half VDC depending if Gate is high or low
+		if (config[i] != PhaseConfig::HiZ)
 		{
 			acc++;
 			center += voltages(i) - bemf(i);  // Add bemf subtracted voltage to midpoint
@@ -72,7 +87,7 @@ MotorSimulation::computeVoltages(double v, const std::array<Gate, 3>& config,
 	// Make voltages relative to center
 	for (size_t i = 0; i < config.size(); i++)
 	{
-		if (config[i] == Gate::HiZ)
+		if (config[i] == PhaseConfig::HiZ)
 		{
 			voltages(i) = bemf(i);
 		} else
@@ -80,21 +95,21 @@ MotorSimulation::computeVoltages(double v, const std::array<Gate, 3>& config,
 			voltages(i) -= center;
 		}
 	}
-
 	return voltages;
 }
 
 MotorState
-MotorSimulation::nextState(const std::array<Gate, 3> config, double timestep)
+MotorSimulation::nextState(const std::array<float, 3>& pwms,
+						   const std::array<PhaseConfig, 3>& config, double timestep)
 {
 	// Trapezoidal function
-	const auto emf_factor = emfFunction(state_.omega_m * data_.p / 2);
+	const auto emf_factor = emfFunction(state_.theta_e);
 
 	// Actual back emf voltages
 	const auto e = emf_factor * data_.k_e * state_.omega_m;
 
 	// Phase voltages
-	const auto v = computeVoltages(data_.vdc, config, e);
+	const auto v = computeVoltages(data_.vdc, pwms, config, e);
 
 	// Phase Currents
 	const auto d_i = (v - data_.r_s * state_.i - e) / (data_.l - data_.m);
@@ -103,10 +118,14 @@ MotorSimulation::nextState(const std::array<Gate, 3> config, double timestep)
 	// Torque
 	const auto t_e = emf_factor.dot(state_.i) * data_.k_e;
 
+	// Linear friction
+	const auto t_f = data_.f * state_.omega_m;
+
 	// Mechanics
-	const auto d_omega_m = (t_e - state_.t_l - data_.f * state_.omega_m) / data_.j;
+	const auto d_omega_m = (t_e - state_.t_l - t_f) / data_.j;
 	const auto omega_m = state_.omega_m + d_omega_m * timestep;
 	const auto theta_m = angleMod(state_.theta_m + state_.omega_m * timestep);
+	const auto theta_e = angleMod(theta_m * data_.p / 2);
 
 	// Create new state object
 	MotorState out{};
@@ -115,7 +134,9 @@ MotorSimulation::nextState(const std::array<Gate, 3> config, double timestep)
 	out.v = v;
 	out.omega_m = omega_m;
 	out.theta_m = theta_m;
+	out.theta_e = theta_e;
 	out.t_e = t_e;
+	out.t_f = t_f;
 	out.t_l = state_.t_l;
 	return out;
 }
@@ -123,9 +144,8 @@ MotorSimulation::nextState(const std::array<Gate, 3> config, double timestep)
 void
 MotorSimulation::update(double timestep)
 {
-	// Update our bridge config
-	MotorBridge::update(timestep);
-	state_ = nextState(MotorBridge::getConfig(), timestep);
+	state_ = nextState(MotorBridge::getPWMs(), MotorBridge::getConfig(), timestep);
+	updateHallPort();
 }
 
 double
@@ -137,7 +157,7 @@ MotorSimulation::maxCurrent()
 void
 MotorSimulation::updateHallPort()
 {
-	const auto index = ((unsigned int)std::round(angleMod(state_.theta_m) * 6 / (2 * M_PI))) % 6;
+	const auto index = ((unsigned int)std::round(angleMod(state_.theta_e) * 6 / (2 * M_PI))) % 6;
 
 	Pin<0>::set(index == 5 || index == 0 || index == 1);
 	Pin<1>::set(index == 1 || index == 2 || index == 3);

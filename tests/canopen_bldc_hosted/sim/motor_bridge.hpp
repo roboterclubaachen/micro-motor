@@ -25,9 +25,6 @@ public:
 	static constexpr uint16_t MaxPwm = 2047;
 
 	static void
-	update(double timestep);
-
-	static void
 	initialize();
 
 	static void
@@ -48,15 +45,16 @@ public:
 	static void
 	applyCompareValues();
 
-	static std::array<Gate, 3>
+	static const std::array<PhaseConfig, 3>
 	getConfig();
+
+	static const std::array<float, 3>
+	getPWMs();
 
 private:
 	static inline std::array<PhaseConfig, 3> phaseConfig{PhaseConfig::HiZ, PhaseConfig::HiZ,
 														 PhaseConfig::HiZ};
-	static inline std::array<Gate, 3> gateConfig{Gate::HiZ, Gate::HiZ, Gate::HiZ};
 	static inline std::array<uint16_t, 3> pwms{};
-	static inline std::array<double, 3> onTime{};
 };
 
 }  // namespace sim

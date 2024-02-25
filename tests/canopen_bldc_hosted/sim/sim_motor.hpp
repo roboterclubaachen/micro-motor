@@ -13,10 +13,12 @@ private:
 	static inline MotorState state_{};
 
 	static Eigen::Vector3d
-	computeVoltages(double v, const std::array<Gate, 3>& config, const Eigen::Vector3d& bemf);
+	computeVoltages(double v, const std::array<float, 3>& pwms,
+					const std::array<PhaseConfig, 3>& config, const Eigen::Vector3d& bemf);
 
 	static MotorState
-	nextState(const std::array<Gate, 3> config, double timestep);
+	nextState(const std::array<float, 3>& pwms, const std::array<PhaseConfig, 3>& config,
+			  double timestep);
 
 	static double
 	angleMod(double angle);

@@ -5,13 +5,6 @@
 namespace sim
 {
 
-enum class Gate : int8_t
-{
-	HiZ = 0,
-	Low = -1,
-	High = 1
-};
-
 struct MotorData
 {
 	double l{0.0215};           // Phase inductance
@@ -22,7 +15,7 @@ struct MotorData
 	double vdc{2 * 10 * M_PI};  // Supply voltage
 
 	double j{0.0001};  // Inertia
-	double f{0.1};     // Friction
+	double f{0.001};   // Friction
 };
 
 struct MotorState
@@ -30,8 +23,10 @@ struct MotorState
 	Eigen::Vector3d i{0, 0, 0}, v{0, 0, 0}, e{0, 0, 0};  // Current Voltage and BackEMF
 	double omega_m{};                                    // Mechanical angular velocity
 	double t_e{};                                        // Electromagnetic Torque
-	double t_l{0.1};                                     // Load Torque
+	double t_f{};                                        // Friction Torque
+	double t_l{0.0};                                     // Load Torque
 	double theta_m{};                                    // Mechanical angle
+	double theta_e{};
 };
 
 }  // namespace sim

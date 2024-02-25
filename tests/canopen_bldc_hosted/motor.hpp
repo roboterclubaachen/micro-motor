@@ -50,6 +50,9 @@ public:
 	bool
 	update(MessageCallback&& cb);
 
+	void
+	testUpdate(int16_t pwm);
+
 	modm::PreciseClock::time_point
 	lastUpdateTime() const;
 };
@@ -82,5 +85,5 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-constexpr uint8_t motor0CommutationOffset{0};
+constexpr uint8_t motor0CommutationOffset{4};
 inline Motor Motor0{motor0CommutationOffset};
