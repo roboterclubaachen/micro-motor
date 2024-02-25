@@ -103,8 +103,8 @@ main()
 		Motor0.testUpdate(pwm);
 		if (debugTimer.execute())
 		{
-			auto& state = sim::MotorSimulation::state();
-			auto config = sim::MotorBridge::getConfig();
+			auto& state = librobots2::motor_sim::MotorSimulation::state();
+			auto config = librobots2::motor_sim::MotorBridge::getConfig();
 			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
 						   state.i[2], state.theta_m, state.omega_m, (int8_t)config[0],
 						   (int8_t)config[1], (int8_t)config[2], state.e[0], state.e[1], state.e[2],

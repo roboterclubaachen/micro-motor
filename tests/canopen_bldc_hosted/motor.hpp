@@ -5,16 +5,16 @@
 #include <limits>
 #include <modm/processing/timer.hpp>
 
-#include "sim/motor_bridge.hpp"
-#include "sim/sim_motor.hpp"
+#include <librobots2/motor-sim/motor_simulation.hpp>
+#include <librobots2/motor-sim/motor_bridge.hpp>
 #include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 
 using namespace std::literals;
 
-using sim::MotorBridge;
-using sim::MotorSimulation;
+using librobots2::motor_sim::MotorBridge;
+using librobots2::motor_sim::MotorSimulation;
 
 class Motor
 {
