@@ -12,9 +12,9 @@ private:
 	static inline const MotorData data_{};
 	static inline MotorState state_{};
 
-	static Eigen::Vector3d
+	static modm::Vector3f
 	computeVoltages(double v, const std::array<float, 3>& pwms,
-					const std::array<PhaseConfig, 3>& config, const Eigen::Vector3d& bemf);
+					const std::array<PhaseConfig, 3>& config, const modm::Vector3f& bemf);
 
 	static MotorState
 	nextState(const std::array<float, 3>& pwms, const std::array<PhaseConfig, 3>& config,
@@ -23,7 +23,7 @@ private:
 	static double
 	angleMod(double angle);
 
-	static Eigen::Vector3d
+	static modm::Vector3f
 	emfFunction(double rotor_p);
 
 	static void

@@ -7,9 +7,6 @@
 [submodule "ext/modm-canopen"]
 	path = ext/modm-canopen
 	url = https://git.roboterclub.rwth-aachen.de/rca/modm-canopen
-[submodule "ext/gnuplot-lbuild"]
-	path = ext/gnuplot-lbuild
-	url = https://github.com/Javask/gnuplot-lbuild
 [submodule "ext/eigen-lbuild"]
 	path = ext/eigen-lbuild
 	url = https://github.com/Javask/eigen-lbuild

@@ -29,58 +29,18 @@
 
 #include "motor.hpp"
 #include "csv_writer.hpp"
-#include <gnuplot/gnuplot-iostream.h>
 
 using namespace std::literals;
 
 #define SIMPLE
 
-#ifdef TEST
-int
-main()
-{
-	Gnuplot gp;
-	std::vector<double> t, a, b, c;
-
-	for (double time = 0.0; time < M_PI * 2; time += M_PI / 1000.0)
-	{
-		auto emf = sim::MotorSimulation::emfFunction(time);
-		t.push_back(time);
-		a.push_back(emf[0]);
-		b.push_back(emf[1]);
-		c.push_back(emf[2]);
-	}
-
-	auto file = gp.file1d(std::tuple{t, a, b, c});
-	gp << "set xrange [-1:7]\nset yrange [-2:2]\n";
-	gp << "plot " << file << " using 1:2 with linespoints linetype 6 linewidth 3 title 'A', \\\n\
-	 " << file
-	   << " using 1:3 with linespoints linetype 7 linewidth 3 title 'B', \\\n\
-	 " << file
-	   << " using 1:4 with linespoints linetype 2 linewidth 3 title 'C'\n"
-	   << std::endl;
-
-	return 0;
-}
-#endif
-
 #ifdef CAN
-
-modm::PeriodicTimer debugTimer{100us};
 
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
 int
 main(int argc, char** argv)
 {
-
-	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "g1", "g2",
-					  "g3", "e1", "e2", "e3"}};
-	if (!writer.create("sim_motor.csv"))
-	{
-		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
-		return 1;
-	}
 
 	uint8_t nodeId = 10;
 	if (argc == 2) { nodeId = std::atoi(argv[1]); }
@@ -111,18 +71,6 @@ main(int argc, char** argv)
 
 		Motor0.update(sendMessage);
 		CanOpen::update(sendMessage);
-
-		if (debugTimer.execute())
-		{
-			auto& state = sim::MotorSimulation::state();
-			auto config = sim::MotorBridge::getConfig();
-			auto time = Motor0.lastUpdateTime().time_since_epoch().count();
-			writer.addRowC(time, state.v(0), state.v(1), state.v(2), state.i(0), state.i(1),
-						   state.i(2), state.theta_m, state.omega_m, (int8_t)config[0],
-						   (int8_t)config[1], (int8_t)config[2], state.e(0), state.e(1),
-						   state.e(2));
-			writer.flush();
-		}
 	}
 	return 0;
 }
@@ -157,9 +105,9 @@ main()
 		{
 			auto& state = sim::MotorSimulation::state();
 			auto config = sim::MotorBridge::getConfig();
-			writer.addRowC(diff.count(), state.v(0), state.v(1), state.v(2), state.i(0), state.i(1),
-						   state.i(2), state.theta_m, state.omega_m, (int8_t)config[0],
-						   (int8_t)config[1], (int8_t)config[2], state.e(0), state.e(1), state.e(2),
+			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
+						   state.i[2], state.theta_m, state.omega_m, (int8_t)config[0],
+						   (int8_t)config[1], (int8_t)config[2], state.e[0], state.e[1], state.e[2],
 						   pwm, state.t_e, state.t_l, state.t_f);
 			writer.flush();
 		}

@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include <Eigen/Dense>
+#include <modm/math/geometry/vector3.hpp>
 
 namespace sim
 {
@@ -20,7 +20,7 @@ struct MotorData
 
 struct MotorState
 {
-	Eigen::Vector3d i{0, 0, 0}, v{0, 0, 0}, e{0, 0, 0};  // Current Voltage and BackEMF
+	modm::Vector3f i{0, 0, 0}, v{0, 0, 0}, e{0, 0, 0};   // Current Voltage and BackEMF
 	double omega_m{};                                    // Mechanical angular velocity
 	double t_e{};                                        // Electromagnetic Torque
 	double t_f{};                                        // Friction Torque

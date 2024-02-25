@@ -18,43 +18,43 @@ MotorSimulation::angleMod(double angle)
 	return angle;
 }
 
-Eigen::Vector3d
+modm::Vector3f
 MotorSimulation::emfFunction(double rotor_p)
 {
 	// Switching Pattern-Independent Simulation Model for Brushless DC Motors (Kang et al. 2011)
-	auto out = Eigen::Vector3d();
+	auto out = modm::Vector3f();
 	for (size_t i = 0; i < 3; i++)
 	{
 		rotor_p = angleMod(rotor_p);
 		if (0 <= rotor_p && rotor_p < M_PI / 6)
 		{
-			out(i) = rotor_p * 6 / M_PI;
+			out[i] = rotor_p * 6 / M_PI;
 		} else if (M_PI / 6 <= rotor_p && rotor_p < 5 * M_PI / 6)
 		{
-			out(i) = 1;
+			out[i] = 1;
 		} else if (5 * M_PI / 6 <= rotor_p && rotor_p < 7 * M_PI / 6)
 		{
-			out(i) = (M_PI - rotor_p) * 6 / M_PI;
+			out[i] = (M_PI - rotor_p) * 6 / M_PI;
 		} else if (7 * M_PI / 6 <= rotor_p && rotor_p < 11 * M_PI / 6)
 		{
-			out(i) = -1;
+			out[i] = -1;
 		} else if (11 * M_PI / 6 <= rotor_p && rotor_p < 2 * M_PI)
 		{
-			out(i) = (rotor_p - 2 * M_PI) * 6 / M_PI;
+			out[i] = (rotor_p - 2 * M_PI) * 6 / M_PI;
 		}
 		rotor_p += M_PI * 4.0 / 3.0;
 	}
 	return -out;
 }
 
-Eigen::Vector3d
+modm::Vector3f
 MotorSimulation::computeVoltages(double v, const std::array<float, 3>& pwms,
 								 const std::array<PhaseConfig, 3>& config,
-								 const Eigen::Vector3d& bemf)
+								 const modm::Vector3f& bemf)
 {
 	size_t acc{0};
 	double center{0.0};
-	Eigen::Vector3d voltages{0, 0, 0};
+	modm::Vector3f voltages{0, 0, 0};
 
 	// At this point we technically compute potentials
 	for (size_t i = 0; i < config.size(); i++)
@@ -74,12 +74,12 @@ MotorSimulation::computeVoltages(double v, const std::array<float, 3>& pwms,
 				mult = pwms[i];
 				break;
 		}
-		voltages(i) =
+		voltages[i] =
 			v / 2 * mult;  // Set outside points to +-half VDC depending if Gate is high or low
 		if (config[i] != PhaseConfig::HiZ)
 		{
 			acc++;
-			center += voltages(i) - bemf(i);  // Add bemf subtracted voltage to midpoint
+			center += voltages[i] - bemf[i];  // Add bemf subtracted voltage to midpoint
 		}
 	}
 	center /= acc;  // Compute center voltage
@@ -89,10 +89,10 @@ MotorSimulation::computeVoltages(double v, const std::array<float, 3>& pwms,
 	{
 		if (config[i] == PhaseConfig::HiZ)
 		{
-			voltages(i) = bemf(i);
+			voltages[i] = bemf[i];
 		} else
 		{
-			voltages(i) -= center;
+			voltages[i] -= center;
 		}
 	}
 	return voltages;
@@ -116,7 +116,7 @@ MotorSimulation::nextState(const std::array<float, 3>& pwms,
 	const auto i = state_.i + d_i * timestep;
 
 	// Torque
-	const auto t_e = emf_factor.dot(state_.i) * data_.k_e;
+	const auto t_e = (emf_factor * state_.i) * data_.k_e;
 
 	// Linear friction
 	const auto t_f = data_.f * state_.omega_m;
@@ -151,7 +151,8 @@ MotorSimulation::update(double timestep)
 double
 MotorSimulation::maxCurrent()
 {
-	return state_.i.cwiseAbs().maxCoeff();
+
+	return std::max(std::max(std::abs(state_.i[0]), std::abs(state_.i[1])), std::abs(state_.i[2]));
 }
 
 void
