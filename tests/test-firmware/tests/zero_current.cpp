@@ -4,7 +4,7 @@
 #include <micro-motor/micro-motor.hpp>
 
 bool
-test_zero_current(Motor &)
+test_zero_current(Motor &, const MotorInfo &)
 {
 
 	MODM_LOG_INFO << "Measuring current at no load... (2s)" << modm::endl;

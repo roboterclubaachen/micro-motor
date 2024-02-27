@@ -7,7 +7,7 @@
 #include "../motor.hpp"
 
 bool
-test_run_forwards(Motor& Motor0)
+test_run_forwards(Motor& Motor0, const MotorInfo& info)
 {
 	MODM_LOG_INFO << "Testing light load... (5s)" << modm::endl;
 
@@ -54,7 +54,7 @@ test_run_forwards(Motor& Motor0)
 		MODM_LOG_INFO << "Check your commutation offset!" << modm::endl;
 		success = false;
 	}
-	if (avgVelAcc < 0.0f)
+	if ((avgVelAcc < 0.0f && !info.reversed) || (avgVelAcc > 0.0f && info.reversed))
 	{
 		MODM_LOG_INFO << "Motor turned the wrong way!" << modm::endl;
 		MODM_LOG_INFO << "Check your direction!" << modm::endl;

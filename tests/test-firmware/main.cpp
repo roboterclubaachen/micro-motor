@@ -156,7 +156,7 @@ main()
 	size_t failedTests = 0;
 	for (size_t i = 0; i < tests.size(); i++)
 	{
-		if (!tests[i](Motor0)) failedTests++;
+		if (!tests[i](Motor0, info)) failedTests++;
 	}
 
 	if (failedTests != 0)
