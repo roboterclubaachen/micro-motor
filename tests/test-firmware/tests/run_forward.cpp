@@ -39,6 +39,7 @@ test_run_forwards(Motor& Motor0, const MotorInfo& info)
 		first = false;
 	}
 	Motor0.setPWM(0);
+	Motor0.update();
 	avgVelAcc /= avgVelNum;
 	bool success = true;
 	MODM_LOG_INFO << "Done!" << modm::endl;

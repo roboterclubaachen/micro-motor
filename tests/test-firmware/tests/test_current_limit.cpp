@@ -8,7 +8,6 @@ test_current_limit(Motor &Motor0, const MotorInfo &)
 {
 	MODM_LOG_INFO << "Testing Current limit... (2s)" << modm::endl;
 
-	Motor0.setPWM(8000);
 
 	bool first = true;
 	std::array<float, 3> maxCurrent{};
@@ -22,6 +21,7 @@ test_current_limit(Motor &Motor0, const MotorInfo &)
 	MODM_LOG_INFO << "Limiting to: " << currentLimit << "A" << modm::endl;
 	micro_motor::setCurrentLimitAmps(currentLimit);
 
+	Motor0.setPWM(8000);
 	Motor0.update();
 	auto testStart = modm::Clock::now();
 	bool abort = false;
