@@ -1,12 +1,12 @@
 [submodule "ext/modm"]
 	path = ext/modm
-	url = https://git.roboterclub.rwth-aachen.de/rca/modm
+	url = ../modm
 [submodule "ext/librobots2"]
 	path = ext/librobots2
-	url = https://git.roboterclub.rwth-aachen.de/rca/librobots2
+	url = ../librobots2
 [submodule "ext/modm-canopen"]
 	path = ext/modm-canopen
-	url = https://git.roboterclub.rwth-aachen.de/rca/modm-canopen
+        url = ../modm-canopen
 [submodule "ext/eigen-lbuild"]
 	path = ext/eigen-lbuild
 	url = https://github.com/Javask/eigen-lbuild
