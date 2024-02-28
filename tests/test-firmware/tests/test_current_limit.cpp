@@ -15,13 +15,15 @@ test_current_limit(Motor &Motor0, const MotorInfo &)
 
 	auto waitStart = modm::Clock::now();
 
+	Motor0.setPWM(8000);
 	MODM_LOG_INFO << "Waiting two seconds..." << modm::endl;
-	while (modm::Clock::now() - waitStart < 2s){};
+	while (modm::Clock::now() - waitStart < 2s){
+		Motor0.update();
+	};
 
 	MODM_LOG_INFO << "Limiting to: " << currentLimit << "A" << modm::endl;
 	micro_motor::setCurrentLimitAmps(currentLimit);
 
-	Motor0.setPWM(8000);
 	Motor0.update();
 	auto testStart = modm::Clock::now();
 	bool abort = false;

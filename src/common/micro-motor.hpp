@@ -41,7 +41,7 @@ convertAdcToCurrent(uint16_t adcValue)
 }
 
 constexpr uint16_t
-convertCurrentToAdc(float current)
+convertCurrentToCurrentLimit(float current)
 {
 	constexpr float ShuntResistance = 5e-3;
 	constexpr float CurrentGain = 50;
@@ -56,7 +56,7 @@ convertCurrentToAdc(float current)
 inline void
 setCurrentLimitAmps(float limit)
 {
-	uint16_t limit_12_bit = convertCurrentToAdc(limit) & 0x0FFF;
+	uint16_t limit_12_bit = convertCurrentToCurrentLimit(limit) & 0x0FFF;
 	DAC3->DHR12R1 = limit_12_bit;
 	DAC3->DHR12R2 = limit_12_bit;
 }
