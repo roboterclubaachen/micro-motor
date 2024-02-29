@@ -31,10 +31,16 @@
 #include "csv_writer.hpp"
 
 using namespace std::literals;
+//#define LOG
+#define CAN
 
-#define SIMPLE
+#ifdef LOG
+modm::PeriodicTimer logTimer{1000us};
+#endif
 
 #ifdef CAN
+
+modm::PeriodicTimer debugTimer{4000ms};
 
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
@@ -42,7 +48,17 @@ int
 main(int argc, char** argv)
 {
 
-	uint8_t nodeId = 10;
+#ifdef LOG
+	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "e1", "e2",
+					  "e3", "pwm", "te", "tl", "tf"}};
+	if (!writer.create("sim_motor.csv"))
+	{
+		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
+		return 1;
+	}
+#endif
+
+	uint8_t nodeId = 12;
 	if (argc == 2) { nodeId = std::atoi(argv[1]); }
 	MODM_LOG_INFO << "NodeId: " << nodeId << modm::endl;
 
@@ -57,10 +73,20 @@ main(int argc, char** argv)
 	auto sendMessage = +[](const modm::can::Message& msg) { return can.sendMessage(msg); };
 	CanOpen::initialize(nodeId);
 
+	librobots2::motor_sim::MotorData simConfig{
+		.j{0.0001},
+		.f_l{0.0005},
+		.f_s{0.001},
+	};
+	librobots2::motor_sim::MotorSimulation::initialize(simConfig);
+
 	Motor0.initializeHall();
+	auto start = modm::Clock::now();
 
 	while (1)
 	{
+		auto now = modm::Clock::now();
+		auto diff = now - start;
 
 		while (can.isMessageAvailable())
 		{
@@ -68,6 +94,15 @@ main(int argc, char** argv)
 			can.getMessage(message);
 			CanOpen::processMessage(message, sendMessage);
 		}
+		auto& state = librobots2::motor_sim::MotorSimulation::state();
+#ifdef LOG
+		if (logTimer.execute())
+		{
+			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
+						   state.i[2], state.theta_m, state.omega_m, state.e[0], state.e[1],
+						   state.e[2], 0, state.t_e, state.t_l, state.t_f);
+		}
+#endif
 
 		Motor0.update(sendMessage);
 		CanOpen::update(sendMessage);
@@ -78,7 +113,6 @@ main(int argc, char** argv)
 #endif
 
 #ifdef SIMPLE
-modm::PeriodicTimer debugTimer{1000us};
 
 int
 main()
@@ -93,15 +127,19 @@ main()
 		return 1;
 	}
 
+	librobots2::motor_sim::MotorData simConfig{};
+	librobots2::motor_sim::MotorSimulation::initialize(simConfig);
+
 	Motor0.initializeHall();
 	auto start = modm::Clock::now();
 	while (1)
 	{
 		auto now = modm::Clock::now();
 		auto diff = now - start;
-		int pwm = -16000;  //-(diff.count() % 15000);
+		int pwm = std::sin(diff.count() / 1000.0f) * 32000.0f;
 		Motor0.testUpdate(pwm);
-		if (debugTimer.execute())
+#ifdef LOG
+		if (logTimer.execute())
 		{
 			auto& state = librobots2::motor_sim::MotorSimulation::state();
 			auto config = librobots2::motor_sim::MotorBridge::getConfig();
@@ -111,6 +149,7 @@ main()
 						   pwm, state.t_e, state.t_l, state.t_f);
 			writer.flush();
 		}
+#endif
 		if (diff > 10s) return 0;
 	}
 	return 0;

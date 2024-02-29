@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('sim_motor.csv')
 
 plt.rcParams["figure.autolayout"] = True
-fig, (ax1,ax2,ax3,ax4,ax5) = plt.subplots(5, 1)
+fig, (ax1,ax2,ax3,ax4) = plt.subplots(4, 1)
 ax1.plot(df.Time, df.v1, label="v1")
 ax1.plot(df.Time, df.v2, label="v2")
 ax1.plot(df.Time, df.v3, label="v3")
@@ -27,15 +27,10 @@ ax3.plot(df.Time, df.omega, label="omega")
 ax3.set_xlabel('Time/s')
 ax3.legend()
 
-ax4.plot(df.Time, df.pwm, label="pwm")
+ax4.plot(df.Time, df.te, label="t_e")
+ax4.plot(df.Time, df.tl, label="t_l")
+ax4.plot(df.Time, df.tf, label="t_f")
 ax4.set_xlabel('Time/s')
 ax4.legend()
-
-
-ax5.plot(df.Time, df.te, label="t_e")
-ax5.plot(df.Time, df.tl, label="t_l")
-ax5.plot(df.Time, df.tf, label="t_f")
-ax5.set_xlabel('Time/s')
-ax5.legend()
 
 plt.show()
