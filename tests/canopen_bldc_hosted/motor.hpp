@@ -23,6 +23,7 @@ private:
 	uint_fast8_t lastHallState_{};
 	int32_t actualPosition_{};
 	modm::PeriodicTimer controlTimer_{1ms};
+	modm::PeriodicTimer simTimer_{100us};
 
 	modm::PreciseClock::time_point lastUpdate_{modm::PreciseClock::now()};
 
@@ -78,10 +79,13 @@ Motor::update(MessageCallback&& cb)
 		}
 		updated = true;
 	}
-	auto timestep = std::chrono::duration<double>(now - lastUpdate_).count();
-	motor_.update();
-	MotorSimulation::update(timestep);
-	lastUpdate_ = now;
+	if (simTimer_.execute())
+	{
+		auto timestep = std::chrono::duration<double>(now - lastUpdate_).count();
+		motor_.update();
+		MotorSimulation::update(timestep);
+		lastUpdate_ = now;
+	}
 	return updated;
 }
 
