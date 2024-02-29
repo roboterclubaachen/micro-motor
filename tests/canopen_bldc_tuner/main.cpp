@@ -82,6 +82,13 @@ main()
 			can.getMessage(message);
 			Master::processMessage(message, handleResponse);
 		}
+
+		if (!makeReady())
+		{
+			Master::update(sendMessage);
+			continue;
+		}
+
 		relay.setValues(state_.currentValue, state_.velocityValue);
 		relay.update(now);
 		if (relay.errored())
@@ -96,6 +103,8 @@ main()
 		}
 		if (state_.targetCurrent != relay.getTargetCurrent())
 		{
+
+			MODM_LOG_INFO << "Relay change!" << modm::endl;
 			state_.targetCurrent = relay.getTargetCurrent();
 			motorNode_.setValueChanged(CurrentObjects::TargetCurrent);
 		}

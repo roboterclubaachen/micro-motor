@@ -7,6 +7,10 @@ constexpr uint8_t motorId = 12;
 
 using modm_canopen::CanopenMaster;
 using modm_canopen::CanopenNode;
+using modm_canopen::cia402::OperatingMode;
+using modm_canopen::cia402::State;
+using modm_canopen::cia402::StateCommandNames;
+using modm_canopen::cia402::StateCommands;
 using modm_canopen::generated::micromotor_OD;
 
 using MotorNode = CanopenNode<micromotor_OD, CanopenCallbacks>;
@@ -153,4 +157,35 @@ configure(MessageCallback&& sendMessage)
 
 	// Configure Motor Units
 	setUnits(std::forward<MessageCallback>(sendMessage));
+}
+
+inline bool
+makeReady()
+{
+	if (state_.stateMachine_.state() == State::OperationEnabled) return true;
+
+	const auto oldControl = state_.control_.value();
+	switch (state_.stateMachine_.state())
+	{
+		case State::ReadyToSwitchOn:
+			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::SwitchOn].cmd);
+			break;
+		case State::SwitchOnDisabled:
+			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::Shutdown].cmd);
+			break;
+		case State::SwitchedOn:
+			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::EnableOperation].cmd);
+			break;
+		default:
+			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::Shutdown].cmd);
+			break;
+	}
+	if (oldControl != state_.control_.value())
+	{
+		MODM_LOG_INFO << "Sending Command..." << modm::endl;
+		MODM_LOG_INFO << modm_canopen::cia402::stateToString(state_.stateMachine_.state())
+					  << modm::endl;
+	}
+	Master::setValueChanged(StateObjects::ControlWord);
+	return false;
 }
