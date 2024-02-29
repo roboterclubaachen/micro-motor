@@ -74,6 +74,7 @@ main(int argc, char** argv)
 	CanOpen::initialize(nodeId);
 
 	librobots2::motor_sim::MotorData simConfig{
+		.l{0.515},
 		.j{0.0001},
 		.f_l{0.0005},
 		.f_s{0.001},
@@ -94,8 +95,8 @@ main(int argc, char** argv)
 			can.getMessage(message);
 			CanOpen::processMessage(message, sendMessage);
 		}
-		auto& state = librobots2::motor_sim::MotorSimulation::state();
 #ifdef LOG
+		auto& state = librobots2::motor_sim::MotorSimulation::state();
 		if (logTimer.execute())
 		{
 			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
