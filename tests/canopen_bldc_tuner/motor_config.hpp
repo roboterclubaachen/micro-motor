@@ -148,8 +148,13 @@ configure(MessageCallback&& sendMessage)
 	Master::configureRemoteRPDO(motorId, 1, targetTpdoMotor,
 								std::forward<MessageCallback>(sendMessage));
 
-	// NO TARGET POSITION MAPPING! Setting manually.
 	SdoClient::requestWrite(motorId, PositionObjects::TargetPosition, state_.targetPosition,
+							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity, state_.targetSpeed,
+							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, CurrentObjects::TargetCurrent, state_.targetCurrent,
 							std::forward<MessageCallback>(sendMessage));
 
 	// Update PIDs

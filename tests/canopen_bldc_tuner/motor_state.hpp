@@ -27,9 +27,9 @@ struct MotorState
 	modm_canopen::cia402::CommandWord control_{0};
 	modm_canopen::cia402::StateMachine stateMachine_{modm_canopen::cia402::State::SwitchOnDisabled};
 
-	float vPID_kP = 0.0025f;
-	float vPID_kI = 0.0000015f;
-	float vPID_kD = 0.0000001f;
+	float vPID_kP = 1.0f;
+	float vPID_kI = 0.0f;
+	float vPID_kD = 0.0f;
 
 	int32_t targetSpeed = 0;
 	int32_t velDemand = 0;
@@ -41,8 +41,8 @@ struct MotorState
 	int32_t targetPosition = 0;
 	int32_t posDemand = 0;
 
-	float cPID_kP = -0.001f;
-	float cPID_kI = -0.004f;
+	float cPID_kP = 1.0f;
+	float cPID_kI = 0.0f;
 	float cPID_kD = 0.0f;
 
 	float targetCurrent = 0.0f;

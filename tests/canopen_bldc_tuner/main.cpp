@@ -7,6 +7,7 @@
 #include "csv_writer.hpp"
 #include "relay.hpp"
 #include "motor_config.hpp"
+#include "relay_analyzer.hpp"
 
 #include <thread>
 #include <cassert>
@@ -16,7 +17,7 @@
 using namespace std::literals;
 
 modm::platform::SocketCan can;
-constexpr char canDevice[] = "can0";
+constexpr char canDevice[] = "vcan0";
 
 auto sendMessage = [](const modm::can::Message& msg) { return can.sendMessage(msg); };
 Relay relay = Relay();
@@ -103,8 +104,6 @@ main()
 		}
 		if (state_.targetCurrent != relay.getTargetCurrent())
 		{
-
-			MODM_LOG_INFO << "Relay change!" << modm::endl;
 			state_.targetCurrent = relay.getTargetCurrent();
 			motorNode_.setValueChanged(CurrentObjects::TargetCurrent);
 		}
@@ -116,7 +115,11 @@ main()
 	if (!relay.errored())
 	{
 		relay.dumpToCSV();
-		// TODO analyze and compute PID
+		RelayAnalyzer analyzer;
+		analyzer.setData(relay.getData());
+		analyzer.calc();
+		analyzer.dumpToCSV();
+		return 0;
 	}
 
 	while (true) {}  // Spin

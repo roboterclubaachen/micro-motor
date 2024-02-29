@@ -15,9 +15,9 @@ struct RelayUpdate
 class Relay
 {
 private:
-	constexpr static uint64_t count = 128;  // 128 Periods to run
+	constexpr static uint64_t count = 16;  // 8 Periods to run
 	constexpr static modm::Clock::duration halfPeriod =
-		std::chrono::duration<uint32_t, std::milli>(1000);  // 1s
+		std::chrono::duration<uint32_t, std::milli>(200);   // 1s
 	constexpr static double onCurrent = 1.0f;               // 1A
 	constexpr static uint64_t reserveVectorSize = 1024;
 

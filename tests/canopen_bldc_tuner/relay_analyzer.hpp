@@ -6,6 +6,11 @@
 class RelayAnalyzer
 {
 public:
+	struct Analysis
+	{
+		std::vector<size_t> peaks_samples;
+	};
+
 	RelayAnalyzer() = default;
 	~RelayAnalyzer() = default;
 	void
@@ -21,7 +26,8 @@ public:
 	computeStaticGainInner(size_t highSampleIndex, size_t lowSampleIndex) const;
 
 	std::pair<double, double>
-	computeDeadTimeAndTimeConstantInner(uint64_t period, double static_gain) const;
+	computeDeadTimeAndTimeConstantInner(uint64_t period, double static_gain, size_t highSampleIndex,
+										size_t lowSampleIndex) const;
 
 	double
 	computeDeadTimeWhole(uint64_t period) const;
@@ -31,6 +37,9 @@ public:
 
 	std::vector<size_t>
 	findPeaksOuter() const;
+
+	std::vector<size_t>
+	filterPeaks(const std::vector<size_t>& peaks) const;
 
 	uint64_t
 	findStaticOscillationSampleOuter(const std::vector<size_t>& peaks) const;
@@ -51,8 +60,11 @@ public:
 	double
 	getDeadTimeOuter(uint64_t period) const;
 
-	void
+	bool
 	calc() const;
+
+	void
+	dumpToCSV() const;
 
 private:
 	static std::vector<std::pair<size_t, size_t>>
@@ -60,4 +72,5 @@ private:
 
 	std::vector<std::pair<size_t, size_t>> periodData;
 	std::vector<RelayUpdate> data;
+	mutable Analysis analysis;
 };
