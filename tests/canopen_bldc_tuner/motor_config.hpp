@@ -54,13 +54,13 @@ setUnits(MessageCallback&& sendMessage)
 	// Convert Ticks to rotations
 	SdoClient::requestWrite(motorId, StateObjects::PositionFactorDivisor, ticks_per_rev,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, StateObjects::PositionFactorNumerator, 1,
+	SdoClient::requestWrite(motorId, StateObjects::PositionFactorNumerator,1,
 							std::forward<MessageCallback>(sendMessage));
 
 	// Convert ticks per second to rev/min
 	SdoClient::requestWrite(motorId, StateObjects::VelocityFactorDivisor, ticks_per_rev,
 							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, StateObjects::VelocityFactorNumerator, seconds_per_minute,
+	SdoClient::requestWrite(motorId, StateObjects::VelocityFactorNumerator, seconds_per_minute, 
 							std::forward<MessageCallback>(sendMessage));
 }
 
