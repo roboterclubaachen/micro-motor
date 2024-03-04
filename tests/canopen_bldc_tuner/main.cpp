@@ -90,7 +90,7 @@ main()
 			continue;
 		}
 
-		relay.setValues(state_.currentValue, state_.velocityValue);
+		relay.setValues(state_.currentValue, state_.velocityValue, state_.positionValue);
 		relay.update(now);
 		if (relay.errored())
 		{
@@ -102,9 +102,9 @@ main()
 			MODM_LOG_INFO << "Relay done!" << modm::endl;
 			break;
 		}
-		if (state_.targetCurrent != relay.getTargetCurrent())
+		if (state_.targetCurrent != relay.getDemand())
 		{
-			state_.targetCurrent = relay.getTargetCurrent();
+			state_.targetCurrent = relay.getDemand();
 			motorNode_.setValueChanged(CurrentObjects::TargetCurrent);
 		}
 

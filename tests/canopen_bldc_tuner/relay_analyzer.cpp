@@ -119,7 +119,6 @@ RelayAnalyzer::computeStaticGain(const std::vector<double>& values,
 
 std::pair<double, double>
 RelayAnalyzer::computeDeadTimeAndTimeConstantInner(Period period, double static_gain,
-												   size_t lowSampleIndex,
 												   size_t highSampleIndex) const
 {
 
@@ -198,7 +197,8 @@ RelayAnalyzer::findPeaks(const std::vector<double>& values)
 		averages.push_back(computeWindowAverage(values, i, windowSize));
 	}
 	constexpr size_t stride = 1;
-	constexpr size_t localMaxWindow = 100;
+	// TODO derive from period length
+	constexpr size_t localMaxWindow = 500;
 
 	if (averages.size() < stride * 2 + 1) return {};
 	bool plateaud = false;
@@ -249,6 +249,7 @@ RelayAnalyzer::findValleys(const std::vector<double>& values)
 		averages.push_back(computeWindowAverage(values, i, windowSize));
 	}
 	constexpr size_t stride = 1;
+	// TODO derive from period length
 	constexpr size_t localMinWindow = 500;
 
 	if (averages.size() < stride * 2 + 1) return {};
@@ -364,23 +365,26 @@ RelayAnalyzer::findPeriodForSample(const std::vector<Period>& periodData, size_t
 std::complex<double>
 RelayAnalyzer::getFreqResponseWhole(const std::vector<double>& demands,
 									const std::vector<double>& values,
-									const std::vector<modm::Clock::time_point>& time, Period period,
-									double omega_u)
+									const std::vector<modm::Clock::time_point>& time,
+									double omega_u, size_t startSample, size_t timeStartSample)
 
 {
-	const auto startIndex = findDemandStart(demands, period);
-	const modm::chrono::milli_clock::time_point startTime = time[startIndex];
-	modm::chrono::milli_clock::time_point lastTime = startTime;
+	modm::chrono::milli_clock::time_point lastTime = time[startSample];
 
 	double timeAcc = 0.0;
 	std::complex<double> inAcc = {}, outAcc = {};
 	const auto t_u = 2.0 * M_PI / omega_u;
-	size_t i = startIndex + 1;
+	size_t i = startSample + 1;
+	MODM_LOG_INFO << "Integrating over t=["
+				  << std::chrono::duration_cast<std::chrono::duration<float>>(time[startSample] -
+																			  time[timeStartSample])
+						 .count()
+				  << "s:";
 	while (timeAcc < t_u && i < values.size())
 	{
-		const auto t =
-			std::chrono::duration_cast<std::chrono::duration<float>>(time[i] - time[startIndex])
-				.count();
+		const auto t = std::chrono::duration_cast<std::chrono::duration<float>>(
+						   time[i] - time[timeStartSample])
+						   .count();
 		const auto timeDiff =
 			std::chrono::duration_cast<std::chrono::duration<float>>(time[i] - time[i - 1]).count();
 		timeAcc += timeDiff;
@@ -392,7 +396,14 @@ RelayAnalyzer::getFreqResponseWhole(const std::vector<double>& demands,
 		lastTime = time[i];
 		i++;
 	}
+
+	MODM_LOG_INFO
+		<< std::chrono::duration_cast<std::chrono::duration<float>>(time[i] - time[0]).count()
+		<< "s]" << modm::endl;
 	if (i == values.size()) { return {}; }
+
+	MODM_LOG_INFO << "y(t): " << outAcc.real() << " +i " << outAcc.imag() << modm::endl;
+	MODM_LOG_INFO << "ud(t): " << inAcc.real() << " +i " << inAcc.imag() << modm::endl;
 
 	return (outAcc) / (inAcc);
 }
@@ -453,7 +464,7 @@ RelayAnalyzer::calc() const
 	MODM_LOG_INFO << "Found " << c_valleys.size() << " Valleys." << modm::endl;
 	if (c_valleys.size() == 0) return false;
 	analysis.cur_valleys = c_valleys;
-	for (size_t i = 0; i < periodData.size(); i++)
+	for (size_t i = 0; i < c_valleys.size(); i++)
 	{
 		Period p = findPeriodForSample(periodData, analysis.cur_valleys[i]);
 		auto sample = findSteadyState(currents, p, analysis.cur_valleys[i]);
@@ -469,14 +480,18 @@ RelayAnalyzer::calc() const
 
 	MODM_LOG_INFO << "Analyzing oscillation period..." << modm::endl;
 	const auto lastLowSample_2 = findLastLow(c_valleys, periodData, static_period);
-	const auto lastLowDemandSample_2 = findDemandStart(demands, static_period);
+	const auto lastLowDemandSample = findDemandStart(demands, static_period);
 	const auto firstHighSample_2 = findSteadyState(currents, static_period, lastLowSample_2);
+	const auto lastLowSample_1 = findLastLow(v_valleys, periodData, static_period);
+	const auto firstHighSample_1 = findSteadyState(velocities, static_period, lastLowSample_1);
 
-	MODM_LOG_INFO << "Last low demand sample: " << lastLowDemandSample_2 << modm::endl;
-	MODM_LOG_INFO << "Last low response sample: " << lastLowSample_2 << modm::endl;
-	MODM_LOG_INFO << "First steady state sample: " << firstHighSample_2 << modm::endl;
+	MODM_LOG_INFO << "Last low demand sample: " << lastLowDemandSample << modm::endl;
+	MODM_LOG_INFO << "Last low response sample: " << lastLowSample_2 << "; " << lastLowSample_1
+				  << modm::endl;
+	MODM_LOG_INFO << "First steady state sample: " << firstHighSample_2 << "; " << firstHighSample_1
+				  << modm::endl;
 	if (lastLowSample_2 >= currents.size() || firstHighSample_2 >= currents.size() ||
-		lastLowDemandSample_2 >= currents.size())
+		lastLowDemandSample >= currents.size())
 		return false;
 
 	MODM_LOG_INFO << "Finding ultimate Frequency..." << modm::endl;
@@ -485,16 +500,17 @@ RelayAnalyzer::calc() const
 	if (omega_u == 0.0) return false;
 
 	MODM_LOG_INFO << "Computing inner static gain..." << modm::endl;
-	const auto k_2 = computeStaticGain(currents, demands, firstHighSample_2, lastLowDemandSample_2);
+	const auto k_2 = computeStaticGain(currents, demands, firstHighSample_2, lastLowDemandSample);
 	MODM_LOG_INFO << "Inner static gain: " << k_2 << modm::endl;
 
 	MODM_LOG_INFO << "Computing inner dead time and time constant..." << modm::endl;
 	const auto [t_2, l_2] =
-		computeDeadTimeAndTimeConstantInner(static_period, k_2, lastLowSample_2, firstHighSample_2);
+		computeDeadTimeAndTimeConstantInner(static_period, k_2, firstHighSample_2);
 
 	MODM_LOG_INFO << "Finding dead times..." << modm::endl;
-	const auto lastLowSample_1 = findLastLow(v_valleys, periodData, periodData[0]);
-	const auto l = getDeadTimeOuter(demands, times, periodData[0], lastLowSample_1);
+	// Period 0 seems clearer that in static oscillation...
+	const auto lastNoReactionSample_1 = findLastLow(v_valleys, periodData, periodData[0]);
+	const auto l = getDeadTimeOuter(demands, times, periodData[0], lastNoReactionSample_1);
 	const auto l_1 = l - l_2;
 
 	MODM_LOG_INFO << "Inner dead time: " << l_2 << modm::endl;
@@ -503,7 +519,8 @@ RelayAnalyzer::calc() const
 
 	MODM_LOG_INFO << "Computing frequency response..." << modm::endl;
 	const auto g_2 = getFreqResponseInner(k_2, l_2, t_2, omega_u);
-	const auto g_whole = getFreqResponseWhole(demands, velocities, times, static_period, omega_u);
+	const auto g_whole = getFreqResponseWhole(demands, velocities, times, omega_u,
+											  lastLowDemandSample, lastLowDemandSample);
 	const auto g_1 = g_whole / g_2;
 	const auto g_1_prime = g_1 / std::exp(std::complex<double>{0, -l_1 * omega_u});
 
@@ -610,7 +627,7 @@ RelayAnalyzer::dumpToCSV() const
 		for (size_t i = 0; i < analysis.vel_peaks.size(); i++)
 		{
 			auto sample = analysis.vel_peaks[i];
-			writer.addRow({std::to_string(times[sample].time_since_epoch().count()),
+			writer.addRow({std::to_string((times[sample] - times[0]).count()),
 						   std::to_string(demands[sample]), std::to_string(currents[sample]),
 						   std::to_string(velocities[sample])});
 		}
@@ -626,7 +643,7 @@ RelayAnalyzer::dumpToCSV() const
 		for (size_t i = 0; i < analysis.cur_peaks.size(); i++)
 		{
 			auto sample = analysis.cur_peaks[i];
-			writer.addRow({std::to_string(times[sample].time_since_epoch().count()),
+			writer.addRow({std::to_string((times[sample] - times[0]).count()),
 						   std::to_string(demands[sample]), std::to_string(currents[sample]),
 						   std::to_string(velocities[sample])});
 		}
@@ -642,7 +659,7 @@ RelayAnalyzer::dumpToCSV() const
 		for (size_t i = 0; i < analysis.cur_valleys.size(); i++)
 		{
 			auto sample = analysis.cur_valleys[i];
-			writer.addRow({std::to_string(times[sample].time_since_epoch().count()),
+			writer.addRow({std::to_string((times[sample] - times[0]).count()),
 						   std::to_string(demands[sample]), std::to_string(currents[sample]),
 						   std::to_string(velocities[sample])});
 		}
@@ -658,7 +675,7 @@ RelayAnalyzer::dumpToCSV() const
 		for (size_t i = 0; i < analysis.vel_valleys.size(); i++)
 		{
 			auto sample = analysis.vel_valleys[i];
-			writer.addRow({std::to_string(times[sample].time_since_epoch().count()),
+			writer.addRow({std::to_string((times[sample] - times[0]).count()),
 						   std::to_string(demands[sample]), std::to_string(currents[sample]),
 						   std::to_string(velocities[sample])});
 		}

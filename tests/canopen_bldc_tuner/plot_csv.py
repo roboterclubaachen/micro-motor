@@ -19,7 +19,7 @@ ax1.set_xlabel('Time/s')
 ax1.axhline(y=0.0, color='r', linestyle='-')
 
 ax2.plot(df.Time, df.CurrentVelocity, label="CurrentVelocity")
-ax2.plot(df.Time, df.CurrentDemand*30, label="CurrentDemand")
+ax2.plot(df.Time, df.CurrentDemand*25, label="CurrentDemand Scaled")
 ax2.plot(df_vel_peaks.Time, df_vel_peaks.CurrentVelocity,color="red", marker='x', linestyle=" ", label ="High")
 ax2.plot(df_vel_valleys.Time, df_vel_valleys.CurrentVelocity,color="green", marker='x', linestyle=" ", label ="Low")
 ax2.set_xlabel('Time/s')

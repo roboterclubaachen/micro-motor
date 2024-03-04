@@ -169,7 +169,6 @@ makeReady()
 {
 	if (state_.stateMachine_.state() == State::OperationEnabled) return true;
 
-	const auto oldControl = state_.control_.value();
 	switch (state_.stateMachine_.state())
 	{
 		case State::ReadyToSwitchOn:
@@ -184,12 +183,6 @@ makeReady()
 		default:
 			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::Shutdown].cmd);
 			break;
-	}
-	if (oldControl != state_.control_.value())
-	{
-		MODM_LOG_INFO << "Sending Command..." << modm::endl;
-		MODM_LOG_INFO << modm_canopen::cia402::stateToString(state_.stateMachine_.state())
-					  << modm::endl;
 	}
 	Master::setValueChanged(StateObjects::ControlWord);
 	return false;

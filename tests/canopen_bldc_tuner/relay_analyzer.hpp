@@ -1,12 +1,12 @@
 #pragma once
-#include "relay.hpp"
+#include "relay_analyzer_base.hpp"
 #include <complex>
 #include <span>
 
-class RelayAnalyzer
+class RelayAnalyzer : public RelayAnalyzerBase
 {
-public:
-	using Period = std::pair<size_t,size_t>;
+private:
+	using Period = std::pair<size_t, size_t>;
 
 	struct Analysis
 	{
@@ -17,16 +17,14 @@ public:
 		std::vector<size_t> cur_valleys;
 	};
 
-	RelayAnalyzer() = default;
-	~RelayAnalyzer() = default;
-	void
-	setData(const std::vector<RelayUpdate>& data);
+	static std::vector<Period>
+	getPeriodInfo(const std::vector<RelayUpdate>& data);
 
 	static size_t
 	findSteadyState(const std::vector<double>& value, Period period, size_t lastLowSample);
 
-    static size_t
-    findDemandStart(const std::vector<double>& demand, Period period);
+	static size_t
+	findDemandStart(const std::vector<double>& demand, Period period);
 
 	static size_t
 	findLastLow( const std::vector<size_t>& valleys,const std::vector<Period>& perioData,Period period) ;
@@ -35,7 +33,7 @@ public:
 	computeStaticGain(const std::vector<double>& values, const std::vector<double>& demand, size_t highSampleIndex, size_t lowSampleIndex);
 
 	std::pair<double, double>
-	computeDeadTimeAndTimeConstantInner(Period period, double static_gain, size_t lowSampleIndex,
+	computeDeadTimeAndTimeConstantInner(Period period, double static_gain,
 										size_t highSampleIndex) const;
 
 	static double
@@ -64,8 +62,8 @@ public:
 
 	static std::complex<double>
 	getFreqResponseWhole(const std::vector<double>& demand, const std::vector<double>& values,
-						 const std::vector<modm::Clock::time_point>& time,
-						 Period static_oscillation_period, double ultimate_freq);  // G_p
+						 const std::vector<modm::Clock::time_point>& time, double ultimate_freq,
+						 size_t startSample, size_t timeStartSample);  // G_p
 
 	static std::complex<double>
 	getFreqResponseInner(double k_2, double l_2, double t_2, double omega_u);  // G_p2
@@ -75,16 +73,20 @@ public:
 					 const std::vector<modm::Clock::time_point>& time, Period period,
 					 size_t lastLowSample);
 
-	bool
-	calc() const;
+public:
+	RelayAnalyzer() = default;
+	virtual ~RelayAnalyzer() = default;
 
 	void
-	dumpToCSV() const;
+	setData(const std::vector<RelayUpdate>& data) override;
+
+	bool
+	calc() const override;
+
+	void
+	dumpToCSV() const override;
 
 private:
-	static std::vector<Period>
-	getPeriodInfo(const std::vector<RelayUpdate>& data);
-
 	std::vector<Period> periodData;
 	std::vector<double> currents, demands, velocities;
 	std::vector<modm::Clock::time_point> times;

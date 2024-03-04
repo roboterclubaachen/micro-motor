@@ -1,16 +1,5 @@
 #pragma once
-#include <modm/processing/timer.hpp>
-#include <cstdint>
-#include <vector>
-
-struct RelayUpdate
-{
-	uint64_t period;
-	double current;
-	double velocity;
-	double demand;
-	modm::Clock::time_point time;
-};
+#include "relay_update.hpp"
 
 class Relay
 {
@@ -29,10 +18,10 @@ public:
 	update(modm::Clock::time_point now);
 
 	double
-	getTargetCurrent() const;
+	getDemand() const;
 
 	void
-	setValues(double actualCurrent, double actualVelocity);
+	setValues(double actualCurrent, double actualVelocity, double actualPosition);
 
 	bool
 	done() const;
@@ -50,7 +39,7 @@ private:
 	bool wasUpdated = false, error = false;
 	modm::Clock::time_point firstUpdate, lastUpdate;
 	uint64_t currentCount = 0;
-	double targetCurrent = 0.0f, actualCurrent = 0.0f, actualVelocity = 0.0f;
+	double actualDemand = 0.0f, actualCurrent = 0.0f, actualVelocity = 0.0f, actualPosition = 0.0f;
 
 	std::vector<RelayUpdate> data;
 };
