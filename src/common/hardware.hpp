@@ -443,7 +443,7 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
 	DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
 	// 5mohm shunt, 50V pro V gain amplifier
-	setCurrentLimit(0xFFFF / 2);  // 50%
+	setCurrentLimit(0x7FFF + (0xFFF / 2));  // 50%
 
 	modm::Timeout waitForVRefBuf = modm::Timeout(20ms);
 	while (!waitForVRefBuf.execute())
