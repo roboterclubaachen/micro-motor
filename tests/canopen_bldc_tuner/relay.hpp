@@ -1,17 +1,21 @@
 #pragma once
 #include "relay_update.hpp"
 
+struct RelayConfig
+{
+	uint64_t periodCount = 8;
+	modm::Clock::duration onPeriod = std::chrono::duration<uint32_t, std::milli>(400);
+	modm::Clock::duration offPeriod = std::chrono::duration<uint32_t, std::milli>(400);
+	double onValue = 1.0;
+};
+
 class Relay
 {
 private:
-	constexpr static uint64_t count = 8;  // 8 Periods to run
-	constexpr static modm::Clock::duration halfPeriod =
-		std::chrono::duration<uint32_t, std::milli>(800);   // 1s
-	constexpr static double onCurrent = 1.0f;               // 1A
 	constexpr static uint64_t reserveVectorSize = 1024;
 
 public:
-	Relay();
+	Relay(const RelayConfig& config);
 	~Relay() = default;
 
 	void
@@ -36,6 +40,8 @@ public:
 	getData() const;
 
 private:
+	const RelayConfig config;
+
 	bool wasUpdated = false, error = false;
 	modm::Clock::time_point firstUpdate, lastUpdate;
 	uint64_t currentCount = 0;

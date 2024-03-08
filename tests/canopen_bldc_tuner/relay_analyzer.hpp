@@ -6,20 +6,6 @@
 class RelayAnalyzer : public RelayAnalyzerBase
 {
 private:
-	using Period = std::pair<size_t, size_t>;
-
-	struct Analysis
-	{
-		std::vector<size_t> vel_peaks;
-		std::vector<size_t> vel_valleys;
-
-		std::vector<size_t> cur_peaks;
-		std::vector<size_t> cur_valleys;
-	};
-
-	static std::vector<Period>
-	getPeriodInfo(const std::vector<RelayUpdate>& data);
-
 	static size_t
 	findSteadyState(const std::vector<double>& value, Period period, size_t lastLowSample);
 
@@ -77,18 +63,6 @@ public:
 	RelayAnalyzer() = default;
 	virtual ~RelayAnalyzer() = default;
 
-	void
-	setData(const std::vector<RelayUpdate>& data) override;
-
 	bool
-	calc() const override;
-
-	void
-	dumpToCSV() const override;
-
-private:
-	std::vector<Period> periodData;
-	std::vector<double> currents, demands, velocities;
-	std::vector<modm::Clock::time_point> times;
-	mutable Analysis analysis;
+	calc() override;
 };

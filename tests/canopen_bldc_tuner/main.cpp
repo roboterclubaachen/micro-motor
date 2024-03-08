@@ -8,6 +8,7 @@
 #include "relay.hpp"
 #include "motor_config.hpp"
 #include "relay_analyzer.hpp"
+#include "relay_analyzer_simple.hpp"
 
 #include <thread>
 #include <cassert>
@@ -20,7 +21,9 @@ modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
 
 auto sendMessage = [](const modm::can::Message& msg) { return can.sendMessage(msg); };
-Relay relay = Relay();
+
+RelayAnalyzerSimple::AnalysisMode currentMode = RelayAnalyzerSimple::AnalysisMode::Current;
+Relay relay = Relay(RelayConfig{});
 
 int
 main()
@@ -115,9 +118,23 @@ main()
 	if (!relay.errored())
 	{
 		relay.dumpToCSV();
-		RelayAnalyzer analyzer;
+		RelayAnalyzerSimple analyzer{RelayAnalyzerSimple::AnalysisMode::Current};
 		analyzer.setData(relay.getData());
-		analyzer.calc();
+		if (analyzer.calc())
+		{
+			auto res = analyzer.getResult().value();
+			MODM_LOG_INFO << "Computed PID values:" << modm::endl;
+			MODM_LOG_INFO << "P: " << res.p << modm::endl;
+			MODM_LOG_INFO << "I: " << res.i << modm::endl;
+			MODM_LOG_INFO << "D: " << res.d << modm::endl;
+			if (currentMode == RelayAnalyzerSimple::AnalysisMode::Current)
+			{
+				state_.cPID_kP = res.p;
+				state_.cPID_kI = res.i;
+				state_.cPID_kD = res.d;
+			}
+			updatePIDs(sendMessage);
+		}
 		analyzer.dumpToCSV();
 		return 0;
 	}

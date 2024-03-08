@@ -7,42 +7,6 @@
 
 using namespace std::literals;
 
-/// Return index,length pairs for periods in data
-std::vector<std::pair<size_t, size_t>>
-RelayAnalyzer::getPeriodInfo(const std::vector<RelayUpdate>& data)
-{
-	std::vector<std::pair<size_t, size_t>> out;
-	size_t currentPeriod = 0, index = 0, size = 0;
-	for (size_t i = 0; i < data.size(); i++)
-	{
-		auto& update = data[i];
-		if (update.period == currentPeriod) { size++; }
-		if (update.period > currentPeriod)
-		{
-			out.push_back({index, size});
-			index = i;
-			size = 1;
-			currentPeriod++;
-		}
-	}
-	out.push_back({index, size});
-	return out;
-}
-
-void
-RelayAnalyzer::setData(const std::vector<RelayUpdate>& data)
-{
-	MODM_LOG_INFO << "Sample count: " << data.size() << modm::endl;
-	for (size_t i = 0; i < data.size(); i++)
-	{
-		currents.push_back(data[i].current);
-		demands.push_back(data[i].demand);
-		velocities.push_back(data[i].velocity);
-		times.push_back(data[i].time);
-	}
-	periodData = getPeriodInfo(data);
-	MODM_LOG_INFO << "Period count: " << periodData.size() << modm::endl;
-}
 size_t
 RelayAnalyzer::findSteadyState(const std::vector<double>& values, Period period,
 							   size_t lastLowSample)
@@ -198,7 +162,7 @@ RelayAnalyzer::findPeaks(const std::vector<double>& values)
 	}
 	constexpr size_t stride = 1;
 	// TODO derive from period length
-	constexpr size_t localMaxWindow = 500;
+	constexpr size_t localMaxWindow = 400;
 
 	if (averages.size() < stride * 2 + 1) return {};
 	bool plateaud = false;
@@ -207,7 +171,8 @@ RelayAnalyzer::findPeaks(const std::vector<double>& values)
 	for (size_t i = stride; i < averages.size() - stride; i++)
 	{
 		double pastMax{0.0}, futureMax{0.0};
-		for (size_t j = i - 1; j > i - localMaxWindow; j--)
+		const auto pastMaxWindowStart = (i > localMaxWindow) ? i - localMaxWindow : 0;
+		for (size_t j = i - 1; j > pastMaxWindowStart; j--)
 		{
 			if (averages[j] > pastMax) pastMax = averages[j];
 			if (j == 0) break;
@@ -250,7 +215,7 @@ RelayAnalyzer::findValleys(const std::vector<double>& values)
 	}
 	constexpr size_t stride = 1;
 	// TODO derive from period length
-	constexpr size_t localMinWindow = 500;
+	constexpr size_t localMinWindow = 400;
 
 	if (averages.size() < stride * 2 + 1) return {};
 	bool plateaud = false;
@@ -259,7 +224,8 @@ RelayAnalyzer::findValleys(const std::vector<double>& values)
 	for (size_t i = stride; i < averages.size() - stride; i++)
 	{
 		double pastMin{averages[i - 1]}, futureMin{averages[i + 1]};
-		for (size_t j = i - 1; j > i - localMinWindow; j--)
+		const auto pastMinWindowStart = (i > localMinWindow) ? i - localMinWindow : 0;
+		for (size_t j = i - 1; j > pastMinWindowStart; j--)
 		{
 			if (averages[j] < pastMin) pastMin = averages[j];
 			if (j == 0) break;
@@ -444,7 +410,7 @@ computePade(const std::array<double, n>& d, const std::array<double, n>& e)
 }
 
 bool
-RelayAnalyzer::calc() const
+RelayAnalyzer::calc()
 {
 
 	// Implementing "Auto-tuning of cascade control systems", Song et al. 2002
@@ -612,73 +578,4 @@ RelayAnalyzer::calc() const
 	MODM_LOG_INFO << "Outer Loop: P " << k_p1 << " I " << k_i1 << " D " << k_d1 << " Tn " << k_tn1
 				  << modm::endl;
 	return true;
-}
-
-void
-RelayAnalyzer::dumpToCSV() const
-{
-	{
-		CSVWriter writer({"Time", "CurrentDemand", "CurrentActual", "CurrentVelocity"});
-		if (!writer.create("relay_vel_peaks.csv"))
-		{
-			MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
-			return;
-		}
-		for (size_t i = 0; i < analysis.vel_peaks.size(); i++)
-		{
-			auto sample = analysis.vel_peaks[i];
-			writer.addRow({std::to_string((times[sample] - times[0]).count()),
-						   std::to_string(demands[sample]), std::to_string(currents[sample]),
-						   std::to_string(velocities[sample])});
-		}
-		writer.close();
-	}
-	{
-		CSVWriter writer({"Time", "CurrentDemand", "CurrentActual", "CurrentVelocity"});
-		if (!writer.create("relay_cur_peaks.csv"))
-		{
-			MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
-			return;
-		}
-		for (size_t i = 0; i < analysis.cur_peaks.size(); i++)
-		{
-			auto sample = analysis.cur_peaks[i];
-			writer.addRow({std::to_string((times[sample] - times[0]).count()),
-						   std::to_string(demands[sample]), std::to_string(currents[sample]),
-						   std::to_string(velocities[sample])});
-		}
-		writer.close();
-	}
-	{
-		CSVWriter writer({"Time", "CurrentDemand", "CurrentActual", "CurrentVelocity"});
-		if (!writer.create("relay_cur_valleys.csv"))
-		{
-			MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
-			return;
-		}
-		for (size_t i = 0; i < analysis.cur_valleys.size(); i++)
-		{
-			auto sample = analysis.cur_valleys[i];
-			writer.addRow({std::to_string((times[sample] - times[0]).count()),
-						   std::to_string(demands[sample]), std::to_string(currents[sample]),
-						   std::to_string(velocities[sample])});
-		}
-		writer.close();
-	}
-	{
-		CSVWriter writer({"Time", "CurrentDemand", "CurrentActual", "CurrentVelocity"});
-		if (!writer.create("relay_vel_valleys.csv"))
-		{
-			MODM_LOG_ERROR << "Could not write csv data." << modm::endl;
-			return;
-		}
-		for (size_t i = 0; i < analysis.vel_valleys.size(); i++)
-		{
-			auto sample = analysis.vel_valleys[i];
-			writer.addRow({std::to_string((times[sample] - times[0]).count()),
-						   std::to_string(demands[sample]), std::to_string(currents[sample]),
-						   std::to_string(velocities[sample])});
-		}
-		writer.close();
-	}
 }

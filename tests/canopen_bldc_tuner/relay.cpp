@@ -4,7 +4,7 @@
 #include <string>
 #include "csv_writer.hpp"
 
-Relay::Relay()
+Relay::Relay(const RelayConfig& config) : config(config)
 {
 	data.reserve(reserveVectorSize);
 }
@@ -30,7 +30,7 @@ Relay::update(modm::Clock::time_point now)
 		return;
 	}
 
-	if (now - lastUpdate > halfPeriod)
+	if (now - lastUpdate > config.onPeriod || now - lastUpdate > config.offPeriod)
 	{
 		MODM_LOG_ERROR << "Detected time skip in relay program!" << modm::endl;
 		error = true;
@@ -45,12 +45,11 @@ Relay::update(modm::Clock::time_point now)
 			 timeSinceStart)
 			 .count()) /
 		(((double)std::chrono::duration_cast<modm::chrono::milli_clock::duration, uint32_t>(
-			  halfPeriod)
-			  .count()) *
-		 2);
+			  config.onPeriod + config.offPeriod)
+			  .count()));
 
 	currentCount = std::floor(periodsSinceStart);
-	if (currentCount >= count)
+	if (currentCount >= config.periodCount)
 	{
 		// We are done
 		actualDemand = 0.0f;
@@ -58,14 +57,16 @@ Relay::update(modm::Clock::time_point now)
 	}
 
 	auto currentPointInPeriod = periodsSinceStart - currentCount;
-	if (currentPointInPeriod < 0.5f)
+	double onOffRatio =
+		(float)config.offPeriod.count() / (float)(config.offPeriod + config.onPeriod).count();
+	if (currentPointInPeriod < onOffRatio)
 	{
 		// First half of period
 		actualDemand = 0.0f;
 	} else
 	{
 		// Second half of period
-		actualDemand = onCurrent;
+		actualDemand = config.onValue;
 	}
 
 	data.emplace_back(RelayUpdate{.period = currentCount,
@@ -87,7 +88,7 @@ Relay::getDemand() const
 bool
 Relay::done() const
 {
-	return currentCount >= count;
+	return currentCount >= config.periodCount;
 }
 
 bool
