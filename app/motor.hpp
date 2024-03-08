@@ -78,6 +78,7 @@ Motor::update(MessageCallback&& cb)
 		} else
 		{
 			motor_.setSetpoint(MotorControl0::outputPWM());
+			micro_motor::setCurrentLimitAmps(MotorControl0::currentLimit());
 		}
 		updated = true;
 	}

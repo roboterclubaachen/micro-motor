@@ -35,11 +35,8 @@ updatePIDs(MessageCallback&& sendMessage)
 	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kD, state_.pPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kP, state_.cPID_kP,
-							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kI, state_.cPID_kI,
-							std::forward<MessageCallback>(sendMessage));
-	SdoClient::requestWrite(motorId, CurrentObjects::CurrentPID_kD, state_.cPID_kD,
+	SdoClient::requestWrite(motorId, CurrentObjects::DefaultPWM,
+							(int16_t)(std::numeric_limits<int16_t>::max() - 1),
 							std::forward<MessageCallback>(sendMessage));
 }
 

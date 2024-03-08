@@ -7,12 +7,14 @@
 
 #include <librobots2/motor-sim/motor_simulation.hpp>
 #include <librobots2/motor-sim/motor_bridge.hpp>
+#include <librobots2/motor-sim/current_limit.hpp>
 #include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 
 using namespace std::literals;
 
+using librobots2::motor_sim::CurrentLimit;
 using librobots2::motor_sim::MotorBridge;
 using librobots2::motor_sim::MotorSimulation;
 
@@ -76,6 +78,7 @@ Motor::update(MessageCallback&& cb)
 		} else
 		{
 			motor_.setSetpoint(MotorControl0::outputPWM());
+			CurrentLimit::set(MotorControl0::currentLimit());
 		}
 		updated = true;
 	}

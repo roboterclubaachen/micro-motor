@@ -23,15 +23,17 @@
 #include <modm/processing/timer.hpp>
 #include <modm/platform/can/socketcan.hpp>
 #include <micro-motor/canopen/canopen.hpp>
+#include <librobots2/motor-sim/current_limit.hpp>
 
 #include <cstdlib>
 #include <vector>
+#include <limits>
 
 #include "motor.hpp"
 #include "csv_writer.hpp"
 
 using namespace std::literals;
-//#define LOG
+#define LOG
 #define CAN
 
 #ifdef LOG
@@ -50,7 +52,7 @@ main(int argc, char** argv)
 
 #ifdef LOG
 	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "e1", "e2",
-					  "e3", "pwm", "te", "tl", "tf"}};
+					  "e3", "pwm", "te", "tl", "tf", "g1", "g2", "g3"}};
 	if (!writer.create("sim_motor.csv"))
 	{
 		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
@@ -89,19 +91,23 @@ main(int argc, char** argv)
 		auto now = modm::Clock::now();
 		auto diff = now - start;
 
+		Motor0.update(sendMessage);
 		while (can.isMessageAvailable())
 		{
 			modm::can::Message message;
 			can.getMessage(message);
 			CanOpen::processMessage(message, sendMessage);
+			Motor0.update(sendMessage);
 		}
 #ifdef LOG
 		auto& state = librobots2::motor_sim::MotorSimulation::state();
+		auto& gates = librobots2::motor_sim::MotorBridge::getConfig();
 		if (logTimer.execute())
 		{
 			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
 						   state.i[2], state.theta_m, state.omega_m, state.e[0], state.e[1],
-						   state.e[2], 0, state.t_e, state.t_l, state.t_f);
+						   state.e[2], MotorControl0::outputPWM() * 3, state.t_e, state.t_l,
+						   state.t_f, (int)gates[0] - 1, (int)gates[1] - 1, (int)gates[2] - 1);
 		}
 #endif
 
@@ -120,8 +126,8 @@ main()
 {
 
 	MODM_LOG_INFO << "Running test..." << modm::endl;
-	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "g1", "g2",
-					  "g3", "e1", "e2", "e3", "pwm", "te", "tl", "tf"}};
+	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "e1", "e2",
+					  "e3", "pwm", "te", "tl", "tf", "g1", "g2", "g3"}};
 	if (!writer.create("sim_motor.csv"))
 	{
 		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
@@ -137,17 +143,22 @@ main()
 	{
 		auto now = modm::Clock::now();
 		auto diff = now - start;
-		int pwm = std::sin(diff.count() / 1000.0f) * 32000.0f;
+		// int pwm = ((diff.count() / 400) % 2) * std::numeric_limits<int16_t>::max();
+		//  int pwm = std::sin(diff.count() / 1000.0f) * 32000.0f;
+		int pwm = std::numeric_limits<int16_t>::max();
+		double currentLimit = std::abs(std::sin(diff.count() / 1000.0f) * 2.0);
+		librobots2::motor_sim::CurrentLimit::set(currentLimit);
 		Motor0.testUpdate(pwm);
 #ifdef LOG
 		if (logTimer.execute())
 		{
 			auto& state = librobots2::motor_sim::MotorSimulation::state();
-			auto config = librobots2::motor_sim::MotorBridge::getConfig();
+			auto& pwms = librobots2::motor_sim::MotorBridge::getPWMs();
+			auto& gates = librobots2::motor_sim::MotorBridge::getConfig();
 			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
-						   state.i[2], state.theta_m, state.omega_m, (int8_t)config[0],
-						   (int8_t)config[1], (int8_t)config[2], state.e[0], state.e[1], state.e[2],
-						   pwm, state.t_e, state.t_l, state.t_f);
+						   state.i[2], state.theta_m, state.omega_m, state.e[0], state.e[1],
+						   state.e[2], pwms[0] * 3, state.t_e, state.t_l, state.t_f,
+						   (int)gates[0] - 1, (int)gates[1] - 1, (int)gates[2] - 1);
 			writer.flush();
 		}
 #endif
