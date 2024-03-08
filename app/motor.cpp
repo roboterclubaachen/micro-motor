@@ -29,8 +29,7 @@ void
 Motor::updatePosition()
 {
 	const auto hallState = readHall();
-	actualPosition_ += hallDiff(lastHallState_, hallState) *
-					   (1 << 12);  // Left shift by 12 bits to give some resolution
+	actualPosition_ += hallDiff(lastHallState_, hallState); 
 	lastHallState_ = hallState;
 }
 
