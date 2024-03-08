@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=19
+SupportedObjects=20
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1331,6 +1331,7 @@ SupportedObjects=19
 17=0x2018
 18=0x2019
 19=0x2020
+20=0x2021
 
 [2001]
 ParameterName=Update time
@@ -1478,36 +1479,11 @@ DefaultValue=200
 PDOMapping=1
 
 [2010]
-ParameterName=Current Pid
-ObjectType=0x8
-SubNumber=4
-
-[2010sub1]
-ParameterName= Current Pid kP 
+ParameterName=Default Current PWM
 ObjectType=0x7
-DataType=0x0008
-AccessType=wo
-PDOMapping=1
-
-[2010sub2]
-ParameterName= Current Pid kI 
-ObjectType=0x7
-DataType=0x0008
-AccessType=wo
-PDOMapping=1
-
-[2010sub3]
-ParameterName= Current Pid kD 
-ObjectType=0x7
-DataType=0x0008
-AccessType=wo
-PDOMapping=1
-
-[2010sub4]
-ParameterName= Current Pid Max Error Sum
-ObjectType=0x7
-DataType=0x0008
-AccessType=wo
+DataType=0x0003
+AccessType=rww
+DefaultValue=0
 PDOMapping=1
 
 [2011]
@@ -1589,3 +1565,11 @@ DataType=0x0008
 AccessType=ro
 DefaultValue=0
 PDOMapping=1
+
+[2021]
+ParameterName=Current Controller Inversion
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0

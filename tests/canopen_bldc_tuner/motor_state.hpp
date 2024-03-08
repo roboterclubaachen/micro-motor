@@ -34,7 +34,7 @@ struct MotorState
 	int32_t targetSpeed = 0;
 	int32_t velDemand = 0;
 
-	float pPID_kP = 8.0f;
+	float pPID_kP = 1.0f;
 	float pPID_kI = 0.0f;
 	float pPID_kD = 0.0f;
 

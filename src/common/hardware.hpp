@@ -547,7 +547,8 @@ initializeAllPeripherals()
 {
 	Ui::initializeDebugUart();
 	Motor::initialize();
-	MotorCurrent::initialize();
+	MotorCurrent::initialize(
+		CompBase::Hysteresis::Hysteresis10mV);  // Add hysteresis for current control
 	MotorBridge::initialize();
 	Encoder::initialize();
 	Sensor::initialize();
