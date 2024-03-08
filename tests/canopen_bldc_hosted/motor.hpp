@@ -22,7 +22,7 @@ private:
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
 	int32_t actualPosition_{};
-	modm::PeriodicTimer controlTimer_{1ms};
+	modm::PeriodicTimer controlTimer_{controlTiming_};
 	modm::PeriodicTimer simTimer_{100us};
 
 	modm::PreciseClock::time_point lastUpdate_{modm::PreciseClock::now()};

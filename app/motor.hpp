@@ -7,6 +7,7 @@
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
 #include <librobots2/motor/bldc_motor_current.hpp>
 #include <micro-motor/hardware.hpp>
+#include <micro-motor/micro-motor.hpp>
 #include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <modm/processing/timer.hpp>
@@ -19,7 +20,7 @@ private:
 	int32_t actualPosition_{};
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
-	modm::PeriodicTimer controlTimer_{1ms};
+	modm::PeriodicTimer controlTimer_{controlTiming_};
 	librobots2::motor::BldcMotorCurrent<16> current_;
 	modm::filter::MovingAverage<float, 1024> max_current_;
 
