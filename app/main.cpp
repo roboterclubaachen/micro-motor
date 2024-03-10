@@ -94,7 +94,7 @@ main()
 
 	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
-	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
+	Board::MotorCurrent::setCurrentLimit(0xFFFF);  // Set current limit to 100%
 
 	Motor0.initializeHall();
 

@@ -422,28 +422,26 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	VREFBUF->CSR |= (VREFBUF_CSR_ENVR | VREFBUF_CSR_VRS_1);
 
 	// Initialize comparator
-	CompU::initialize(CompU::InvertingInput::Dac3Ch1, CompU::NonInvertingInput::GpioA0);
-	CompV::initialize(CompV::InvertingInput::Dac3Ch1, CompV::NonInvertingInput::GpioA1);
-	CompW::initialize(CompW::InvertingInput::Dac3Ch2, CompW::NonInvertingInput::GpioA3);
+	CompU::initialize(CompU::InvertingInput::Dac3Ch1, CompU::NonInvertingInput::GpioA0, hysteresis);
+	CompV::initialize(CompV::InvertingInput::Dac3Ch1, CompV::NonInvertingInput::GpioA1, hysteresis);
+	CompW::initialize(CompW::InvertingInput::Dac3Ch2, CompW::NonInvertingInput::GpioA3, hysteresis);
 	// Connect comparators INPs to Gpios
 	// Connect DAC3_OUT1 to COMP1_INM,
 	// DAC3_OUT2 to COMP2_INM,
 	// and DAC3_OUT1 to COMP3_INM
 
-	CompU::setHysteresis(hysteresis);
-	CompV::setHysteresis(hysteresis);
-	CompW::setHysteresis(hysteresis);
-
 	// Connect COMP{1,2,3}_OUT to TIM1_BKIN
-	TIM1->AF1 |= (TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
+	TIM1->AF1 |= (TIM1_AF1_BKINE |TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
+	TIM1->BDTR |= (TIM_BDTR_BKE | TIM_BDTR_AOE | TIM_BDTR_BKP);
 
 	// Initialize STM32 internal DAC3
 	Rcc::enable<Peripheral::Dac3>();
 	// RCC->AHB2ENR1 |= RCC_AHB2ENR_DAC3EN;
-	DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0;
+
+	setCurrentLimit(0x7FFF + (0xFFF / 2));  // 50%
+	DAC3->MCR = DAC_MCR_MODE1_0 | DAC_MCR_MODE2_0 | DAC_MCR_MODE1_1 | DAC_MCR_MODE2_1;
 	DAC3->CR = DAC_CR_EN1 | DAC_CR_EN2;
 	// 5mohm shunt, 50V pro V gain amplifier
-	setCurrentLimit(0x7FFF + (0xFFF / 2));  // 50%
 
 	modm::Timeout waitForVRefBuf = modm::Timeout(20ms);
 	while (!waitForVRefBuf.execute())

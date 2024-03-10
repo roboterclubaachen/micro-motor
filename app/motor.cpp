@@ -40,8 +40,7 @@ Motor::updateCurrent()
 	current_.updateCurrentAverage(std::get<0>(currents), std::get<1>(currents));
 	auto curr_u = micro_motor::convertAdcToCurrent(adc_u_value);
 	auto curr_v = micro_motor::convertAdcToCurrent(adc_v_value);
-	auto curr_w = -curr_u - curr_v;
-	auto curr_max = std::max(std::max(std::abs(curr_u), std::abs(curr_v)), std::abs(curr_w));
+	auto curr_max = std::max(std::abs(curr_u), std::abs(curr_v));
 	max_current_.update(curr_max);
 }
 
@@ -67,6 +66,7 @@ MODM_ISR(TIM1_UP_TIM16)
 									AdcU::InterruptFlag::EndOfSampling |
 									AdcU::InterruptFlag::Overrun);
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
+	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Break);
 	Motor0.updateMotor();
 }
 }  // namespace micro_motor

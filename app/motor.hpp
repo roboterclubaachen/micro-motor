@@ -75,6 +75,7 @@ Motor::update(MessageCallback&& cb)
 		if (!MotorControl0::state().enableMotor_)
 		{
 			motor_.disable();
+			micro_motor::setCurrentLimitAmps(0);
 		} else
 		{
 			motor_.setSetpoint(MotorControl0::outputPWM());

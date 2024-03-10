@@ -27,17 +27,16 @@ clarkeTransform(float u, float v)
 constexpr float
 convertAdcToCurrent(uint16_t adcValue)
 {
-	// return adcValue - 0x7ff;
-
 	constexpr float ShuntResistance = 5e-3;
 	constexpr float CurrentGain = 50;
 	constexpr float ReferenceVoltage = 2.9;
+	constexpr float FummelKonstante = 2.0f;
 	constexpr uint16_t AdcCounts = (1 << 12) - 1;
 
 	const float adcVoltage = adcValue * (ReferenceVoltage / AdcCounts);
 	const float current =
-		(adcVoltage - (ReferenceVoltage / 2)) * (1 / (CurrentGain * ShuntResistance));
-	return current;
+		((adcVoltage - (ReferenceVoltage / 2.0f)) / (CurrentGain * ShuntResistance));
+	return current * FummelKonstante;
 }
 
 constexpr uint16_t
@@ -48,7 +47,7 @@ convertCurrentToAdc(float current)
 	constexpr float ReferenceVoltage = 2.9;
 	constexpr uint16_t AdcCounts = (1 << 12) - 1;
 	const float adcVoltage =
-		(current / (1 / CurrentGain * ShuntResistance)) + (ReferenceVoltage / 2);
+		(current * CurrentGain * ShuntResistance) + (ReferenceVoltage / 2.0f);
 	const float adcValue = adcVoltage / (ReferenceVoltage / AdcCounts);
 	return (uint16_t)adcValue;
 }
