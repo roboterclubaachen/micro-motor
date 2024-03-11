@@ -64,22 +64,22 @@ Motor::update(MessageCallback&& cb)
 	updateCurrent();
 	if (controlTimer_.execute())
 	{
-		MotorControl0::setActualPosition(actualPosition_);
+		MotorState0::setActualPosition(actualPosition_);
 		// auto current = current_.getMagnitude();
 		// auto velocity = MotorControl0::state().actualVelocity_.getValue();
 		// if (std::signbit(velocity)) current = -current;
-		MotorControl0::setUnorientedCurrent(max_current_.getValue());
-		MotorControl0::setOrientedCurrent(current_.getOrientedCurrent());
-		MotorControl0::setOrientedCurrentAngleDiff(current_.getAngleDifference());
+		MotorState0::setUnorientedCurrent(max_current_.getValue());
+		MotorState0::setOrientedCurrent(current_.getOrientedCurrent());
+		MotorState0::setOrientedCurrentAngleDiff(current_.getAngleDifference());
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
-		if (!MotorControl0::state().enableMotor_)
+		if (!MotorState0::enableMotor_)
 		{
 			motor_.disable();
 			micro_motor::setCurrentLimitAmps(0);
 		} else
 		{
-			motor_.setSetpoint(MotorControl0::outputPWM());
-			micro_motor::setCurrentLimitAmps(MotorControl0::currentLimit());
+			motor_.setSetpoint(MotorState0::outputPWM());
+			micro_motor::setCurrentLimitAmps(MotorState0::currentLimit());
 		}
 		updated = true;
 	}

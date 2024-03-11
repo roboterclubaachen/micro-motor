@@ -69,16 +69,16 @@ Motor::update(MessageCallback&& cb)
 	updatePosition();
 	if (controlTimer_.execute())
 	{
-		MotorControl0::setUnorientedCurrent(MotorSimulation::maxCurrent());
-		MotorControl0::setActualPosition(actualPosition_);
+		MotorState0::setUnorientedCurrent(MotorSimulation::maxCurrent());
+		MotorState0::setActualPosition(actualPosition_);
 		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
-		if (!MotorControl0::state().enableMotor_)
+		if (!MotorState0::enableMotor_)
 		{
 			motor_.disable();
 		} else
 		{
-			motor_.setSetpoint(MotorControl0::outputPWM());
-			CurrentLimit::set(MotorControl0::currentLimit());
+			motor_.setSetpoint(MotorState0::outputPWM());
+			CurrentLimit::set(MotorState0::currentLimit());
 		}
 		updated = true;
 	}

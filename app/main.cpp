@@ -140,14 +140,18 @@ main()
 		if (debugTimer.execute() && false)
 		{
 			MODM_LOG_DEBUG << "MotorState:\n"
-						   << "Max Current: " << state.maxCurrent_ << "\n"
+						   << "Max Current: " << MotorState0::maxCurrent_ << "\n"
 						   << "Commanded Current: " << CurrentControl<0>::commandedCurrent_ << "\n"
 						   << "Target Current: " << CurrentProtocol<0>::targetCurrent_ << "\n"
-						   << "Unoriented Current: " << state.unorientedCurrent_ << "\n"
-						   << "Oriented Current: " << state.orientedCurrent_ << "\n"
-						   << "Mode: " << state.mode_ << "\n"
-						   << "Charge: " << state.currentCharge_ << "\n"
-						   << "PWM: " << state.outputPWM_ << modm::endl;
+						   << "Unoriented Current: " << MotorState0::unorientedCurrent_ << "\n"
+						   << "Oriented Current: " << MotorState0::orientedCurrent_ << "\n"
+						   << "Commanded Velocity: "<<VelocityProtocol<0>::commandedVelocity_ << "\n"
+						   << "Actual Velocity: "<<MotorState0::actualVelocity_.getValue() << "\n"
+						   << "Commanded Position: "<<PositionProtocol<0>::commandedPosition_ << "\n"
+						   << "Actual Position: "<<MotorState0::actualPosition_ << "\n"
+						   << "Mode: " << MotorState0::mode_ << "\n"
+						   << "Charge: " << MotorState0::currentCharge_ << "\n"
+						   << "PWM: " << MotorState0::outputPWM_ << modm::endl;
 		}
 	}
 

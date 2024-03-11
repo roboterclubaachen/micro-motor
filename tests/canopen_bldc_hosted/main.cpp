@@ -106,7 +106,7 @@ main(int argc, char** argv)
 		{
 			writer.addRowC(diff.count(), state.v[0], state.v[1], state.v[2], state.i[0], state.i[1],
 						   state.i[2], state.theta_m, state.omega_m, state.e[0], state.e[1],
-						   state.e[2], MotorControl0::outputPWM() * 3, state.t_e, state.t_l,
+						   state.e[2], MotorState0::outputPWM() * 3, state.t_e, state.t_l,
 						   state.t_f, (int)gates[0] - 1, (int)gates[1] - 1, (int)gates[2] - 1);
 		}
 #endif
