@@ -8,7 +8,7 @@
 #include "../state.hpp"
 #include "../canopen.hpp"
 
-#ifdef POSITION_CMDS
+#ifdef VELOCITY_CMDS
 #define CMDLIST
 
 size_t maxTime = 10100;
@@ -23,24 +23,25 @@ constexpr std::array sendCommands{
 					.time{20},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
+					.mode{OperatingMode::Velocity},
 					.time{30},
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
+					.mode{OperatingMode::Velocity},
 					.time{1030},
 					.custom{[]() {
-						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
-												state.targetPosition, sendMessage);
+						state.targetSpeed = 5000;
+						SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity,
+												state.targetSpeed, sendMessage);
 						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Position},
+					.mode{OperatingMode::Velocity},
 					.time{5030},
 					.custom{[]() {
-						state.targetPosition = 200;
-						SdoClient::requestWrite(motorId, PositionObjects::TargetPosition,
-												state.targetPosition, sendMessage);
+						state.targetSpeed = -5000;
+						SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity,
+												state.targetSpeed, sendMessage);
 						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
 					}}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},

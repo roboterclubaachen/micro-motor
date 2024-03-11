@@ -7,17 +7,15 @@
 using modm_canopen::cia402::OperatingMode;
 
 // PIDs
-constexpr float pPID_kP = 8.0f;
-constexpr float pPID_kI = 0.0f;
+constexpr float pPID_kP = 5.0f;
+constexpr float pPID_kI = 0.01f;
 constexpr float pPID_kD = 0.0f;
 
-constexpr float vPID_kP = 0.0025f;
-constexpr float vPID_kI = 0.0000015f;
-constexpr float vPID_kD = 0.0000001f;
+constexpr float vPID_kP = 0.0012f;
+constexpr float vPID_kI = 0.00001;
+constexpr float vPID_kD = 0.0;
 
-constexpr float cPID_kP = -0.001f;
-constexpr float cPID_kI = -0.004f;
-constexpr float cPID_kD = 0.0f;
+constexpr bool invert = true;
 
 struct State
 {
@@ -34,7 +32,7 @@ struct State
 	int32_t posDemand = 0;
 	int32_t posErrorValue = 0;
 
-	float targetCurrent = 0.4f;
+	float targetCurrent = 0.0f;
 	float currentValue = 0.0f;
 	float commandedCurrent = 0.0f;
 	float currentErrorValue = 0.0f;

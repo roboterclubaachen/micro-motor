@@ -15,6 +15,9 @@
 #include "canopen.hpp"
 #include "setup.hpp"
 #include "runs/pwm_run.hpp"
+#include "runs/current_run.hpp"
+#include "runs/velocity_run.hpp"
+#include "runs/position_run.hpp"
 
 using namespace std::literals;
 

@@ -97,6 +97,6 @@ setPDOs(MessageCallback&& sendMessage)
 	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kD, pPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, CurrentObjects::DefaultPWM,(int16_t) std::numeric_limits<int16_t>::max()-1,
+	SdoClient::requestWrite(motorId, CurrentObjects::ShouldInvert,(uint8_t) invert,
 							std::forward<MessageCallback>(sendMessage));
 }
