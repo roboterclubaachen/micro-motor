@@ -28,6 +28,9 @@
 #include <micro-motor/canopen/canopen.hpp>
 #include "motor.hpp"
 
+#include <info_build.h>
+#include <info_git.h>
+
 inline modm::IODeviceWrapper<Board::Ui::DebugUart, modm::IOBuffer::BlockIfFull> loggerDevice;
 inline modm::log::Logger modm::log::debug(loggerDevice);
 inline modm::log::Logger modm::log::info(loggerDevice);
@@ -83,10 +86,35 @@ main()
 	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
 				   << modm::endl;
 
+	// Let's print some information about the compiling host, user etc.
+	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;
+	MODM_LOG_INFO << "User:     " << MODM_BUILD_USER << modm::endl;
+	MODM_LOG_INFO << "Os:       " << MODM_BUILD_OS << modm::endl;
+	MODM_LOG_INFO << "Compiler: " << MODM_BUILD_COMPILER << modm::endl;
+	// Let's print some information about the git statud, that is provided in the
+	// modm_git_info.hpp
+	MODM_LOG_INFO << "Local Git User:" << modm::endl;
+	MODM_LOG_INFO << "Name:  " << MODM_GIT_CONFIG_USER_NAME << "<" << MODM_GIT_CONFIG_USER_EMAIL
+				  << ">" << modm::endl;
+	MODM_LOG_INFO << "Last Commit:" << modm::endl;
+	MODM_LOG_INFO << "Abbreviated SHA: " << MODM_GIT_SHA_ABBR << modm::endl;
+	MODM_LOG_INFO << "Subject:         " << MODM_GIT_SUBJECT << modm::endl;
+	MODM_LOG_INFO << modm::endl << "Author:" << modm::endl;
+	MODM_LOG_INFO << "Name:      " << MODM_GIT_AUTHOR << modm::endl;
+	MODM_LOG_INFO << "Email:     " << MODM_GIT_AUTHOR_EMAIL << modm::endl;
+	MODM_LOG_INFO << "Date:      " << MODM_GIT_AUTHOR_DATE << modm::endl;
+	MODM_LOG_INFO << "Timestamp: " << MODM_GIT_AUTHOR_DATE_TIMESTAMP << modm::endl;
+	MODM_LOG_INFO << modm::endl << "File Status:" << modm::endl;
+	MODM_LOG_INFO << "Mod " << MODM_GIT_MODIFIED << " Add " << MODM_GIT_ADDED << " Del "
+				  << MODM_GIT_DELETED;
+	MODM_LOG_INFO << " Ren " << MODM_GIT_RENAMED << " Cop " << MODM_GIT_COPIED << " Unt "
+				  << MODM_GIT_UNTRACKED << modm::endl;
+	MODM_LOG_INFO << modm::endl;
+
 	const uint8_t boardId = readBoardId();
 	const uint8_t nodeId = 2 * boardId;
 	MODM_LOG_INFO.printf("Board ID: %d\n", boardId);
-	MODM_LOG_INFO.printf("Node ID: %d\n", nodeId);
+	MODM_LOG_INFO.printf("Canopen Node ID: %d\n", nodeId);
 
 	Board::MotorBridge::GateDriverEnable::set();
 	RF_CALL_BLOCKING(gateDriver.initialize());
@@ -145,10 +173,12 @@ main()
 						   << "Target Current: " << CurrentProtocol<0>::targetCurrent_ << "\n"
 						   << "Unoriented Current: " << MotorState0::unorientedCurrent_ << "\n"
 						   << "Oriented Current: " << MotorState0::orientedCurrent_ << "\n"
-						   << "Commanded Velocity: "<<VelocityProtocol<0>::commandedVelocity_ << "\n"
-						   << "Actual Velocity: "<<MotorState0::actualVelocity_.getValue() << "\n"
-						   << "Commanded Position: "<<PositionProtocol<0>::commandedPosition_ << "\n"
-						   << "Actual Position: "<<MotorState0::actualPosition_ << "\n"
+						   << "Commanded Velocity: " << VelocityProtocol<0>::commandedVelocity_
+						   << "\n"
+						   << "Actual Velocity: " << MotorState0::actualVelocity_.getValue() << "\n"
+						   << "Commanded Position: " << PositionProtocol<0>::commandedPosition_
+						   << "\n"
+						   << "Actual Position: " << MotorState0::actualPosition_ << "\n"
 						   << "Mode: " << MotorState0::mode_ << "\n"
 						   << "Charge: " << MotorState0::currentCharge_ << "\n"
 						   << "PWM: " << MotorState0::outputPWM_ << modm::endl;

@@ -7,7 +7,10 @@
   </repositories>
 
   <extends>micro-motor:board</extends>
-
+  <options>
+    <option name="modm:build:info.git">Info+Status</option>
+    <option name="modm:build:info.build">True</option>
+  </options>
   <modules>
     <module>modm:debug</module>
     <module>modm:build:scons</module>

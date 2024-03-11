@@ -5,7 +5,6 @@
 
 #include <modm-canopen/device/canopen_device.hpp>
 #include <modm-canopen/object_dictionary.hpp>
-#include <modm/debug/logger.hpp>
 
 #include <librobots2/motor-canopen/current_protocol.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
@@ -13,6 +12,10 @@
 #include <librobots2/motor-canopen/error_protocol.hpp>
 #include <librobots2/motor-canopen/velocity_protocol.hpp>
 #include <librobots2/motor-canopen/position_protocol.hpp>
+#include <librobots2/motor-canopen/identity_protocol.hpp>
+#include <librobots2/motor-canopen/heartbeat_protocol.hpp>
+#include <librobots2/motor-canopen/quickstop_protocol.hpp>
+#include <librobots2/motor-canopen/motor_state.hpp>
 
 template<size_t id>
 using MotorControl_t = MotorControl<id, MotorState<id>, IdentityProtocol<id>, HeartbeatProtocol<id>,
