@@ -158,13 +158,12 @@ main()
 			MODM_LOG_ERROR << "No messages! Resetting...\n" << modm::endl;
 			break;
 		}
-		if (MotorControl0::state().resetMotor_)
+		if (MotorState0::resetMotor_)
 		{
 			MODM_LOG_ERROR << "Resetting...\n" << modm::endl;
 			break;
 		}
 
-		auto& state = MotorControl0::state();
 		if (debugTimer.execute() && false)
 		{
 			MODM_LOG_DEBUG << "MotorState:\n"
