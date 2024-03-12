@@ -1,5 +1,4 @@
-#define HOSTED
-#define PWM_CMDS
+#define VELOCITY_CMDS
 
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>

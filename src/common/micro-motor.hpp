@@ -30,7 +30,7 @@ convertAdcToCurrent(uint16_t adcValue)
 	constexpr float ShuntResistance = 5e-3;
 	constexpr float CurrentGain = 50;
 	constexpr float ReferenceVoltage = 2.9;
-	constexpr float FummelKonstante = 2.0f;
+	constexpr float FummelKonstante = 1.0f;
 	constexpr uint16_t AdcCounts = (1 << 12) - 1;
 
 	const float adcVoltage = adcValue * (ReferenceVoltage / AdcCounts);
@@ -49,7 +49,7 @@ convertCurrentToAdc(float current)
 	const float adcVoltage =
 		(current * CurrentGain * ShuntResistance) + (ReferenceVoltage / 2.0f);
 	const float adcValue = adcVoltage / (ReferenceVoltage / AdcCounts);
-	return (uint16_t)adcValue;
+	return (uint16_t)std::clamp(adcValue,0.0f,4095.0f);
 }
 
 inline void

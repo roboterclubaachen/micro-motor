@@ -16,7 +16,7 @@ constexpr char canDevice[] = "vcan0";
 constexpr uint8_t motorId = 10;  // Keep consistent with firmware
 #else
 constexpr char canDevice[] = "can0";
-constexpr uint8_t motorId = 12;  // Keep consistent with firmware
+constexpr uint8_t motorId = 6;  // Keep consistent with firmware
 #endif
 
 static inline modm::platform::SocketCan can;

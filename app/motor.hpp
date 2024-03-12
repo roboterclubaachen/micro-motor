@@ -22,7 +22,7 @@ private:
 	uint_fast8_t lastHallState_{};
 	modm::PeriodicTimer controlTimer_{controlTiming_};
 	librobots2::motor::BldcMotorCurrent<16> current_;
-	modm::filter::MovingAverage<float, 1024> max_current_;
+	modm::filter::MovingAverage<float, 128> max_current_;
 
 	librobots2::motor::BldcMotorBlockCommutation<Board::Motor> motor_;
 	using Hall = librobots2::motor::HallPermutations<Board::Motor::HallPort>;
@@ -86,5 +86,5 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-constexpr uint8_t motor0CommutationOffset{2};
+constexpr uint8_t motor0CommutationOffset{1};
 inline Motor Motor0{motor0CommutationOffset};

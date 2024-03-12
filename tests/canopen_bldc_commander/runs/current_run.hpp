@@ -30,15 +30,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Current},
 					.time{1030},
 					.custom{[]() {
-						state.targetCurrent = 0.6;
-						SdoClient::requestWrite(motorId, CurrentObjects::TargetCurrent,
-												state.targetCurrent, sendMessage);
-					}}},
-	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::EnableOperation},
-					.mode{OperatingMode::Current},
-					.time{5030},
-					.custom{[]() {
-						state.targetCurrent = 0.2;
+						state.targetCurrent = 1.2;
 						SdoClient::requestWrite(motorId, CurrentObjects::TargetCurrent,
 												state.targetCurrent, sendMessage);
 					}}},

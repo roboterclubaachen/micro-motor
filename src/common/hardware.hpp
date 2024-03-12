@@ -418,8 +418,10 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	SenseW::setAnalogInput();
 
 	// Set VREFBUF output to 2.9 V
+	VREFBUF->CSR &= ~VREFBUF_CSR_ENVR;
 	VREFBUF->CSR &= ~(VREFBUF_CSR_HIZ | VREFBUF_CSR_VRS_0);
-	VREFBUF->CSR |= (VREFBUF_CSR_ENVR | VREFBUF_CSR_VRS_1);
+	VREFBUF->CSR |= VREFBUF_CSR_VRS_1;
+	VREFBUF->CSR |= VREFBUF_CSR_ENVR;
 
 	// Initialize comparator
 	CompU::initialize(CompU::InvertingInput::Dac3Ch1, CompU::NonInvertingInput::GpioA0, hysteresis);
@@ -460,9 +462,9 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	ADC1->CFGR |= ADC_CFGR_EXTEN_0 | (10 << ADC_CFGR_EXTSEL_Pos) | ADC_CFGR_OVRMOD;
 	ADC2->CFGR |= ADC_CFGR_EXTEN_0 | (10 << ADC_CFGR_EXTSEL_Pos) | ADC_CFGR_OVRMOD;
 
-	AdcU::setPinChannel<SenseU>(AdcU::SampleTime::Cycles13);
+	AdcU::setPinChannel<SenseU>(AdcU::SampleTime::Cycles7);
 	// AdcU::setChannel(AdcU::Channel::Channel1, AdcU::SampleTime::Cycles13);
-	AdcV::setPinChannel<SenseV>(AdcV::SampleTime::Cycles13);
+	AdcV::setPinChannel<SenseV>(AdcV::SampleTime::Cycles7);
 	// AdcV::setChannel(AdcV::Channel::Channel2, AdcV::SampleTime::Cycles13);
 
 	AdcU::startConversion();
