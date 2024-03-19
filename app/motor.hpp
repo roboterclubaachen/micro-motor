@@ -86,5 +86,5 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-constexpr uint8_t motor0CommutationOffset{1};
+constexpr uint8_t motor0CommutationOffset{0};
 inline Motor Motor0{motor0CommutationOffset};
