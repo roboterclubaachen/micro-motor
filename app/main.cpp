@@ -47,27 +47,59 @@ modm::Drv832xSpi<Board::MotorBridge::GateDriver::Spi, Board::MotorBridge::GateDr
 namespace
 {
 
+struct BoardId
+{
+	uint32_t id;
+	uint32_t nodeId;
+	uint8_t hw_version_major;
+	uint8_t hw_version_minor;
+};
 uint8_t
 readBoardId()
 {
 	static constexpr std::array boards = {
 		// hardware id, board id
-		std::pair{0x00320025u, 1u},  std::pair{0x0031002cu, 2u}, std::pair{0x00340045u, 3u},
-		std::pair{0x00340047u, 4u},  std::pair{0x002c0048u, 5u}, std::pair{0x002b0041u, 6u},
-		std::pair{0x002b0045u, 7u},  std::pair{0x002e002cu, 8u}, std::pair{0x002e002du, 9u},
-		std::pair{0x00320041u, 10u}, std::pair{0x002c004du, 11u}};
+		BoardId{.id = 0x00320025u, .nodeId = 1u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x0031002cu, .nodeId = 2u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x00340045u, .nodeId = 3u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x00340047u, .nodeId = 4u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002c0048u, .nodeId = 5u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002b0041u, .nodeId = 6u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002b0045u, .nodeId = 7u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002e002cu, .nodeId = 8u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002e002du, .nodeId = 9u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x00320041u, .nodeId = 10u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x002c004du, .nodeId = 11u, .hw_version_major = 2, .hw_version_minor = 1},
+		BoardId{.id = 0x00390046u, .nodeId = 12u, .hw_version_major = 2, .hw_version_minor = 2},
+		BoardId{.id = 0x00290044, .nodeId = 13u, .hw_version_major = 2, .hw_version_minor = 2},
+		BoardId{.id = 0x002E0046, .nodeId = 14u, .hw_version_major = 2, .hw_version_minor = 2},
+		BoardId{.id = 0x00410046, .nodeId = 15u, .hw_version_major = 2, .hw_version_minor = 2},
+	};
 
 	const auto hardwareId = Board::readHardwareId();
 	auto it = std::find_if(std::begin(boards), std::end(boards),
-						   [hardwareId](auto board) { return board.first == hardwareId; });
+						   [hardwareId](auto board) { return board.id == hardwareId; });
 	if (it == std::end(boards))
 	{
-		MODM_LOG_INFO << "Hardware ID: " << modm::hex << hardwareId << modm::endl;
+		MODM_LOG_INFO << "Hardware ID: 0x" << modm::hex << hardwareId << modm::endl;
 		MODM_LOG_ERROR << "Board not found" << modm::endl;
+		Board::Ui::LedRed::set();
+		while (1) asm volatile("nop");
+	}
+	if (it->hw_version_major != Board::Version_Major ||
+		it->hw_version_minor != Board::Version_Minor)
+	{
+		MODM_LOG_INFO << "Hardware ID: 0x" << modm::hex << hardwareId << modm::endl;
+		MODM_LOG_ERROR << "Wrong hardware version!" << modm::endl;
+		MODM_LOG_ERROR << "Is v" << Board::Version_Major << "." << Board::Version_Minor
+					   << modm::endl;
+		MODM_LOG_ERROR << "Should be v" << it->hw_version_major << "." << it->hw_version_minor
+					   << modm::endl;
+		Board::Ui::LedRed::set();
 		while (1) asm volatile("nop");
 	}
 
-	return it->second;
+	return it->nodeId;
 }
 
 }  // namespace
@@ -85,7 +117,8 @@ main()
 
 	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
 				   << modm::endl;
-	MODM_LOG_INFO << "Compiled for board version v"<<Board::Version_Major << "."<<Board::Version_Minor << modm::endl;
+	MODM_LOG_INFO << "Compiled for board version v" << Board::Version_Major << "."
+				  << Board::Version_Minor << modm::endl;
 
 	// Let's print some information about the compiling host, user etc.
 	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;

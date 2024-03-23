@@ -38,10 +38,12 @@ def prepare(module, options):
         # driver etc.
         "modm:platform:adc:1",
         "modm:platform:adc:2",
+        "modm:platform:adc:3",
         "modm:platform:can:1",
         "modm:platform:comp:1",
         "modm:platform:comp:2",
         "modm:platform:comp:3",
+        "modm:platform:comp:4",
         "modm:platform:dac:1",
         "modm:platform:dac:2",
         "modm:platform:gpio",
