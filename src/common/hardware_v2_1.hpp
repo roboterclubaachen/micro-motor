@@ -33,6 +33,9 @@ namespace Board
 {
 using namespace modm::literals;
 
+constexpr uint32_t Version_Major = 2;
+constexpr uint32_t Version_Minor = 1;
+
 /// STM32G474RE running at 170MHz generated from the internal 16MHz crystal
 // Dummy clock for devices
 struct SystemClock

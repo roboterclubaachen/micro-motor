@@ -15,10 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from enum import Enum
+
 def init(module):
     module.name = ":common"
 
+class Board(Enum):
+    v2_1 = 0
+    v2_2 = 1
+
 def prepare(module, options):
+    module.add_option(
+        EnumerationOption(name="board_version",
+                     description="Version of the micro motor board",
+                     enumeration=Board))
     module.depends(
         # basics
         "modm:architecture:clock",
@@ -51,12 +61,11 @@ def prepare(module, options):
 
 def build(env):
     env.outbasepath = "micro-motor/src/micro-motor"
-    env.copy("hardware.hpp")
+    if env.get("board_version") == (Board.v2_1.value):
+        env.copy("hardware_v2_1.hpp",dest="hardware.hpp")
+    elif env.get("board_version") == (Board.v2_2.value):
+        env.copy("hardware_v2_2.hpp",dest="hardware.hpp")
+    else:
+        print("Invalid Board version!")
     env.copy("micro-motor.hpp")
-    #env.copy("imotor.hpp")
-    #env.copy("imotor.cpp")
-    #env.copy("logger.cpp")
-    #env.copy("configuration.hpp")
-    #env.copy("motor_bridge.hpp")
-    #env.copy("motor_bridge_impl.hpp")
     env.collect("modm:build:openocd.source", localpath("openocd.cfg"))

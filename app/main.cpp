@@ -85,6 +85,7 @@ main()
 
 	MODM_LOG_ERROR << "Micro-Motor Application controlling BLDC Motors via canOpen interace"
 				   << modm::endl;
+	MODM_LOG_INFO << "Compiled for board version v"<<Board::Version_Major << "."<<Board::Version_Minor << modm::endl;
 
 	// Let's print some information about the compiling host, user etc.
 	MODM_LOG_INFO << "Machine:  " << MODM_BUILD_MACHINE << modm::endl;
