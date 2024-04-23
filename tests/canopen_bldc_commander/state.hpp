@@ -16,7 +16,7 @@ constexpr float pPID_kD = 0.0f;
 //constexpr float vPID_kI = 0.000006f;
 //constexpr float vPID_kD = 0.01f;
 
-constexpr float vPID_kP = 0.00021f;
+constexpr float vPID_kP = 0.00081f;
 constexpr float vPID_kI = 0.000002f;
 constexpr float vPID_kD = 0.0f;
 
