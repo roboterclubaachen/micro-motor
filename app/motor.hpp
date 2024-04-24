@@ -14,12 +14,28 @@
 
 using namespace std::literals;
 
+constexpr Identity micromotorId = {.deviceType_ = DeviceType::BLDC,
+								   .productCode_ = ProductCode::MicroMotor};
+
+constexpr MotorInfo chinesium = {
+	.id = micromotorId,
+	.winding_r_ohm = 1.8f,
+	.hall_offset = 1,
+};
+
+constexpr MotorInfo maxon = {
+	.id = micromotorId,
+	.winding_r_ohm = 3.8f,
+	.hall_offset = 0,
+};
+
 class Motor
 {
 private:
 	int32_t actualPosition_{};
 	uint_fast8_t commutationOffset_;
 	uint_fast8_t lastHallState_{};
+
 	modm::PeriodicTimer controlTimer_{controlTiming_};
 	librobots2::motor::BldcMotorCurrent<16> current_;
 	modm::filter::MovingAverage<float, 128> max_current_;
@@ -40,7 +56,7 @@ private:
 	updatePosition();
 
 public:
-	Motor(uint_fast8_t commutationOffset);
+	Motor(MotorInfo motorInfo);
 	void
 	initializeHall()
 	{
@@ -86,5 +102,4 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-constexpr uint8_t motor0CommutationOffset{0};
-inline Motor Motor0{motor0CommutationOffset};
+inline Motor Motor0{chinesium};

@@ -23,10 +23,12 @@ hallDiff(int_fast8_t oldState, int_fast8_t newState)
 }
 }  // namespace
 
-Motor::Motor(uint_fast8_t commutationOffset)
-	: commutationOffset_{commutationOffset}, motor_{commutationOffset}
+Motor::Motor(MotorInfo info)
+	: commutationOffset_{info.hall_offset}, motor_{info.hall_offset}
 
-{}
+{
+	MotorState0::initialize(info);
+}
 
 void
 Motor::updatePosition()
