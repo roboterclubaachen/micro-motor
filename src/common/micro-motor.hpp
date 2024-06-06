@@ -2,6 +2,7 @@
 #include "hardware.hpp"
 #include <tuple>
 #include <cmath>
+#include <array>
 #include <modm/debug/logger.hpp>
 namespace micro_motor
 {
@@ -40,7 +41,7 @@ convertAdcToCurrent(uint16_t adcValue)
 }
 
 constexpr uint16_t
-convertCurrentToAdc(float current)
+convertCurrentToCurrentLimit(float current)
 {
 	constexpr float ShuntResistance = 5e-3;
 	constexpr float CurrentGain = 50;
@@ -55,16 +56,18 @@ convertCurrentToAdc(float current)
 inline void
 setCurrentLimitAmps(float limit)
 {
-	uint16_t limit_12_bit = convertCurrentToAdc(limit) & 0x0FFF;
+	uint16_t limit_12_bit = convertCurrentToCurrentLimit(limit) & 0x0FFF;
 	DAC3->DHR12R1 = limit_12_bit;
 	DAC3->DHR12R2 = limit_12_bit;
 }
 
-inline std::tuple<float, float>
-getClarkePhaseCurrents(uint16_t adcU, uint16_t adcV)
-{
-	// MODM_LOG_INFO << modm::hex << "ADCU " << adcU << " ADCV " << adcV << modm::endl;
-	return clarkeTransform(convertAdcToCurrent(adcU), convertAdcToCurrent(adcV));
-}
+void
+updateADC();
+
+std::array<float, 3>
+getADCCurrents();
+
+std::array<uint16_t, 3>
+getADCValues();
 
 };  // namespace micro_motor

@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <library>
   <repositories>
-    <repository><path>../../repo.lb</path></repository>
+    <repository>
+      <path>../../repo.lb</path>
+    </repository>
   </repositories>
 
   <extends>micro-motor:board</extends>

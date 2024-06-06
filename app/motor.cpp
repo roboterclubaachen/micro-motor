@@ -2,13 +2,6 @@
 #include <micro-motor/micro-motor.hpp>
 #include <modm/debug/logger.hpp>
 using StatusBits = modm_canopen::cia402::StatusBits;
-
-static uint16_t adc_u_value = 0x7ff;
-static uint16_t adc_v_value = 0x7ff;
-#ifdef MICRO_MOTOR_HAS_ADC_W
-static uint16_t adc_w_value = 0x7ff;
-#endif
-
 namespace
 {
 int_fast8_t
@@ -41,14 +34,12 @@ Motor::updatePosition()
 void
 Motor::updateCurrent()
 {
-	auto currents = micro_motor::getClarkePhaseCurrents(adc_u_value, adc_v_value);
+	auto phase_current = micro_motor::getADCCurrents();
+	auto currents = micro_motor::clarkeTransform(phase_current[0], phase_current[1]);
 	current_.updateCurrentAverage(std::get<0>(currents), std::get<1>(currents));
-	auto curr_u = micro_motor::convertAdcToCurrent(adc_u_value);
-	auto curr_v = micro_motor::convertAdcToCurrent(adc_v_value);
-	auto curr_max = std::max(std::abs(curr_u), std::abs(curr_v));
+	auto curr_max = std::max(std::abs(phase_current[0]), std::abs(phase_current[1]));
 #ifdef MICRO_MOTOR_HAS_ADC_W
-	auto curr_w = micro_motor::convertAdcToCurrent(adc_w_value);
-	curr_max = std::max(curr_max, std::abs(curr_w));
+	curr_max = std::max(curr_max, std::abs(phase_current[2]));
 #endif
 	max_current_.update(curr_max);
 }
@@ -63,27 +54,7 @@ namespace micro_motor
 {
 MODM_ISR(TIM1_UP_TIM16)
 {
-	using AdcU = Board::MotorCurrent::AdcU;
-	using AdcV = Board::MotorCurrent::AdcV;
-
-	::adc_u_value = AdcU::getValue();
-	::adc_v_value = AdcV::getValue();
-
-	AdcV::acknowledgeInterruptFlags(AdcV::InterruptFlag::EndOfRegularConversion |
-									AdcV::InterruptFlag::EndOfSampling |
-									AdcV::InterruptFlag::Overrun);
-	AdcU::acknowledgeInterruptFlags(AdcU::InterruptFlag::EndOfRegularConversion |
-									AdcU::InterruptFlag::EndOfSampling |
-									AdcU::InterruptFlag::Overrun);
-
-#ifdef MICRO_MOTOR_HAS_ADC_W
-	using AdcW = Board::MotorCurrent::AdcW;
-	::adc_w_value = AdcW::getValue();
-	AdcW::acknowledgeInterruptFlags(AdcW::InterruptFlag::EndOfRegularConversion |
-									AdcW::InterruptFlag::EndOfSampling |
-									AdcW::InterruptFlag::Overrun);
-#endif
-
+	updateADC();
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Break);
 	Motor0.updateMotor();
