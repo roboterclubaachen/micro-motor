@@ -49,7 +49,7 @@ findMotorParameters(Motor &Motor0, MotorInfo &output)
 	float maxAvgVel{};
 	for (size_t commutationOffset = 0; commutationOffset < 6; commutationOffset++)
 	{
-
+		MODM_LOG_INFO << "Trying offset "<< commutationOffset <<modm::endl;
 		Motor0 = Motor(commutationOffset);
 		Motor0.initializeHall();
 
@@ -94,8 +94,9 @@ namespace micro_motor
 {
 MODM_ISR(TIM1_UP_TIM16)
 {
-	micro_motor::updateADC();
+	updateADC();
 	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Update);
+	Timer1::acknowledgeInterruptFlags(Timer1::InterruptFlag::Break);
 	Motor0.updateMotor();
 }
 }  // namespace micro_motor
