@@ -46,7 +46,7 @@ The second version *micro-motor-v2* is basically functional, software improvemen
 PCB _micro-motor-v2.1_ is similar to _v2_, but with added RC filters at encoder connector,
 added 1 µF capacitor to the STM32 _VREFBUF_ output and changed DC/DC converter modules (caused by component shortage).
 
-Any software (Git HEAD) is only for the latest hardware version.
+Software at HEAD is compatible with micro-motor-v2.\[0,1,2\], however the correct version needs to be selected in the project.xml to account for hardware differences with "Board.v2_1" being compatible with v2.0, and v2.1 and "Board.v2_2" being compatible with v2.2.
 
 ## Folder structure
 
@@ -56,11 +56,14 @@ Any software (Git HEAD) is only for the latest hardware version.
 #### `STM32CubeMX/`
 * Pinout configuration of the STM32 microcontrollers done with [STs CubeMX software](https://www.st.com/en/development-tools/stm32cubemx.html)
 
-#### `src/test_*/`
+#### `tests/`
 * Test software. Useful during PCB assembly
 
-#### `src/app/`
+#### `app/`
 * Main Software
+
+#### `src/`
+* Common files used between main software and tests.
 
 ## License
 
