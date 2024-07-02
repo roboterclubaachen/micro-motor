@@ -10,7 +10,7 @@
   <options>
     <option name="modm:build:info.git">Info+Status</option>
     <option name="modm:build:info.build">True</option>
-    <option name="micro-motor:common:board_version">Board.v2_1</option>
+    <option name="micro-motor:common:board_version">Board.v2_2</option>
   </options>
   <modules>
     <module>modm:debug</module>

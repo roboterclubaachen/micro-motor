@@ -16,11 +16,11 @@ constexpr float pPID_kD = 0.0f;
 //constexpr float vPID_kI = 0.000006f;
 //constexpr float vPID_kD = 0.01f;
 
-constexpr float vPID_kP = 0.00081f;
-constexpr float vPID_kI = 0.000002f;
+constexpr float vPID_kP = 0.0007f;
+constexpr float vPID_kI = 0.00003f;
 constexpr float vPID_kD = 0.0f;
 
-constexpr bool invert = true;
+constexpr bool invert = false;
 
 struct State
 {
@@ -48,7 +48,7 @@ struct State
 	float orientedCurrent = 0.0f;
 	float orientedCurrentAngleDiff = 0.0f;
 
-	int16_t commandedPWM = 2000;
+	int16_t commandedPWM = 4000;
 	int16_t outputPWM = 0;
 
 	OperatingMode currMode = OperatingMode::Current;

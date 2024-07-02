@@ -10,7 +10,7 @@
 
 #ifdef PWM_CMDS
 #define CMDLIST
-size_t maxTime = 10100;
+size_t maxTime = 5100;
 
 constexpr std::array sendCommands{
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::Shutdown},
@@ -27,7 +27,7 @@ constexpr std::array sendCommands{
 					.custom{nullptr}},
 	CommandSendInfo{.name{modm_canopen::cia402::StateCommandNames::DisableVoltage},
 					.mode{OperatingMode::Voltage},
-					.time{10030},
+					.time{5030},
 					.custom{nullptr}},
 };
 #endif

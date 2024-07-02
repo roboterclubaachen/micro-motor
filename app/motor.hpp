@@ -29,6 +29,12 @@ constexpr MotorInfo maxon = {
 	.hall_offset = 0,
 };
 
+constexpr MotorInfo watney = {
+	.id = micromotorId,
+	.winding_r_ohm = 3.8f,
+	.hall_offset = 1,
+};
+
 class Motor
 {
 private:
@@ -102,4 +108,4 @@ Motor::update(MessageCallback&& cb)
 	return updated;
 }
 
-inline Motor Motor0{chinesium};
+inline Motor Motor0{watney};

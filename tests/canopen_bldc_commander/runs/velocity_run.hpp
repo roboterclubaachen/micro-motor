@@ -39,7 +39,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Velocity},
 					.time{3030},
 					.custom{[]() {
-						state.targetSpeed = 4000;
+						state.targetSpeed = 3000;
 						SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity,
 												state.targetSpeed, sendMessage);
 						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
@@ -75,7 +75,7 @@ constexpr std::array sendCommands{
 					.mode{OperatingMode::Velocity},
 					.time{17030},
 					.custom{[]() {
-						state.targetSpeed = -4000;
+						state.targetSpeed = -3000;
 						SdoClient::requestWrite(motorId, VelocityObjects::TargetVelocity,
 												state.targetSpeed, sendMessage);
 						state.control_.setBit<modm_canopen::cia402::CommandBits::NewSetPoint>(true);
