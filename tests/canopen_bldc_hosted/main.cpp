@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <vector>
 #include <limits>
+#include <unistd.h>
 
 #include "motor.hpp"
 #include "csv_writer.hpp"
@@ -43,6 +44,8 @@ modm::PeriodicTimer logTimer{1000us};
 #ifdef CAN
 
 modm::PeriodicTimer debugTimer{4000ms};
+
+modm::PrecisePeriodicTimer randomTimer{1ms};
 
 modm::platform::SocketCan can;
 constexpr char canDevice[] = "vcan0";
@@ -88,6 +91,8 @@ main(int argc, char** argv)
 
 	while (1)
 	{
+		usleep(std::rand() % 1000);
+
 		auto now = modm::Clock::now();
 		auto diff = now - start;
 
