@@ -11,8 +11,16 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.REG_PASSWORD }}
+      - uses: actions/checkout@v4
+        name: Checkout actions
+        with:
+          github-server-url: https://git.roboterclub.rwth-aachen.de
+          repository: RCA/ci-actions
+          ref: v1.4
+          token:  ${{ secrets.REG_PASSWORD }}
+          path: ./.gitea/actions
       - name: Setup dependencies
-        uses: ./.gitea/setup_modm
+        uses: ./.gitea/actions/setup_modm
       - name: Compile app
         run: |
           cd app/
@@ -27,9 +35,18 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.REG_PASSWORD }}
+      - uses: actions/checkout@v4
+        name: Checkout actions
+        with:
+          github-server-url: https://git.roboterclub.rwth-aachen.de
+          repository: RCA/ci-actions
+          ref: v1.4
+          token:  ${{ secrets.REG_PASSWORD }}
+          path: ./.gitea/actions
       - name: Setup dependencies
-        uses: ./.gitea/setup_modm
+        uses: ./.gitea/actions/setup_modm
       - name: Run tests
         run: |
           cd tests/
           bash build-tests.sh
+  

@@ -1,0 +1,30 @@
+name: Run erc and generate pdfs for kicad
+on: [push]
+
+jobs:
+  run-kicad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-for-kicad/setup-kicad@v1
+        with:
+          version: "8.0"
+      - uses: actions-for-kicad/check-kicad-files@v1
+        with:
+          file: "./kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch"
+          type: "erc"
+      - uses: actions-for-kicad/generate-kicad-files@v1
+        if: always()
+        with:
+          file: "./kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch"
+          type: "schematic_pdf"
+          black-and-white: true
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: "micro-motor-v2.2.pdf"
+          path: "./micro-motor-v2.2.pdf"
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 1
