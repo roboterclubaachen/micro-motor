@@ -1,0 +1,35 @@
+name: Run tests and compile packages
+on: [push]
+
+jobs:
+  compile-app:
+    name: Compile application
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout repo
+        with:
+          submodules: recursive
+          token: ${{ secrets.REG_PASSWORD }}
+      - name: Setup dependencies
+        uses: ./.gitea/setup_modm
+      - name: Compile app
+        run: |
+          cd app/
+          lbuild build 
+          scons -j $(nproc)
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout repo
+        with:
+          submodules: recursive
+          token: ${{ secrets.REG_PASSWORD }}
+      - name: Setup dependencies
+        uses: ./.gitea/setup_modm
+      - name: Run tests
+        run: |
+          cd tests/
+          bash build-tests.sh
