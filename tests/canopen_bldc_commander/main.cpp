@@ -1,5 +1,5 @@
 #define VELOCITY_CMDS
-
+#define HOSTED
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
 
