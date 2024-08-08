@@ -52,20 +52,21 @@ constexpr char canDevice[] = "vcan0";
 int
 main(int argc, char** argv)
 {
+	uint8_t nodeId = 12;
+	if (argc == 2) { nodeId = std::atoi(argv[1]); }
+	MODM_LOG_INFO << "NodeId: " << nodeId << modm::endl;
 
 #ifdef LOG
+	const std::string filename =
+		std::string("sim_motor_") + std::to_string(nodeId) + std::string(".csv");
 	CSVWriter writer{{"Time", "v1", "v2", "v3", "i1", "i2", "i3", "theta", "omega", "e1", "e2",
 					  "e3", "pwm", "te", "tl", "tf", "g1", "g2", "g3"}};
-	if (!writer.create("sim_motor.csv"))
+	if (!writer.create(filename))
 	{
 		MODM_LOG_ERROR << "Failed to create CSV File!" << modm::endl;
 		return 1;
 	}
 #endif
-
-	uint8_t nodeId = 12;
-	if (argc == 2) { nodeId = std::atoi(argv[1]); }
-	MODM_LOG_INFO << "NodeId: " << nodeId << modm::endl;
 
 	const bool success = can.open(canDevice);
 
