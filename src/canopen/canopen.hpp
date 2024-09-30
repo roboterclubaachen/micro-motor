@@ -15,12 +15,16 @@
 #include <librobots2/motor-canopen/identity_protocol.hpp>
 #include <librobots2/motor-canopen/heartbeat_protocol.hpp>
 #include <librobots2/motor-canopen/quickstop_protocol.hpp>
+#include <librobots2/motor-canopen/encoder_protocol.hpp>
 #include <librobots2/motor-canopen/motor_state.hpp>
 
+#include <micro-motor/hardware.hpp>
+
 template<size_t id>
-using MotorControl_t = MotorControl<id, MotorState<id>, IdentityProtocol<id>, HeartbeatProtocol<id>,
-									PWMProtocol<id>, VelocityProtocol<id>, PositionProtocol<id>,
-									QuickstopProtocol<id>, CurrentProtocol<id>>;
+using MotorControl_t =
+	MotorControl<id, MotorState<id>, IdentityProtocol<id>, HeartbeatProtocol<id>, PWMProtocol<id>,
+				 VelocityProtocol<id>, PositionProtocol<id>, QuickstopProtocol<id>,
+				 CurrentProtocol<id>, EncoderProtocol<id, Board::Encoder>>;
 
 using MotorState0 = MotorState<0>;
 using MotorControl0 = MotorControl_t<0>;

@@ -26,6 +26,8 @@
 
 #include <librobots2/motor/motor_bridge.hpp>
 
+#include <modm/debug/logger.hpp>
+
 using namespace modm::platform;
 using namespace std::chrono_literals;
 
@@ -436,7 +438,7 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 	// and DAC3_OUT1 to COMP3_INM
 
 	// Connect COMP{1,2,3}_OUT to TIM1_BKIN
-	TIM1->AF1 |= (TIM1_AF1_BKINE |TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
+	TIM1->AF1 |= (TIM1_AF1_BKINE | TIM1_AF1_BKCMP3E | TIM1_AF1_BKCMP2E | TIM1_AF1_BKCMP1E);
 	TIM1->BDTR |= (TIM_BDTR_BKE | TIM_BDTR_AOE | TIM_BDTR_BKP);
 
 	// Initialize STM32 internal DAC3
@@ -475,32 +477,47 @@ initialize(CompBase::Hysteresis hysteresis = CompBase::Hysteresis::NoHysteresis)
 }
 }  // namespace MotorCurrent
 
-namespace Encoder
+struct Encoder
 {
-using PinA = GpioB5;
-using PinB = GpioB4;
-using PinIndex = GpioB3;
-using Timer = Timer3;
+	using PinA = GpioB5;
+	using PinB = GpioB4;
+	using PinIndex = GpioB3;
+	using Timer = Timer3;
 
-inline Timer::Value
-getEncoderRaw()
-{
-	return Timer::getValue();
-}
+	static inline Timer::Value
+	getEncoderRaw()
+	{
+		return Timer::getValue();
+	}
 
-inline void
-initialize()
-{
-	Timer::enable();
-	Timer::setMode(Timer::Mode::UpCounter, Timer::SlaveMode::Encoder3);
-	// Overflow must be 16bit because else a lot of our motor control code will break!
-	Timer::setOverflow(0xffff);
+	static inline void
+	initialize()
+	{
+		Timer::enable();
+		Timer::setMode(Timer::Mode::UpCounter, Timer::SlaveMode::Encoder3);
+		Timer::setOverflow(0xffff);
 
-	Timer::connect<PinA::Ch2, PinB::Ch1>();
+		Timer::connect<PinA::Ch2, PinB::Ch1, PinIndex::Etr>();
+		TIM3->ECR |= TIM_ECR_IE;
 
-	Timer::start();
-}
-}  // namespace Encoder
+		Timer::start();
+	}
+
+	static inline bool
+	setGating(uint8_t value)
+	{
+		if(value > 0x3) return false;
+		TIM3->ECR &= ~TIM_ECR_IPOS_Msk;
+		TIM3->ECR |= (value & 0x03) << TIM_ECR_IPOS_Pos;
+		return true;
+	}
+
+	static inline void
+	setOverflow(uint16_t value)
+	{
+		Timer::setOverflow(value);
+	}
+};
 
 namespace Sensor
 {

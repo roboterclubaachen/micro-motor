@@ -10,8 +10,8 @@ setPDOs(MessageCallback&& sendMessage)
 	statusRpdoMotor.setInactive();
 	assert(statusRpdoMotor.setMapping(0, modm_canopen::PdoMapping{StateObjects::StatusWord, 16}) ==
 		   SdoErrorCode::NoError);
-	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{StateObjects::OutputPWM, 16}) ==
-		   SdoErrorCode::NoError);
+	assert(statusRpdoMotor.setMapping(1, modm_canopen::PdoMapping{EncoderObjects::EncoderValue,
+																  16}) == SdoErrorCode::NoError);
 	assert(statusRpdoMotor.setMapping(
 			   2, modm_canopen::PdoMapping{StateObjects::ModeOfOperationDisplay, 8}) ==
 		   SdoErrorCode::NoError);
@@ -97,6 +97,11 @@ setPDOs(MessageCallback&& sendMessage)
 	SdoClient::requestWrite(motorId, PositionObjects::PositionPID_kD, pPID_kD,
 							std::forward<MessageCallback>(sendMessage));
 
-	SdoClient::requestWrite(motorId, CurrentObjects::ShouldInvert,(uint8_t) invert,
+	SdoClient::requestWrite(motorId, EncoderObjects::EncoderOverrun, (uint16_t)2048,
+							std::forward<MessageCallback>(sendMessage));
+	SdoClient::requestWrite(motorId, EncoderObjects::IndexGating, (uint8_t)0x3,
+							std::forward<MessageCallback>(sendMessage));
+
+	SdoClient::requestWrite(motorId, CurrentObjects::ShouldInvert, (uint8_t)invert,
 							std::forward<MessageCallback>(sendMessage));
 }

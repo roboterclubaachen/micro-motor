@@ -1311,7 +1311,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=20
+SupportedObjects=21
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1332,6 +1332,7 @@ SupportedObjects=20
 18=0x2019
 19=0x2020
 20=0x2021
+21=0x2008
 
 [2001]
 ParameterName=Update time
@@ -1447,12 +1448,12 @@ PDOMapping=1
 [2008]
 ParameterName=Encoder Values
 ObjectType=0x8
-SubNumber=3
+SubNumber=5
 
 [2008sub1]
 ParameterName= Encoder Value
 ObjectType=0x7
-DataType=0x0004
+DataType=0x0006
 AccessType=ro
 PDOMapping=1
 
@@ -1466,9 +1467,23 @@ PDOMapping=1
 [2008sub3]
 ParameterName= Encoder Delta
 ObjectType=0x7
-DataType=0x0004
+DataType=0x0003
 AccessType=ro
 PDOMapping=1
+
+[2008sub4]
+ParameterName= Encoder Overrun
+ObjectType=0x7
+DataType=0x0006
+AccessType=wo
+PDOMapping=0
+
+[2008sub5]
+ParameterName= Index Gating
+ObjectType=0x7
+DataType=0x0005
+AccessType=wo
+PDOMapping=0
 
 [2009]
 ParameterName=MasterHeartbeatTimeout

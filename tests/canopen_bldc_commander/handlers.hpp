@@ -158,5 +158,14 @@ struct Test
 				}
 				return SdoErrorCode::NoError;
 			});
+		map.template setWriteHandler<EncoderObjects::EncoderValue, uint16_t>(+[](uint16_t value) {
+			static uint16_t oldVal = 0;
+			if (oldVal != value)
+			{
+				oldVal = value;
+				MODM_LOG_INFO << "Enc " << value << modm::endl;
+			}
+			return SdoErrorCode::NoError;
+		});
 	}
 };

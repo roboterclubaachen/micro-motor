@@ -200,7 +200,7 @@ main()
 
 		if (debugTimer.execute())
 		{
-			MODM_LOG_DEBUG << "MotorState:\n"
+			/*MODM_LOG_DEBUG << "MotorState:\n"
 						   << "Max Current: " << MotorState0::maxCurrent_ << "\n"
 						   << "Commanded Current: " << CurrentControl<0>::commandedCurrent_ << "\n"
 						   << "Target Current: " << CurrentProtocol<0>::targetCurrent_ << "\n"
@@ -214,7 +214,7 @@ main()
 						   << "Actual Position: " << MotorState0::actualPosition_ << "\n"
 						   << "Mode: " << MotorState0::mode_ << "\n"
 						   << "Charge: " << MotorState0::currentCharge_ << "\n"
-						   << "PWM: " << MotorState0::outputPWM_ << modm::endl;
+						   << "PWM: " << MotorState0::outputPWM_ << modm::endl;*/
 		}
 	}
 

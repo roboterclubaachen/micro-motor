@@ -59,7 +59,7 @@ findMotorParameters(Motor &Motor0, MotorInfo &output)
 		auto lastPosition = Motor0.getPosition();
 		float avgVelAcc = {};
 		size_t avgVelNum{};
-		while (modm::Clock::now() - testStart < 500ms)
+		while (modm::Clock::now() - testStart < 1000ms)
 		{
 			modm::delay_ms(1);
 			Motor0.update();
@@ -144,7 +144,7 @@ main()
 
 	Board::Motor::initialize();
 	Board::Motor::MotorTimer::start();
-	Board::MotorCurrent::setCurrentLimit(0xFFFF / 8);  // Set current limit to 12.5%
+	Board::MotorCurrent::setCurrentLimit(0xFFFF);  // Set current limit to 100%
 	MotorInfo info{};
 	if (!findMotorParameters(Motor0, info))
 	{

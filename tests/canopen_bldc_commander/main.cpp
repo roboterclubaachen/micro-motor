@@ -1,5 +1,5 @@
-#define VELOCITY_CMDS
-#define HOSTED
+#define NOTHING_CMDS
+//#define HOSTED
 #include <modm/processing/timer.hpp>
 #include <modm/debug/logger.hpp>
 
@@ -17,6 +17,7 @@
 #include "runs/current_run.hpp"
 #include "runs/velocity_run.hpp"
 #include "runs/position_run.hpp"
+#include "runs/nothing_run.hpp"
 
 using namespace std::literals;
 
