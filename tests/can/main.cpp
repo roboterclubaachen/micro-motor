@@ -82,10 +82,13 @@ main()
 
 	MODM_LOG_INFO << "Setting up Filter for Can ..." << modm::endl;
 	// Receive every message
-	Can::setExtendedFilter(0, Can::FilterConfig::Fifo0,
-			modm::can::ExtendedIdentifier(0),
-			modm::can::ExtendedMask(0));
+	Board::CanBus::Can::setStandardFilter(0, Board::CanBus::Can::FilterConfig::Fifo0,
+										  modm::can::StandardIdentifier(0),
+										  modm::can::StandardMask(0));
 
+	Board::CanBus::Can::setExtendedFilter(0, Board::CanBus::Can::FilterConfig::Fifo0,
+										  modm::can::ExtendedIdentifier(0),
+										  modm::can::ExtendedMask(0));
 	// Send a message
 	MODM_LOG_INFO << "Sending message on Can ..." << modm::endl;
 	modm::can::Message msg1(1, 1);
