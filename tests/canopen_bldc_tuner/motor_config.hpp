@@ -181,6 +181,6 @@ makeReady()
 			state_.control_.apply(StateCommands[(uint8_t)StateCommandNames::Shutdown].cmd);
 			break;
 	}
-	Master::setValueChanged(StateObjects::ControlWord);
+	Master::setValueChangedAll(StateObjects::ControlWord);
 	return false;
 }

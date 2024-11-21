@@ -46,11 +46,10 @@ Dummy0007=0
 Lines=0
 
 [MandatoryObjects]
-SupportedObjects=4
+SupportedObjects=3
 1=0x1000
 2=0x1001
-3=0x1017
-4=0x1018
+3=0x1018
 
 [1000]
 ParameterName=Device type
@@ -60,7 +59,6 @@ AccessType=ro
 DefaultValue=0x60192
 PDOMapping=0
 
-
 [1001]
 ParameterName=Error register
 ObjectType=0x7
@@ -68,11 +66,146 @@ DataType=0x0005
 AccessType=ro
 PDOMapping=0
 
-[1017]
-ParameterName=Heartbeat Producer Time
+[OptionalObjects]
+SupportedObjects=45
+1=0x1003
+2=0x1005
+3=0x1006
+4=0x1007
+5=0x1014
+6=0x1015
+7=0x1016
+8=0x1017
+9=0x1019
+10=0x1200
+11=0x1400
+12=0x1401
+13=0x1402
+14=0x1403
+15=0x1600
+16=0x1601
+17=0x1602
+18=0x1603
+19=0x1800
+20=0x1801
+21=0x1802
+22=0x1803
+23=0x1A00
+24=0x1A01
+25=0x1A02
+26=0x1A03
+27=0x6060
+28=0x6064
+29=0x606C
+30=0x60FF
+31=0x6040
+32=0x6041
+33=0x607A
+34=0x607E
+35=0x6067
+36=0x6062
+37=0x6093
+38=0x6094
+39=0x6097
+40=0x6061
+41=0x6063
+42=0x60F4
+43=0x6083
+44=0x606B
+45=0x6085
+
+[1003]
+ParameterName=Pre-defined error field
+ObjectType=0x9
+SubNumber=2
+
+[1003sub0]
+ParameterName=Number of errors
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=1
+
+[1003sub1]
+ParameterName=Standard error field
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[1005]
+ParameterName=SYNC COB ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1006]
+ParameterName=Communication cycle period
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1007]
+ParameterName=Communication window duration
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1014]
+ParameterName=EMCY COB-ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x80
+PDOMapping=0
+
+[1015]
+ParameterName=Inhibit Time EMCY
 ObjectType=0x7
 DataType=0x0006
 AccessType=rw
+DefaultValue=50
+PDOMapping=0
+
+[1016]
+ParameterName=Consumer heartbeat time
+ObjectType=0x9
+SubNumber=2
+
+[1016sub0]
+ParameterName=Number of entries
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=1
+
+[1016sub1]
+ParameterName=Heartbeat Consumer Time #1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1017]
+ParameterName=Producer heartbeat time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
 PDOMapping=0
 
 [1018]
@@ -119,44 +252,13 @@ DataType=0x0007
 AccessType=ro
 PDOMapping=0
 
-[OptionalObjects]
-SupportedObjects=36
-1=0x1400
-2=0x1401
-3=0x1402
-4=0x1403
-5=0x1600
-6=0x1601
-7=0x1602
-8=0x1603
-9=0x1800
-10=0x1801
-11=0x1802
-12=0x1803
-13=0x1A00
-14=0x1A01
-15=0x1A02
-16=0x1A03
-17=0x6060
-18=0x6064
-19=0x606C
-20=0x60FF
-21=0x6040
-22=0x6041
-23=0x607A
-24=0x607E
-25=0x6067
-26=0x6062
-27=0x6093
-28=0x6094
-29=0x6097
-30=0x6061
-31=0x1200
-32=0x6063
-33=0x60F4
-34=0x6083
-35=0x606B
-36=0x6085
+[1019]
+ParameterName=Sync Counter Overflow
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+PDOMapping=0
+DefaultValue=0
 
 [1200]
 ParameterName=Server SDO Parameter
@@ -1311,7 +1413,7 @@ DefaultValue=1
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=21
+SupportedObjects=20
 1=0x2001
 2=0x2002
 3=0x2003
@@ -1319,20 +1421,19 @@ SupportedObjects=21
 5=0x2005
 6=0x2006
 7=0x2007
-8=0x2009
-9=0x2010
-10=0x2011
-11=0x2012
-12=0x2013
-13=0x2014
-14=0x2015
-15=0x2016
-16=0x2017
-17=0x2018
-18=0x2019
-19=0x2020
-20=0x2021
-21=0x2008
+8=0x2010
+9=0x2011
+10=0x2012
+11=0x2013
+12=0x2014
+13=0x2015
+14=0x2016
+15=0x2017
+16=0x2018
+17=0x2019
+18=0x2020
+19=0x2021
+20=0x2008
 
 [2001]
 ParameterName=Update time

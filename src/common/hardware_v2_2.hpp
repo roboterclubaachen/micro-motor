@@ -21,7 +21,8 @@
 
 #include <modm/platform.hpp>
 #include <modm/architecture/interface/clock.hpp>
-#include <modm/platform/uart/uart_1.hpp>
+#include <modm/platform/uart/uart_hal_1.hpp>
+#include <modm/platform/uart/uart.hpp>
 #include <modm/processing/timer.hpp>
 
 #include <librobots2/motor/motor_bridge.hpp>
@@ -139,7 +140,7 @@ using LedGreen = GpioA5;  // DAC2
 
 using DebugUartTx = GpioB6;
 using DebugUartRx = GpioB7;
-using DebugUart = Usart1;
+using DebugUart = BufferedUart<UsartHal1>;
 static constexpr uint32_t DebugUartBaudrate = 460800_Bd;
 
 inline void

@@ -14,26 +14,25 @@
 
 using namespace std::literals;
 
-constexpr Identity micromotorId = {.deviceType_ = DeviceType::BLDC,
-								   .productCode_ = ProductCode::MicroMotor};
-
 constexpr MotorInfo chinesium = {
-	.id = micromotorId,
 	.winding_r_ohm = 1.8f,
 	.hall_offset = 1,
 };
 
 constexpr MotorInfo maxon = {
-	.id = micromotorId,
 	.winding_r_ohm = 3.8f,
 	.hall_offset = 0,
 };
 
 constexpr MotorInfo watney = {
-	.id = micromotorId,
 	.winding_r_ohm = 3.8f,
 	.hall_offset = 1,
 };
+
+using MotorState0 = MotorState<0>;
+using MotorControl0 = MotorControl_t<0, Board::Encoder>;
+using CanOpen =
+		modm_canopen::CanopenDevice<modm_canopen::generated::micromotor_OD, MotorControl0>;
 
 class Motor
 {
@@ -93,7 +92,7 @@ Motor::update(MessageCallback&& cb)
 		MotorState0::setUnorientedCurrent(max_current_.getValue());
 		MotorState0::setOrientedCurrent(current_.getOrientedCurrent());
 		MotorState0::setOrientedCurrentAngleDiff(current_.getAngleDifference());
-		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
+		MotorControl0::update<CanOpen, MessageCallback>(std::forward<MessageCallback>(cb));
 		if (!MotorState0::enableMotor_)
 		{
 			motor_.disable();

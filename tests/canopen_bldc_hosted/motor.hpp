@@ -11,12 +11,20 @@
 #include <micro-motor/canopen/canopen.hpp>
 #include <librobots2/motor-canopen/motor_control.hpp>
 #include <librobots2/motor/bldc_motor_block_commutation.hpp>
+#include <librobots2/motor-sim/encoder.hpp>
 
 using namespace std::literals;
 
 using librobots2::motor_sim::CurrentLimit;
 using librobots2::motor_sim::MotorBridge;
 using librobots2::motor_sim::MotorSimulation;
+using librobots2::motor_sim::Encoder;
+
+
+using MotorState0 = MotorState<0>;
+using MotorControl0 = MotorControl_t<0, Encoder>;
+using CanOpen =
+		modm_canopen::CanopenDevice<modm_canopen::generated::micromotor_OD, MotorControl0>;
 
 class Motor
 {
@@ -71,7 +79,7 @@ Motor::update(MessageCallback&& cb)
 	{
 		MotorState0::setUnorientedCurrent(MotorSimulation::maxCurrent());
 		MotorState0::setActualPosition(actualPosition_);
-		MotorControl0::update<CanOpen::Device, MessageCallback>(std::forward<MessageCallback>(cb));
+		MotorControl0::update<CanOpen, MessageCallback>(std::forward<MessageCallback>(cb));
 		if (!MotorState0::enableMotor_)
 		{
 			motor_.disable();

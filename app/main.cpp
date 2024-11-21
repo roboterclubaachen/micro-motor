@@ -25,6 +25,7 @@
 #include <modm/platform.hpp>
 #include <modm/processing/timer.hpp>
 
+#include <librobots2/motor-canopen/identity.hpp>
 #include <micro-motor/canopen/canopen.hpp>
 #include "motor.hpp"
 
@@ -106,6 +107,11 @@ readBoardId()
 
 constexpr auto noMessageTimeout = 200ms;
 
+constexpr modm_canopen::Identity micromotorId = {.deviceType_ = (uint32_t)DeviceType::BLDC,
+												 .vendorId_ = 0xdeadbeef,
+												 .productCode_ = (uint32_t)ProductCode::MicroMotor};
+
+
 int
 main()
 {
@@ -168,7 +174,7 @@ main()
 										  modm::can::ExtendedIdentifier(0),
 										  modm::can::ExtendedMask(0));
 
-	CanOpen::initialize(nodeId);
+	CanOpen::initialize(nodeId, micromotorId);
 	auto lastMessage = modm::Clock::now();
 
 	MODM_LOG_INFO << "Starting App Main Loop..." << modm::endl;
