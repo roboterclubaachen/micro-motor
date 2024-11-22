@@ -107,6 +107,13 @@ main(int argc, char** argv)
 		{
 			modm::can::Message message;
 			can.getMessage(message);
+			if (message.isExtended())
+			{
+				message.identifier &= 0x1FFFFFFF;
+			} else
+			{
+				message.identifier &= 0x7FF;
+			}
 			CanOpen::processMessage(message, sendMessage);
 			Motor0.update(sendMessage);
 		}
