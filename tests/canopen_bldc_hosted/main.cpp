@@ -97,7 +97,7 @@ main(int argc, char** argv)
 
 	while (1)
 	{
-		usleep(std::rand() % 1000);
+		usleep(std::rand() % 10);
 
 		auto now = modm::Clock::now();
 		auto diff = now - start;
