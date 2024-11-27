@@ -80,7 +80,8 @@ Motor::update(MessageCallback&& cb)
 		MotorState0::setUnorientedCurrent(MotorSimulation::maxCurrent());
 		MotorState0::setActualPosition(actualPosition_);
 		MotorControl0::update<CanOpen, MessageCallback>(std::forward<MessageCallback>(cb));
-		if (!MotorState0::enableMotor_)
+		if (!MotorState0::enableMotor_ ||
+			CanOpen::nmtState() != modm_canopen::NMTState::Operational)
 		{
 			motor_.disable();
 		} else
