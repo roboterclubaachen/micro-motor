@@ -65,6 +65,22 @@ Software at HEAD is compatible with micro-motor-v2.\[0,1,2\], however the correc
 #### `src/`
 * Common files used between main software and tests.
 
+## Notes
+
+### On first boot
+When first assembled the boards will be stuck inside the STM32 bootloader because BOOT0 is used as a GPIO pin.
+This behaviour can be overwritten by setting an option byte: \
+First read flash option byte:
+
+    openocd -f interface/stlink.cfg -c "transport select hla_swd" -f target/stm32g4x.cfg -c "reset_config none" -c "init" -c "stm32g4x option_read 0 0x20" -c "shutdown"
+
+Should respond 'Option Register: <0x40022020> = 0xffeff8aa' on a new PCB
+or 'Option Register: <0x40022020> = 0xfbeff8aa' once the nSWBOOT0 bit is cleared. \
+Clear the bit:
+
+    openocd -f interface/stlink.cfg -c "transport select hla_swd" -f target/stm32g4x.cfg -c "reset_config none" -c "init" -c "stm32g4x option_write 0 0x20 0x00000000 0x04000000" -c "shutdown"
+
+
 ## License
 
 Software is licensed under [GPLv3](LICENSE).
