@@ -82,14 +82,20 @@ jobs:
       - name: Create Artifact
         if: always() 
         run: |
+          mkdir output
           FILES=$(find -maxdepth 1 -name \*.pdf -o -name \*.csv -o -name \*.rpt)
-          tar czf artifact.tar.gz $FILES gerbers/ board_pdfs/
+          for file in $FILES
+          do 
+            mv "$file" output 
+          done
+          mv gerbers output/gerbers
+          mv board_pdfs output/board_pdfs
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: "${{matrix.folder}}.tar.gz"
-          path: "./artifact.tar.gz"
+          name: "${{matrix.folder}}"
+          path: "output"
           if-no-files-found: error
           overwrite: true
           retention-days: 1

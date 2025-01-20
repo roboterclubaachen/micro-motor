@@ -27,7 +27,10 @@ jobs:
         board: 'kicad/macro-motor/macro-motor.kicad_pcb'
     - name: Upload results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: macro-motor
         path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
