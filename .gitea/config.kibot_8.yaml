@@ -211,3 +211,8 @@ outputs:
       bottom: True
       show_components: none
       dpi: 600
+  
+  - name: pcb_step
+    comment: "PCB Step 3D Model"
+    type: step
+    dir: Step
