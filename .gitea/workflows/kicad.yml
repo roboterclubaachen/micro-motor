@@ -18,18 +18,6 @@ jobs:
         - folder: "micro-motor-v2.2"
           main_schematic: "micro-motor-v2.2.kicad_sch"
           sch_file: "kicad_sch"
-        - folder: "micro-motor-v2.1"
-          main_schematic: "micro-motor-v2.1.sch"
-          sch_file: "sch"
-        - folder: "micro-motor-v2"
-          main_schematic: "micro-motor-v2.sch"
-          sch_file: "sch"
-        - folder: "micro-motor-v1"
-          main_schematic: "µmotor.sch"
-          sch_file: "sch"
-        - folder: "macro-motor"
-          main_schematic: "macro-motor.sch"
-          sch_file: "sch"
     steps:
       - uses: actions/checkout@v4
       - name: "Setup Kicad"
