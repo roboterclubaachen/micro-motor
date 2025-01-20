@@ -3,19 +3,30 @@ on: [push]
 
 jobs:
   run-kicad:
+    name: Run Kicad ERC and generate PFDs/Gerber files
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
         - folder: "micro-motor-v2.2"
           sch_file: "kicad_sch"
+        - folder: "micro-motor-v2.1"
+          sch_file: "sch"
+        - folder: "micro-motor-v2"
+          sch_file: "sch"
+        - folder: "micro-motor-v1"
+          sch_file: "sch"
+        - folder: "macro-motor"
+          sch_file: "sch"
     steps:
       - uses: actions/checkout@v4
-      - name: "Setup Kicad"
+      - name: "Setup Kicad PPA"
         run: |
           add-apt-repository --yes ppa:kicad/kicad-8.0-releases
-          apt-get update
-          apt-get install --install-recommends kicad --yes
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: kicad
+          version: 1.0
       - name: Process Schematics
         run: |
           SCHEMATICS=$(find kicad/${{ matrix.folder }} -name \*.${{ matrix.sch_file }})
