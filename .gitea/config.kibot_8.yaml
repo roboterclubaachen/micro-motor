@@ -3,10 +3,11 @@ kibot:
   version: 1
 
 preflight:
-  run_erc: true
-  run_drc: false
+  erc: 
+    enabled: true
+    dont_stop: true
+  drc: false
   check_zone_fills: false
-  ignore_unconnected: false
 
 global:
   # We want the revision added to the names for this project
