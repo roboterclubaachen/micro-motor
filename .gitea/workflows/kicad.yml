@@ -32,13 +32,11 @@ jobs:
           sch_file: "sch"
     steps:
       - uses: actions/checkout@v4
-      - name: "Setup Kicad PPA"
+      - name: "Setup Kicad"
         run: |
           add-apt-repository --yes ppa:kicad/kicad-8.0-releases
-      - uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: kicad
-          version: 1.0
+          apt-get update
+          apt-get install --yes kicad          
       - name: Process Schematics
         run: |
           SCHEMATICS=$(find kicad/${{ matrix.folder }} -name \*.${{ matrix.sch_file }})
