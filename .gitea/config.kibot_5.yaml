@@ -25,37 +25,24 @@ outputs:
     type: pdf_sch_print
     dir: .
 
-  - name: 'print_front'
-    comment: "Print F.Cu+Dwgs.User"
-    type: pdf_pcb_print
+  - name: 'print_all'
+    comment: "Print Layers to single PDF"
+    type: pcb_print
     dir: .
-    layers:
-      - layer: F.Cu
-      - layer: Dwgs.User
-
-  - name: 'print_in1'
-    comment: "Print In1.Cu+Dwgs.User"
-    type: pdf_pcb_print
-    dir: .
-    layers:
-      - layer: In1.Cu
-      - layer: Dwgs.User
-
-  - name: 'print_in2'
-    comment: "Print In2.Cu+Dwgs.User"
-    type: pdf_pcb_print
-    dir: .
-    layers:
-      - layer: In2.Cu
-      - layer: Dwgs.User
-
-  - name: 'print_bottom'
-    comment: "Print B.Cu+Dwgs.User"
-    type: pdf_pcb_print
-    dir: .
-    layers:
-      - layer: B.Cu
-      - layer: Dwgs.User
+    options:
+      pages:
+        - layers: 
+          - F.Cu
+          - Dwgs.User
+        - layers: 
+          - In1.Cu
+          - Dwgs.User
+        - layers: 
+          - In2.Cu
+          - Dwgs.User
+        - layers: 
+          - B.Cu
+          - Dwgs.User
 
   - name: 'interactive_bom'
     comment: "Interactive Bill of Materials (HTML)"
