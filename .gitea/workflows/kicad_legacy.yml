@@ -34,3 +34,63 @@ jobs:
         if-no-files-found: error
         overwrite: true
         retention-days: 1
+  micro-motor-v1:
+    name: Process Micro-Motor v1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v1_k6
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v1/µmotor.sch'
+        board: 'kicad/micro-motor-v1/µmotor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2:
+    name: Process Micro-Motor v2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v1_k6
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2/micro-motor-v2.sch'
+        board: 'kicad/micro-motor-v2/micro-motor-v2.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2-1:
+    name: Process Micro-Motor v2.1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v1_k6
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2.1/micro-motor-v2.1.sch'
+        board: 'kicad/micro-motor-v2.1/micro-motor-v2.1.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2.1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
