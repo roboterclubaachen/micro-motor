@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: INTI-CMNB/KiBot@v1_k6
+    - uses: INTI-CMNB/KiBot@v2
       with:
         # Required - kibot config file
         config: .gitea/config.kibot.yaml
@@ -35,11 +35,12 @@ jobs:
         overwrite: true
         retention-days: 1
   micro-motor-v1:
-    name: Process Micro-Motor v1
+    if: false
+    name: Process Micro-Motor v1(broken)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: INTI-CMNB/KiBot@v1_k6
+    - uses: INTI-CMNB/KiBot@v2
       with:
         config: .gitea/config.kibot.yaml
         dir: output
@@ -59,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: INTI-CMNB/KiBot@v1_k6
+    - uses: INTI-CMNB/KiBot@v2
       with:
         config: .gitea/config.kibot.yaml
         dir: output
@@ -79,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: INTI-CMNB/KiBot@v1_k6
+    - uses: INTI-CMNB/KiBot@v2
       with:
         config: .gitea/config.kibot.yaml
         dir: output
