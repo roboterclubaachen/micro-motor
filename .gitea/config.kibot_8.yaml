@@ -5,7 +5,7 @@ kibot:
 preflight:
   erc: 
     enabled: true
-    dont_stop: true
+    dont_stop: false
   drc: false
   check_zone_fills: false
 

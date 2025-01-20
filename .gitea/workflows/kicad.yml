@@ -4,10 +4,12 @@ on:
     paths:
       - "kicad/**"
       - .gitea/workflows/kicad.yml
+      - .gitea/*.kibot_*.yml
   pull_request:
     paths:
       - "kicad/**"
       - .gitea/workflows/kicad.yml
+      - .gitea/*.kibot_*.yml
 
 jobs:
   macro-motor:
