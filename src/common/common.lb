@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) 2019, Raphael Lehmann
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from enum import Enum
+
+def init(module):
+    module.name = ":common"
+
+class Board(Enum):
+    v2_1 = 0
+    v2_2 = 1
+
+def prepare(module, options):
+    module.add_option(
+        EnumerationOption(name="board_version",
+                     description="Version of the micro motor board",
+                     enumeration=Board))
+    module.depends(
+        # basics
+        "modm:architecture:clock",
+        "modm:debug",
+        "modm:platform:clock",
+        "modm:platform:core",
+        # driver etc.
+        "modm:platform:adc:1",
+        "modm:platform:adc:2",
+        "modm:platform:adc:3",
+        "modm:platform:can:1",
+        "modm:platform:comp:1",
+        "modm:platform:comp:2",
+        "modm:platform:comp:3",
+        "modm:platform:comp:4",
+        "modm:platform:dac:1",
+        "modm:platform:dac:2",
+        "modm:platform:gpio",
+        "modm:platform:timer:1",
+        "modm:platform:timer:3",
+        "modm:platform:uart:1",
+        "modm:platform:uart.spi:3",
+        "modm:processing:protothread",
+        "modm:processing:resumable",
+        "modm:processing:timer",
+        "modm:driver:drv832x_spi",
+        # ext
+        "librobots2:motor",
+        "librobots2:motor-can:slave",
+    )
+    return True
+
+def build(env):
+    env.outbasepath = "micro-motor/src/micro-motor"
+    if env.get("board_version") == (Board.v2_1.value):
+        env.copy("hardware_v2_1.hpp",dest="hardware.hpp")
+    elif env.get("board_version") == (Board.v2_2.value):
+        env.copy("hardware_v2_2.hpp",dest="hardware.hpp")
+    else:
+        print("Invalid Board version!")
+    env.copy("micro-motor.hpp")
+    env.copy("micro-motor.cpp")
+    env.collect("modm:build:openocd.source", localpath("openocd.cfg"))

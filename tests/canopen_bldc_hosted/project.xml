@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<library>
+  <repositories>
+    <repository>
+      <path>../../repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../ext/modm/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../ext/librobots2/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../ext/modm-canopen/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../ext/eigen-lbuild/repo.lb</path>
+    </repository>
+  </repositories>
+
+  <options>
+    <option name="modm:target">hosted-linux</option>
+  </options>
+
+  <modules>
+    <module>modm:build:scons</module>
+    <module>modm:platform:socketcan</module>
+    <module>micro-motor:canopen</module>
+    <module>modm:debug</module>
+    <module>librobots2:motor-sim</module>
+  </modules>
+</library>

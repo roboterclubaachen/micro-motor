@@ -1,0 +1,37 @@
+<library>
+  <repositories>
+    <repository>
+      <path>../../ext/modm/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../ext/modm-canopen/repo.lb</path>
+    </repository>
+        <repository>
+      <path>../../ext/librobots2/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../../repo.lb</path>
+    </repository>
+  </repositories>
+
+
+  <options>
+    <option name="modm:target">hosted-linux</option>
+    <option name="modm:build:build.path">build</option>
+  </options>
+
+  <collectors>
+    <collect name="modm-canopen:common:eds_files">../../src/canopen/micro-motor.eds</collect>
+  </collectors>
+
+  <modules>
+    <module>modm:debug</module>
+    <module>modm:build:scons</module>
+    <module>modm-canopen:common</module>
+    <module>modm-canopen:common:cia402</module>
+    <module>modm-canopen:master</module>
+    <module>modm:platform:socketcan</module>
+    <module>librobots2:motor-canopen</module>
+  </modules>
+</library>
+

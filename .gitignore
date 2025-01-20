@@ -4,6 +4,28 @@ src/*/modm
 src/*/SConstruct
 project.xml.log
 
+modm/
+micro-motor/
+librobots2/
+modm-canopen/
+motor-canopen/
+eigen-lbuild/
+gnuplot-lbuild/
+build/
+SConstruct
+
+!ext/modm
+!ext/modm-canopen
+!ext/librobots2
+!ext/gnuplot-lbuild
+!ext/eigen-lbuild
+
+# Codium/Code
+**/.vscode/
+
+# lbuild
+__pycache__/
+
 # KiCAD
 *.bak
 *.kicad_pcb-bak
@@ -12,6 +34,9 @@ project.xml.log
 *.bck
 *.FCStd
 *~
+
+#NixOS
+.direnv/
 
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
@@ -104,3 +129,6 @@ Temporary Items
 *.creator.user
 *.files
 *.includes
+
+#CSVs
+*.csv

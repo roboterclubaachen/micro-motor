@@ -46,6 +46,7 @@ The second version *micro-motor-v2* is basically functional, software improvemen
 PCB _micro-motor-v2.1_ is similar to _v2_, but with added RC filters at encoder connector,
 added 1 µF capacitor to the STM32 _VREFBUF_ output and changed DC/DC converter modules (caused by component shortage).
 
+Software at HEAD is compatible with micro-motor-v2.\[0,1,2\], however the correct version needs to be selected in the project.xml to account for hardware differences with "Board.v2_1" being compatible with v2.0, and v2.1 and "Board.v2_2" being compatible with v2.2.
 
 ## Folder structure
 
@@ -55,11 +56,30 @@ added 1 µF capacitor to the STM32 _VREFBUF_ output and changed DC/DC converter 
 #### `STM32CubeMX/`
 * Pinout configuration of the STM32 microcontrollers done with [STs CubeMX software](https://www.st.com/en/development-tools/stm32cubemx.html)
 
-#### `src/test_*/`
+#### `tests/`
 * Test software. Useful during PCB assembly
 
-#### `src/app/`
+#### `app/`
 * Main Software
+
+#### `src/`
+* Common files used between main software and tests.
+
+## Notes
+
+### On first boot
+When first assembled the boards will be stuck inside the STM32 bootloader because BOOT0 is used as a GPIO pin.
+This behaviour can be overwritten by setting an option byte: \
+First read flash option byte:
+
+    openocd -f interface/stlink.cfg -c "transport select hla_swd" -f target/stm32g4x.cfg -c "reset_config none" -c "init" -c "stm32g4x option_read 0 0x20" -c "shutdown"
+
+Should respond 'Option Register: <0x40022020> = 0xffeff8aa' on a new PCB
+or 'Option Register: <0x40022020> = 0xfbeff8aa' once the nSWBOOT0 bit is cleared. \
+Clear the bit:
+
+    openocd -f interface/stlink.cfg -c "transport select hla_swd" -f target/stm32g4x.cfg -c "reset_config none" -c "init" -c "stm32g4x option_write 0 0x20 0x00000000 0x04000000" -c "shutdown"
+
 
 ## License
 

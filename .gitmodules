@@ -1,0 +1,13 @@
+[submodule "ext/modm"]
+	path = ext/modm
+	url = https://github.com/modm-io/modm.git
+[submodule "ext/librobots2"]
+	path = ext/librobots2
+	url = ../librobots2
+[submodule "ext/modm-canopen"]
+	path = ext/modm-canopen
+    url = ../modm-canopen
+[submodule "ext/eigen-lbuild"]
+	path = ext/eigen-lbuild
+	url = https://github.com/Javask/eigen-lbuild
+

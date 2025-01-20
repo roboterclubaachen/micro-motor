@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<library>
+  <repositories>
+    <repository>
+      <path>../ext/modm/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../ext/librobots2/repo.lb</path>
+    </repository>
+    <repository>
+      <path>../ext/modm-canopen/repo.lb</path>
+    </repository>
+  </repositories>
+
+  <options>
+    <option name="modm:target">stm32g474cet6</option>
+  </options>
+
+  <modules>
+    <module>micro-motor:canopen</module>
+    <module>micro-motor:common</module>
+  </modules>
+</library>
