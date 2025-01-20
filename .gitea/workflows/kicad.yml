@@ -1,4 +1,4 @@
-name: Run erc and generate pdfs for kicad
+name: Run erc and generate pdfs for kicad using kibot
 on:
   push:
     paths:
@@ -8,82 +8,110 @@ on:
     paths:
       - "kicad/**"
       - .gitea/workflows/kicad.yml
+
 jobs:
-  run-kicad:
-    name: Run Kicad ERC and generate PFDs/Gerber files
+  macro-motor:
+    name: Process Macro-Motor
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-        - folder: "micro-motor-v2.2"
-          main_schematic: "micro-motor-v2.2.kicad_sch"
-          sch_file: "kicad_sch"
     steps:
-      - uses: actions/checkout@v4
-      - name: "Setup Kicad"
-        run: |
-          add-apt-repository --yes ppa:kicad/kicad-8.0-releases
-          apt-get update
-          apt-get install --yes kicad          
-      - name: Process Schematics
-        run: |
-          SCHEMATICS=$(find kicad/${{ matrix.folder }} -name \*.${{ matrix.sch_file }})
-          RET=0
-          set +e
-          kicad-cli sch export bom kicad/${{ matrix.folder }}/${{ matrix.main_schematic }}
-          if [ $? -ne 0 ]; then
-            RET=1
-          fi
-          for SCHEMATIC in $SCHEMATICS
-          do
-            echo "File: $SCHEMATIC"
-            kicad-cli sch erc $SCHEMATIC --exit-code-violations
-            if [ $? -ne 0 ]; then
-              RET=1
-            fi
-            kicad-cli sch export pdf $SCHEMATIC
-            if [ $? -ne 0 ]; then
-              RET=1
-            fi
-          done
-          exit $RET
-      - name: Process PCBs
-        if: always()
-        run: |
-          mkdir gerbers
-          mkdir board_pdfs
-          PCBS=$(find kicad/${{ matrix.folder }} -name \*.kicad_pcb)
-          for PCB in $PCBS
-          do
-            filename=$(basename -- "$PCB")
-            extension="${filename##*.}"
-            filename="${filename%.*}"
-            echo "File: $filename"
-
-            kicad-cli pcb export pdf -l F.Cu,Dwgs.User -o board_pdfs/$filename.print_front.pdf $PCB
-            kicad-cli pcb export pdf -l In1.Cu,Dwgs.User -o board_pdfs/$filename.print_in1.pdf $PCB
-            kicad-cli pcb export pdf -l In2.Cu,Dwgs.User -o board_pdfs/$filename.print_in2.pdf $PCB
-            kicad-cli pcb export pdf -l B.Cu,Dwgs.User -o board_pdfs/$filename.print_bottom.pdf $PCB
-
-            kicad-cli pcb export gerbers -o gerbers -l F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Dwgs.User,Edge.Cuts,F.Fab,B.Fab $PCB
-          done
-      - name: Create Artifact
-        if: always() 
-        run: |
-          mkdir output
-          FILES=$(find -maxdepth 1 -name \*.pdf -o -name \*.csv -o -name \*.rpt)
-          for file in $FILES
-          do 
-            mv "$file" output 
-          done
-          mv gerbers output/gerbers
-          mv board_pdfs output/board_pdfs
-      - name: Upload
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: "${{matrix.folder}}"
-          path: "output"
-          if-no-files-found: error
-          overwrite: true
-          retention-days: 1
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        # Required - kibot config file
+        config: .gitea/config.kibot.yaml
+        # optional - prefix to output defined in config
+        dir: output
+        # optional - schematic file
+        schema: 'kicad/macro-motor/macro-motor.sch'
+        # optional - PCB design file
+        board: 'kicad/macro-motor/macro-motor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: macro-motor
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v1:
+    if: false
+    name: Process Micro-Motor v1(broken)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v1/µmotor.sch'
+        board: 'kicad/micro-motor-v1/µmotor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2:
+    name: Process Micro-Motor v2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2/micro-motor-v2.sch'
+        board: 'kicad/micro-motor-v2/micro-motor-v2.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2-1:
+    name: Process Micro-Motor v2.1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2.1/micro-motor-v2.1.sch'
+        board: 'kicad/micro-motor-v2.1/micro-motor-v2.1.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2.1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2-2:
+    name: Process Micro-Motor v2.2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2_k8
+      with:
+        config: .gitea/config.kibot.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch'
+        board: 'kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2.2
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
