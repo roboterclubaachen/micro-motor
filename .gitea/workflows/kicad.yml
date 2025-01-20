@@ -1,6 +1,13 @@
 name: Run erc and generate pdfs for kicad
-on: [push]
-
+on:
+  push:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad.yml
+  pull_request:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad.yml
 jobs:
   run-kicad:
     name: Run Kicad ERC and generate PFDs/Gerber files
