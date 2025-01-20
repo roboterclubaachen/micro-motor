@@ -4,27 +4,66 @@ on: [push]
 jobs:
   run-kicad:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - folder: "micro-motor-v2.2"
+          sch_file: "kicad_sch"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-for-kicad/setup-kicad@v1
-        with:
-          version: "8.0"
-      - uses: actions-for-kicad/check-kicad-files@v1
-        with:
-          file: "./kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch"
-          type: "erc"
-      - uses: actions-for-kicad/generate-kicad-files@v1
+      - name: "Setup Kicad"
+        run: |
+          add-apt-repository --yes ppa:kicad/kicad-8.0-releases
+          apt-get update
+          apt-get install --install-recommends kicad --yes
+      - name: Process Schematics
+        run: |
+          SCHEMATICS=$(find kicad/${{ matrix.folder }} -name \*.${{ matrix.sch_file }})
+          RET=0
+          kicad-cli sch export bom kicad/${{ matrix.folder }}/${{ matrix.folder }}.${{ matrix.sch_file }}
+          for SCHEMATIC in $SCHEMATICS
+          do
+            echo "File: $SCHEMATIC"
+            set +e
+            kicad-cli sch erc $SCHEMATIC --exit-code-violations
+            if [ $? -ne 0 ]; then
+              RET=1
+            fi
+            set -e
+            kicad-cli sch export pdf $SCHEMATIC
+          done
+          exit $RET
+      - name: Process PCBs
         if: always()
-        with:
-          file: "./kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch"
-          type: "schematic_pdf"
-          black-and-white: true
+        run: |
+          mkdir gerbers
+          mkdir board_pdfs
+          PCBS=$(find kicad/${{ matrix.folder }} -name \*.kicad_pcb)
+          for PCB in $PCBS
+          do
+            filename=$(basename -- "$PCB")
+            extension="${filename##*.}"
+            filename="${filename%.*}"
+            echo "File: $filename"
+
+            kicad-cli pcb export pdf -l F.Cu,Dwgs.User -o board_pdfs/$filename.print_front.pdf $PCB
+            kicad-cli pcb export pdf -l In1.Cu,Dwgs.User -o board_pdfs/$filename.print_in1.pdf $PCB
+            kicad-cli pcb export pdf -l In2.Cu,Dwgs.User -o board_pdfs/$filename.print_in2.pdf $PCB
+            kicad-cli pcb export pdf -l B.Cu,Dwgs.User -o board_pdfs/$filename.print_bottom.pdf $PCB
+
+            kicad-cli pcb export gerbers -o gerbers -l F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Dwgs.User,Edge.Cuts,F.Fab,B.Fab $PCB
+          done
+      - name: Create Artifact
+        if: always() 
+        run: |
+          FILES=$(find -maxdepth 1 -name \*.pdf -o -name \*.csv -o -name \*.rpt)
+          tar czf artifact.tar.gz $FILES gerbers/ board_pdfs/
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: "micro-motor-v2.2.pdf"
-          path: "./micro-motor-v2.2.pdf"
+          name: "${{matrix.folder}}.tar.gz"
+          path: "./artifact.tar.gz"
           if-no-files-found: error
           overwrite: true
           retention-days: 1
