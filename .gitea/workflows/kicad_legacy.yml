@@ -1,0 +1,33 @@
+name: Run erc and generate pdfs for kicad (Legacy)
+on:
+  push:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad_legacy.yml
+  pull_request:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad_legacy.yml
+
+jobs:
+  macro-motor:
+    name: Process Macro-Motor
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v1_k6
+      with:
+        # Required - kibot config file
+        config: .gitea/config.kibot.yaml
+        # optional - prefix to output defined in config
+        dir: output
+        # optional - schematic file
+        schema: 'kicad/macro-motor/macro-motor.sch'
+        # optional - PCB design file
+        board: 'kicad/macro-motor/macro-motor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: macro-motor
+        path: output
