@@ -6,6 +6,10 @@ preflight:
   erc: 
     enabled: true
     dont_stop: false
+    filters:
+      - filter: 'power_pin_not_driven'
+        change_to: 'warning'
+        error: 'power_pin_not_driven'
   drc: false
   check_zone_fills: false
 

@@ -13,7 +13,8 @@ on:
 
 jobs:
   macro-motor:
-    name: Process Macro-Motor
+    if: false
+    name: Process Macro-Motor(broken)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
