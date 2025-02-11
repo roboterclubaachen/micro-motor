@@ -1,0 +1,116 @@
+name: Run erc and generate pdfs for kicad using kibot
+on:
+  push:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad.yml
+      - .gitea/*.kibot_*.yaml
+  pull_request:
+    paths:
+      - "kicad/**"
+      - .gitea/workflows/kicad.yml
+      - .gitea/*.kibot_*.yaml
+
+jobs:
+  macro-motor:
+    if: false
+    name: Process Macro-Motor(broken)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot_5.yaml
+        dir: output
+        schema: 'kicad/macro-motor/macro-motor.sch'
+        board: 'kicad/macro-motor/macro-motor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: macro-motor
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v1:
+    if: false
+    name: Process Micro-Motor v1(broken)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot_5.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v1/µmotor.sch'
+        board: 'kicad/micro-motor-v1/µmotor.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2:
+    name: Process Micro-Motor v2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot_5.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2/micro-motor-v2.sch'
+        board: 'kicad/micro-motor-v2/micro-motor-v2.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2-1:
+    name: Process Micro-Motor v2.1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2
+      with:
+        config: .gitea/config.kibot_5.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2.1/micro-motor-v2.1.sch'
+        board: 'kicad/micro-motor-v2.1/micro-motor-v2.1.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2.1
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+  micro-motor-v2-2:
+    name: Process Micro-Motor v2.2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: INTI-CMNB/KiBot@v2_k8
+      with:
+        config: .gitea/config.kibot_8.yaml
+        dir: output
+        schema: 'kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_sch'
+        board: 'kicad/micro-motor-v2.2/micro-motor-v2.2.kicad_pcb'
+    - name: Upload results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: micro-motor-v2.2
+        path: output
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1

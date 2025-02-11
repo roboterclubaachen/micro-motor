@@ -21,6 +21,6 @@ for test in $TESTS
 do
     pushd $test
     lbuild build
-    scons build -j8
+    scons build -j $(nproc)
     popd
 done
