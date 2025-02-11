@@ -55,7 +55,7 @@
               gcc
               scons
               openocd
-              lldb
+              gdb
               gcc-arm-embedded
               (python3.withPackages (python-pkgs: [
                 python-pkgs.pandas
