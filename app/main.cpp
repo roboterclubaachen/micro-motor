@@ -76,6 +76,7 @@ readBoardId()
 		BoardId{.id = 0x002E0046, .nodeId = 14u, .hw_version_major = 2, .hw_version_minor = 2},
 		BoardId{.id = 0x00410046, .nodeId = 15u, .hw_version_major = 2, .hw_version_minor = 2},
 		BoardId{.id = 0x00320030, .nodeId = 17u, .hw_version_major = 2, .hw_version_minor = 2},
+		BoardId{.id = 0x002C0050, .nodeId = 18u, .hw_version_major = 2, .hw_version_minor = 2},
 	};
 
 	const auto hardwareId = Board::readHardwareId();
@@ -111,7 +112,6 @@ constexpr auto noMessageTimeout = 200ms;
 constexpr modm_canopen::Identity micromotorId = {.deviceType_ = (uint32_t)DeviceType::BLDC,
 												 .vendorId_ = 0xdeadbeef,
 												 .productCode_ = (uint32_t)ProductCode::MicroMotor};
-
 
 int
 main()
