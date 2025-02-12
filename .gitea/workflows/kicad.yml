@@ -5,11 +5,6 @@ on:
       - "kicad/**"
       - .gitea/workflows/kicad.yml
       - .gitea/*.kibot_*.yaml
-  pull_request:
-    paths:
-      - "kicad/**"
-      - .gitea/workflows/kicad.yml
-      - .gitea/*.kibot_*.yaml
 
 jobs:
   macro-motor:
