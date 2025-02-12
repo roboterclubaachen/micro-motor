@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - "kicad/**"
-      - .gitea/workflows/kicad.yml
+      - .gitea/workflows/kicad.yaml
       - .gitea/*.kibot_*.yaml
 
 jobs:

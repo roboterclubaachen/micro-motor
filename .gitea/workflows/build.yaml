@@ -9,7 +9,7 @@ on:
       - "ext/**"
       - ".gitmodules"
       - "repo.lb"
-      - .gitea/workflows/build.yml
+      - .gitea/workflows/build.yaml
 
 jobs:
   compile-app:
