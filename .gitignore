@@ -34,6 +34,7 @@ __pycache__/
 *.bck
 *.FCStd
 *~
+kicad/**/*-backups/
 
 #NixOS
 .direnv/

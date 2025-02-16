@@ -39,15 +39,21 @@ outputs:
       pages:
         - layers: 
           - F.Cu
+          - F.SilkS
+          - Edge.Cuts
           - Dwgs.User
         - layers: 
           - In1.Cu
+          - Edge.Cuts
           - Dwgs.User
         - layers: 
           - In2.Cu
+          - Edge.Cuts
           - Dwgs.User
         - layers: 
           - B.Cu
+          - B.SilkS
+          - Edge.Cuts
           - Dwgs.User
 
   - name: 'interactive_bom'
